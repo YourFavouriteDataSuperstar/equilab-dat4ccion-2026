@@ -1,0 +1,259 @@
+---
+title: "Página 2 — Calidad del Empleo"
+subtitle: "EQUILAB · DAT4CCIÓN 2026"
+date: today
+lang: es
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    theme: cosmo
+    self-contained: true
+    code-fold: true
+execute:
+  warning: false
+  message: false
+---
+
+> **Esta es tu página de trabajo.** Desarrolla aquí tus visualizaciones.
+> Cuando esté lista, Alejandra integrará el contenido en `dashboard.qmd`.
+> Pregunta cualquier duda antes de avanzar.
+
+---
+
+# Configuración inicial
+
+```{r librerias}
+library(arrow)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(plotly)
+
+COLOR_HOMBRES <- "#2166AC"
+COLOR_MUJERES <- "#D6604D"
+```
+
+```{r cargar-datos}
+df_ocup <- read_parquet("../datos/geih_ocupados_2019_2025.parquet")
+
+glimpse(df_ocup)
+```
+
+---
+
+# Filtros base
+
+```{r filtros}
+# Filtros obligatorios para el parquet de ocupados
+df_base <- df_ocup |>
+  filter(
+    condicion_activ == 1,   # solo ocupados confirmados
+    edad >= 15, edad <= 99,
+    sexo %in% c(1, 2)
+  )
+
+# Etiquetas de posición ocupacional
+posicion_labels <- c(
+  "1" = "Empleado gobierno",
+  "2" = "Empleado empresa privada",
+  "3" = "Empleado doméstico",
+  "4" = "Cuenta propia",
+  "5" = "Empleador",
+  "6" = "Familiar sin remuneración",
+  "7" = "Sin remuneración (otras emp.)",
+  "8" = "Jornalero / peón",
+  "9" = "Otro"
+)
+
+df_base <- df_base |>
+  mutate(
+    sexo_label     = if_else(sexo == 1, "Hombres", "Mujeres"),
+    posicion_label = posicion_labels[as.character(posicion_ocup)]
+  )
+```
+
+---
+
+# Visualización 1 — Composición por posición ocupacional
+
+Esta gráfica muestra qué tipo de empleo tienen hombres y mujeres, y cómo ha cambiado entre 2019 y 2025.
+
+```{r viz-posicion}
+# Calcular porcentaje ponderado por posición, sexo y año
+posicion_pct <- df_base |>
+  group_by(anio, sexo_label, posicion_label) |>
+  summarise(n_pond = sum(fex, na.rm = TRUE), .groups = "drop") |>
+  group_by(anio, sexo_label) |>
+  mutate(pct = n_pond / sum(n_pond) * 100) |>
+  ungroup() |>
+  filter(!is.na(posicion_label))
+
+# Versión simplificada: mostrar solo los años de inicio y fin
+posicion_extremos <- posicion_pct |>
+  filter(anio %in% c(2019, 2025))
+
+p_posicion <- ggplot(posicion_extremos,
+       aes(x = pct, y = reorder(posicion_label, pct),
+           fill = sexo_label, group = sexo_label)) +
+  geom_col(position = "dodge", alpha = 0.85) +
+  facet_wrap(~anio) +
+  scale_fill_manual(values = c("Hombres" = COLOR_HOMBRES, "Mujeres" = COLOR_MUJERES)) +
+  labs(
+    title = "Composición del empleo por posición ocupacional",
+    subtitle = "Colombia — comparación 2019 vs 2025",
+    x = "Porcentaje (%)", y = NULL, fill = NULL,
+    caption = "Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026."
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "top", axis.text.y = element_text(size = 9))
+
+ggplotly(p_posicion)
+```
+
+---
+
+# Visualización 2 — Horas trabajadas por semana
+
+Las diferencias en horas trabajadas revelan otro tipo de brecha: el acceso a empleo de tiempo completo.
+
+```{r viz-horas}
+# Distribución de horas semanales por sexo y año
+# Calculamos percentiles ponderados: p25, p50, p75
+horas_resumen <- df_base |>
+  group_by(anio, sexo_label) |>
+  summarise(
+    mediana_horas = Hmisc::wtd.quantile(horas_sem, weights = fex, probs = 0.5, na.rm = TRUE),
+    p25_horas     = Hmisc::wtd.quantile(horas_sem, weights = fex, probs = 0.25, na.rm = TRUE),
+    p75_horas     = Hmisc::wtd.quantile(horas_sem, weights = fex, probs = 0.75, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+p_horas <- ggplot(horas_resumen, aes(x = anio, y = mediana_horas,
+                                      color = sexo_label, group = sexo_label)) +
+  geom_ribbon(aes(ymin = p25_horas, ymax = p75_horas, fill = sexo_label),
+              alpha = 0.15, color = NA) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 3) +
+  geom_vline(xintercept = 2021, linetype = "dashed", color = "gray50") +
+  annotate("text", x = 2021.1, y = max(horas_resumen$p75_horas),
+           label = "Cambio Marco\nMuestral", hjust = 0, size = 3, color = "gray40") +
+  scale_color_manual(values = c("Hombres" = COLOR_HOMBRES, "Mujeres" = COLOR_MUJERES)) +
+  scale_fill_manual(values  = c("Hombres" = COLOR_HOMBRES, "Mujeres" = COLOR_MUJERES)) +
+  scale_x_continuous(breaks = 2019:2025) +
+  labs(
+    title = "Horas trabajadas por semana — mediana y rango intercuartílico",
+    subtitle = "Colombia 2019–2025 (banda: p25–p75)",
+    x = NULL, y = "Horas / semana", color = NULL, fill = NULL,
+    caption = "Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026."
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(legend.position = "top")
+
+ggplotly(p_horas)
+```
+
+---
+
+# Visualización 3 — Proxy de informalidad
+
+La posición ocupacional permite construir un proxy de informalidad laboral.
+Consideramos informales: cuenta propia (4), familiar sin remuneración (6), jornalero/peón (8).
+
+```{r viz-informalidad}
+df_informal <- df_base |>
+  mutate(
+    informal = posicion_ocup %in% c(4, 6, 8)
+  ) |>
+  group_by(anio, sexo_label) |>
+  summarise(
+    pct_informal = sum(fex[informal], na.rm = TRUE) / sum(fex, na.rm = TRUE) * 100,
+    .groups = "drop"
+  )
+
+p_informal <- ggplot(df_informal, aes(x = anio, y = pct_informal,
+                                       color = sexo_label, group = sexo_label)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 3) +
+  geom_vline(xintercept = 2021, linetype = "dashed", color = "gray50") +
+  annotate("text", x = 2021.1, y = max(df_informal$pct_informal),
+           label = "Cambio Marco\nMuestral", hjust = 0, size = 3, color = "gray40") +
+  scale_color_manual(values = c("Hombres" = COLOR_HOMBRES, "Mujeres" = COLOR_MUJERES)) +
+  scale_x_continuous(breaks = 2019:2025) +
+  labs(
+    title = "Proxy de informalidad laboral por sexo",
+    subtitle = "% de ocupados en posición cuenta propia, familiar sin remuneración o jornalero",
+    x = NULL, y = "% informales (proxy)", color = NULL,
+    caption = "Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026."
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(legend.position = "top")
+
+ggplotly(p_informal)
+```
+
+---
+
+# Visualización 4 — Segregación sectorial
+
+Esta gráfica muestra en qué ramas económicas se concentran hombres y mujeres (composición % por rama).
+
+```{r viz-segregacion}
+# Agrupar ramas en categorías más legibles
+# rama2d_orig: código CIIU 2 dígitos como texto
+# Simplificamos a sectores grandes para legibilidad
+
+df_sector <- df_base |>
+  filter(!is.na(rama2d_orig)) |>
+  mutate(
+    sector = case_when(
+      rama2d_orig %in% c("01","02","03") ~ "Agropecuario",
+      rama2d_orig %in% c("10","11","12","13","14","15","16","17","18","19",
+                         "20","21","22","23","24","25","26","27","28","29",
+                         "30","31","32","33") ~ "Industria",
+      rama2d_orig %in% c("41","42","43") ~ "Construcción",
+      rama2d_orig %in% c("45","46","47") ~ "Comercio",
+      rama2d_orig %in% c("49","50","51","52","53") ~ "Transporte",
+      rama2d_orig %in% c("55","56") ~ "Alojamiento y restaurantes",
+      rama2d_orig %in% c("84") ~ "Adm. pública",
+      rama2d_orig %in% c("85") ~ "Educación",
+      rama2d_orig %in% c("86","87","88") ~ "Salud",
+      rama2d_orig %in% c("97","98") ~ "Hogares / doméstico",
+      TRUE ~ "Otros servicios"
+    )
+  ) |>
+  # Solo año más reciente para claridad
+  filter(anio == max(anio)) |>
+  group_by(sexo_label, sector) |>
+  summarise(n_pond = sum(fex, na.rm = TRUE), .groups = "drop") |>
+  group_by(sexo_label) |>
+  mutate(pct = n_pond / sum(n_pond) * 100) |>
+  ungroup()
+
+p_sector <- ggplot(df_sector,
+       aes(x = pct, y = reorder(sector, pct), fill = sexo_label)) +
+  geom_col(position = "dodge", alpha = 0.85) +
+  scale_fill_manual(values = c("Hombres" = COLOR_HOMBRES, "Mujeres" = COLOR_MUJERES)) +
+  labs(
+    title = paste("Distribución sectorial del empleo —", max(df_base$anio)),
+    subtitle = "% de ocupados por sector económico y sexo",
+    x = "Porcentaje (%)", y = NULL, fill = NULL,
+    caption = "Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026."
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "top")
+
+ggplotly(p_sector)
+```
+
+---
+
+# Próximos pasos sugeridos
+
+1. **Ajustar la agrupación de sectores** — revisa si las categorías tienen sentido para el análisis de género.
+2. **Añadir filtro por zona** (`clase_zona`: 1=urbano, 2=rural) para mostrar diferencias rurales/urbanas.
+3. **Serie de tiempo de informalidad** ya está lista — evalúa si el proxy necesita refinamiento.
+
+---
+
+*EQUILAB · DAT4CCIÓN 2026 · Fuente: DANE, GEIH 2019–2025*

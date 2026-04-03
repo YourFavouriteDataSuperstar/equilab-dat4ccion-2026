@@ -1,0 +1,24 @@
+project:
+  type: default
+  output-dir: _site
+
+format:
+  dashboard:
+    theme: cosmo
+    scrolling: false
+    self-contained: true
+    nav-buttons:
+      - icon: github
+        href: https://github.com/equilab-ean/equilab-dat4ccion-2026
+    logo: ""
+    footer: |
+      Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026.
+      Estimaciones ponderadas con factor de expansión (fex).
+
+execute:
+  echo: false
+  warning: false
+  message: false
+  cache: false
+
+lang: es

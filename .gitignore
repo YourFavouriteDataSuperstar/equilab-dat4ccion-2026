@@ -1,0 +1,43 @@
+# =============================================================================
+# EQUILAB — DAT4CCIÓN 2026
+# .gitignore — archivos que NO se suben al repositorio público
+# =============================================================================
+
+# Datos (demasiado grandes — descargar desde Zenodo, ver datos/README.md)
+datos/*.parquet
+datos/*.csv
+datos/*.RDS
+datos/*.rds
+datos/*.feather
+
+# Salida de Quarto (se regenera con quarto render)
+/.quarto/
+_site/
+_book/
+*_files/
+*.html
+!docs/*.html
+
+# R
+.Rhistory
+.RData
+.Rproj.user/
+*.Rproj
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.env
+venv/
+.venv/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Archivos temporales
+*.tmp
+*.bak
+~$*

@@ -1,0 +1,231 @@
+---
+title: "Página 1 — Acceso e Indicadores Laborales"
+subtitle: "EQUILAB · DAT4CCIÓN 2026"
+date: today
+lang: es
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    theme: cosmo
+    self-contained: true
+    code-fold: true
+execute:
+  warning: false
+  message: false
+---
+
+> **Esta es tu página de trabajo.** Desarrolla aquí tus visualizaciones.
+> Cuando esté lista, Alejandra integrará el contenido en `dashboard.qmd`.
+> Pregunta cualquier duda antes de avanzar.
+
+---
+
+# Configuración inicial
+
+```{r librerias}
+library(arrow)      # leer archivos parquet
+library(dplyr)      # manipulación de datos
+library(ggplot2)    # gráficas
+library(plotly)     # hacer gráficas interactivas
+library(Hmisc)      # medianas ponderadas (wtd.quantile)
+
+# Colores del proyecto (no cambiar)
+COLOR_HOMBRES <- "#2166AC"
+COLOR_MUJERES <- "#D6604D"
+```
+
+```{r cargar-datos}
+# IMPORTANTE: la ruta es relativa al archivo. Si estás en analisis/, los datos
+# están en ../datos/
+df_pet <- read_parquet("../datos/geih_pet_2019_2025.parquet")
+
+# Ver las primeras filas para confirmar que cargó bien
+glimpse(df_pet)
+```
+
+---
+
+# Filtros base
+
+```{r filtros}
+# Siempre aplicar estos filtros antes de cualquier cálculo
+df_base <- df_pet |>
+  filter(
+    sexo %in% c(1, 2),    # sexo válido (1=hombre, 2=mujer)
+    edad >= 15,            # PET: población en edad de trabajar
+    edad <= 99             # excluir edades extremas
+  )
+```
+
+---
+
+# Indicadores: TGP, TO, TD
+
+Las tres tasas laborales del DANE se calculan así:
+
+- **TGP** (Tasa Global de Participación) = PEA / PET
+- **TO** (Tasa de Ocupación) = Ocupados / PET
+- **TD** (Tasa de Desempleo) = Desocupados / PEA
+
+```{r calcular-tasas}
+# Clasificaciones según condicion_activ
+# 1 = trabajó ≥1 hora    → Ocupado
+# 2 = tenía trabajo pero ausente → Ocupado
+# 3 = buscó trabajo activamente → Desocupado
+# 4, 5 = desempleo oculto (no entra en cálculo estándar)
+# 6 = inactivo puro
+
+tasas_anuales <- df_base |>
+  group_by(anio, sexo) |>
+  summarise(
+    PET       = sum(fex, na.rm = TRUE),
+    PEA       = sum(fex[condicion_activ %in% c(1, 2, 3)], na.rm = TRUE),
+    Ocupados  = sum(fex[condicion_activ %in% c(1, 2)], na.rm = TRUE),
+    Desocupados = sum(fex[condicion_activ == 3], na.rm = TRUE),
+    .groups = "drop"
+  ) |>
+  mutate(
+    TGP = PEA / PET * 100,
+    TO  = Ocupados / PET * 100,
+    TD  = Desocupados / PEA * 100,
+    sexo_label = if_else(sexo == 1, "Hombres", "Mujeres")
+  )
+
+# Ver resultado
+tasas_anuales |> select(anio, sexo_label, TGP, TO, TD) |> print(n = 20)
+```
+
+---
+
+# Visualización 1 — TGP por sexo y año
+
+```{r viz-tgp}
+# Gráfica de líneas: TGP 2019–2025 por sexo
+p_tgp <- ggplot(tasas_anuales, aes(x = anio, y = TGP, color = sexo_label, group = sexo_label)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 3) +
+  # Línea de cambio de marco muestral
+  geom_vline(xintercept = 2021, linetype = "dashed", color = "gray50", linewidth = 0.7) +
+  annotate("text", x = 2021.1, y = max(tasas_anuales$TGP) * 0.98,
+           label = "Cambio Marco\nMuestral", hjust = 0, size = 3, color = "gray40") +
+  scale_color_manual(
+    values = c("Hombres" = COLOR_HOMBRES, "Mujeres" = COLOR_MUJERES)
+  ) +
+  scale_x_continuous(breaks = 2019:2025) +
+  labs(
+    title = "Tasa Global de Participación por sexo",
+    subtitle = "Colombia 2019–2025",
+    x = NULL, y = "TGP (%)",
+    color = NULL,
+    caption = "Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026."
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(legend.position = "top")
+
+# Hacer interactiva con plotly
+ggplotly(p_tgp)
+```
+
+---
+
+# Visualización 2 — TO por sexo y año
+
+```{r viz-to}
+# TODO: replicar la misma estructura que p_tgp pero con TO
+# Pista: cambia `y = TGP` por `y = TO` y actualiza el título
+
+p_to <- ggplot(tasas_anuales, aes(x = anio, y = TO, color = sexo_label, group = sexo_label)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 3) +
+  geom_vline(xintercept = 2021, linetype = "dashed", color = "gray50", linewidth = 0.7) +
+  annotate("text", x = 2021.1, y = max(tasas_anuales$TO) * 0.98,
+           label = "Cambio Marco\nMuestral", hjust = 0, size = 3, color = "gray40") +
+  scale_color_manual(values = c("Hombres" = COLOR_HOMBRES, "Mujeres" = COLOR_MUJERES)) +
+  scale_x_continuous(breaks = 2019:2025) +
+  labs(
+    title = "Tasa de Ocupación por sexo",
+    subtitle = "Colombia 2019–2025",
+    x = NULL, y = "TO (%)", color = NULL,
+    caption = "Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026."
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(legend.position = "top")
+
+ggplotly(p_to)
+```
+
+---
+
+# Visualización 3 — TD por sexo y año
+
+```{r viz-td}
+# TODO: misma estructura, con TD
+p_td <- ggplot(tasas_anuales, aes(x = anio, y = TD, color = sexo_label, group = sexo_label)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 3) +
+  geom_vline(xintercept = 2021, linetype = "dashed", color = "gray50", linewidth = 0.7) +
+  annotate("text", x = 2021.1, y = max(tasas_anuales$TD),
+           label = "Cambio Marco\nMuestral", hjust = 0, size = 3, color = "gray40") +
+  scale_color_manual(values = c("Hombres" = COLOR_HOMBRES, "Mujeres" = COLOR_MUJERES)) +
+  scale_x_continuous(breaks = 2019:2025) +
+  labs(
+    title = "Tasa de Desempleo por sexo",
+    subtitle = "Colombia 2019–2025",
+    x = NULL, y = "TD (%)", color = NULL,
+    caption = "Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026."
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(legend.position = "top")
+
+ggplotly(p_td)
+```
+
+---
+
+# Visualización 4 — Brecha de participación (en puntos porcentuales)
+
+```{r viz-brecha-pp}
+# Diferencia TGP hombres - TGP mujeres por año
+brecha_pp <- tasas_anuales |>
+  select(anio, sexo_label, TGP, TO, TD) |>
+  tidyr::pivot_wider(names_from = sexo_label, values_from = c(TGP, TO, TD)) |>
+  mutate(
+    brecha_TGP = TGP_Hombres - TGP_Mujeres,
+    brecha_TO  = TO_Hombres  - TO_Mujeres,
+    brecha_TD  = TD_Hombres  - TD_Mujeres   # ojo: puede ser negativa (más desempleo femenino)
+  )
+
+p_brecha <- ggplot(brecha_pp, aes(x = anio, y = brecha_TGP)) +
+  geom_col(fill = "#4393C3", alpha = 0.8) +
+  geom_hline(yintercept = 0, color = "black", linewidth = 0.5) +
+  geom_vline(xintercept = 2020.5, linetype = "dashed", color = "gray50") +
+  annotate("text", x = 2021.1, y = max(brecha_pp$brecha_TGP),
+           label = "Cambio Marco\nMuestral", hjust = 0, size = 3, color = "gray40") +
+  scale_x_continuous(breaks = 2019:2025) +
+  labs(
+    title = "Brecha de participación laboral (TGP Hombres − Mujeres)",
+    subtitle = "En puntos porcentuales — Colombia 2019–2025",
+    x = NULL, y = "Brecha (pp)",
+    caption = "Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026."
+  ) +
+  theme_minimal(base_size = 13)
+
+ggplotly(p_brecha)
+```
+
+---
+
+# Próximos pasos sugeridos
+
+Cuando las 4 gráficas de arriba estén funcionando y bonitas, puedes agregar:
+
+1. **Mapa por departamento** — TGP femenina o brecha por dpto (requiere `dpto_cod` + shapefile DANE)
+2. **Desagregación por nivel educativo** — usar `niv_edu_armon`
+3. **Filtro interactivo con crosstalk** — para que el usuario filtre por año o zona
+
+Consulta la guía metodológica en `docs/guia_metodologica_dashboard.qmd` para instrucciones sobre filtros con crosstalk y CVs con el paquete `survey`.
+
+---
+
+*EQUILAB · DAT4CCIÓN 2026 · Fuente: DANE, GEIH 2019–2025*
