@@ -134,4 +134,4 @@ Los microdatos del DANE son de dominio público bajo la política de datos abier
 
 ---
 
-*Desarrollado para DAT4CCIÓN 2026 — Datatón Regional para la Igualdad de Género. ONU Mujeres / CEPAL / CEEG.*
+*Desarrollado para DAT4CCIÓN 2026 — Datatón Regional para la Igualdad de Género. ONU Mujeres / CEPAL / CEEG.* 
