@@ -20,43 +20,68 @@ execute:
   echo: true
   warning: false
   message: false
+editor: 
+  markdown: 
+    wrap: 72
 ---
 
-::: {.callout-important}
-**Este documento es la guía de referencia metodológica para el equipo.** No está diseñado para ejecutarse — los bloques de código son ilustrativos (`eval: false`). El dashboard funcional se construye en un archivo `.qmd` separado por cada persona, usando este documento como marco de trabajo.
+::: callout-important
+**Este documento es la guía de referencia metodológica para el equipo.**
+No está diseñado para ejecutarse — los bloques de código son
+ilustrativos (`eval: false`). El dashboard funcional se construye en un
+archivo `.qmd` separado por cada persona, usando este documento como
+marco de trabajo.
 :::
 
----
+------------------------------------------------------------------------
 
 # Contexto del proyecto
 
-El **Radar de Brechas Laborales de Género** es el producto central de DAT4CCIÓN 2026 (EQUILAB), desarrollado para la competencia ONU Mujeres + CEEG. El objetivo es caracterizar y descomponer las brechas de género en el mercado laboral colombiano entre 2019 y 2025, combinando análisis descriptivo con el modelo de descomposición Oaxaca-Blinder.
+El **Radar de Brechas Laborales de Género** es el producto central de
+DAT4CCIÓN 2026 (EQUILAB), desarrollado para la competencia ONU Mujeres +
+CEEG. El objetivo es caracterizar y descomponer las brechas de género en
+el mercado laboral colombiano entre 2019 y 2025, combinando análisis
+descriptivo con el modelo de descomposición Oaxaca-Blinder.
 
 El análisis se divide en dos grandes bloques:
 
-- **Descriptivo** (este dashboard, tres páginas): caracterización del mercado laboral por sexo a través del tiempo, con lentes de interseccionalidad.
-- **O-B** (Alejandra): descomposición de la brecha salarial en componente explicado e inexplicado, separando Marco 2005 (2019–2021) y Marco 2018 (2022–2025).
+-   **Descriptivo** (este dashboard, tres páginas): caracterización del
+    mercado laboral por sexo a través del tiempo, con lentes de
+    interseccionalidad.
+-   **O-B** (Alejandra): descomposición de la brecha salarial en
+    componente explicado e inexplicado, separando Marco 2005 (2019–2021)
+    y Marco 2018 (2022–2025).
 
-**Cada persona del equipo construye una página** del dashboard descriptivo en Quarto. Los tres archivos se integran en el dashboard final.
+**Cada persona del equipo construye una página** del dashboard
+descriptivo en Quarto. Los tres archivos se integran en el dashboard
+final.
 
----
+------------------------------------------------------------------------
 
 # El parquet de datos
 
 ## Qué es un parquet y por qué lo usamos
 
-Un archivo `.parquet` es un formato de almacenamiento columnar optimizado para análisis. A diferencia de un CSV, preserva los tipos de datos (enteros, flotantes, strings), permite leer solo las columnas que necesitas sin cargar todo el archivo, y comprime mejor los datos repetitivos.
+Un archivo `.parquet` es un formato de almacenamiento columnar
+optimizado para análisis. A diferencia de un CSV, preserva los tipos de
+datos (enteros, flotantes, strings), permite leer solo las columnas que
+necesitas sin cargar todo el archivo, y comprime mejor los datos
+repetitivos.
 
 ## Los dos parquets del proyecto
 
 El equipo recibe **dos parquets**. Cada página usa el que corresponde:
 
 | Parquet | Filas | Peso | Usa quién |
-|---------|-------|------|-----------|
+|------------------|----------------|----------------|----------------------|
 | `geih_ocupados_2019_2025.parquet` | 2.633.461 | 48 MB | **Páginas 2 y 3** — calidad del empleo y brechas salariales |
 | `geih_pet_2019_2025.parquet` | 4.923.878 | 46 MB | **Página 1** — TGP, TO, TD (incluye toda la PET: ocupados + desocupados + inactivos) |
 
-**¿Por qué dos?** El parquet de ocupados tiene solo personas con trabajo — no tiene el denominador completo para calcular TGP/TO/TD. El parquet PET parte del módulo de Fuerza de Trabajo e incluye a toda la población en edad de trabajar (≥15 años), lo que permite calcular las tasas correctamente.
+**¿Por qué dos?** El parquet de ocupados tiene solo personas con trabajo
+— no tiene el denominador completo para calcular TGP/TO/TD. El parquet
+PET parte del módulo de Fuerza de Trabajo e incluye a toda la población
+en edad de trabajar (≥15 años), lo que permite calcular las tasas
+correctamente.
 
 ```{r}
 library(arrow)
@@ -73,10 +98,11 @@ df_ocup <- read_parquet("ruta/geih_ocupados_2019_2025.parquet")
 
 ### `geih_ocupados_2019_2025.parquet` — 25 columnas (Páginas 2 y 3)
 
-Contiene solo personas **con trabajo**. Tiene todas las variables de ingreso, horas, sector y posición ocupacional.
+Contiene solo personas **con trabajo**. Tiene todas las variables de
+ingreso, horas, sector y posición ocupacional.
 
 | Variable | Tipo | Cobertura | Descripción |
-|----------|------|-----------|-------------|
+|-----------------|-----------------|------------------|----------------------|
 | `marco` | texto | 100% | Marco muestral: `"2005"` (años 2019–2020) o `"2018"` (años 2021–2025) |
 | `anio` | entero | 100% | Año: 2019 a 2025 |
 | `mes` | texto | 100% | Mes en español minúscula (p.ej. `"enero"`) |
@@ -105,18 +131,21 @@ Contiene solo personas **con trabajo**. Tiene todas las variables de ingreso, ho
 
 ### `geih_pet_2019_2025.parquet` — 16 columnas (Página 1)
 
-Contiene **toda la PET** (población en edad de trabajar, ≥15 años): ocupados, desocupados e inactivos. Variables disponibles: `marco`, `anio`, `mes`, `dpto_cod`, `clase_zona`, `fex`, `sexo`, `edad`, `etnia_bin`, `niv_edu_armon`, `esc_anios`, `condicion_activ` + llaves.
+Contiene **toda la PET** (población en edad de trabajar, ≥15 años):
+ocupados, desocupados e inactivos. Variables disponibles: `marco`,
+`anio`, `mes`, `dpto_cod`, `clase_zona`, `fex`, `sexo`, `edad`,
+`etnia_bin`, `niv_edu_armon`, `esc_anios`, `condicion_activ` + llaves.
 
 La variable clave es `condicion_activ` (P6240 del módulo FT):
 
-| Código | Categoría | Grupo |
-|--------|-----------|-------|
-| 1 | Trabajó al menos 1 hora la semana pasada | **Ocupado** |
-| 2 | Tenía trabajo pero estuvo ausente | **Ocupado** |
-| 3 | Buscó trabajo activamente (desempleo abierto) | **Desocupado** |
-| 4 | Buscó trabajo el último mes, no esta semana | Desocupado oculto |
-| 5 | Quiere y puede trabajar, pero no buscó | Desocupado oculto |
-| 6 | No quiere o no puede trabajar | Inactivo puro |
+| Código | Categoría                                     | Grupo             |
+|--------|-----------------------------------------------|-------------------|
+| 1      | Trabajó al menos 1 hora la semana pasada      | **Ocupado**       |
+| 2      | Tenía trabajo pero estuvo ausente             | **Ocupado**       |
+| 3      | Buscó trabajo activamente (desempleo abierto) | **Desocupado**    |
+| 4      | Buscó trabajo el último mes, no esta semana   | Desocupado oculto |
+| 5      | Quiere y puede trabajar, pero no buscó        | Desocupado oculto |
+| 6      | No quiere o no puede trabajar                 | Inactivo puro     |
 
 **Definiciones estándar DANE:**
 
@@ -131,8 +160,10 @@ La variable clave es `condicion_activ` (P6240 del módulo FT):
 # TD  (%) = sum(fex[Desoc])/ sum(fex[PEA]) × 100
 ```
 
-::: {.callout-note}
-Los códigos 4 y 5 (desempleo oculto) no entran en el cálculo estándar de TGP/TO/TD del DANE, pero son informativos para análisis de subutilización laboral. El código 6 es inactivo puro.
+::: callout-note
+Los códigos 4 y 5 (desempleo oculto) no entran en el cálculo estándar de
+TGP/TO/TD del DANE, pero son informativos para análisis de
+subutilización laboral. El código 6 es inactivo puro.
 :::
 
 ## Filtros obligatorios antes de analizar {#sec-filtros}
@@ -156,16 +187,24 @@ df_ingresos <- df_analisis |>
   filter(!ing_mes %in% c(0, 98, 99))   # 0 = sin ingreso, 98 = no sabe, 99 = no informa
 ```
 
-::: {.callout-warning}
-**Sobre `ing_mes`:** El 50.2% de los registros tiene `ing_mes` como `NA`. Esto es normal — la variable captura solo el salario mensual reportado (P6500), que aplica principalmente a asalariados. Trabajadores por cuenta propia, empleadores y empleados sin salario fijo reportan con menos frecuencia. Adicionalmente, los códigos `98` (no sabe) y `99` (no informa) están almacenados como valores numéricos en el parquet — **deben tratarse como NA** en el análisis, nunca como ingresos reales.
+::: callout-warning
+**Sobre `ing_mes`:** El 50.2% de los registros tiene `ing_mes` como
+`NA`. Esto es normal — la variable captura solo el salario mensual
+reportado (P6500), que aplica principalmente a asalariados. Trabajadores
+por cuenta propia, empleadores y empleados sin salario fijo reportan con
+menos frecuencia. Adicionalmente, los códigos `98` (no sabe) y `99` (no
+informa) están almacenados como valores numéricos en el parquet —
+**deben tratarse como NA** en el análisis, nunca como ingresos reales.
 
-Para el análisis de ingresos usa siempre `ing_mes` con los filtros anteriores, o considera `ing_total` (90.5% de cobertura) que es más completo.
+Para el análisis de ingresos usa siempre `ing_mes` con los filtros
+anteriores, o considera `ing_total` (90.5% de cobertura) que es más
+completo.
 :::
 
 ## Advertencias por año
 
 | Año | Marco | Advertencia |
-|-----|-------|-------------|
+|-----------------|-------------------|------------------------------------|
 | 2019 | 2005 | Sin advertencias mayores |
 | **2020** | **2005** | **COVID-19: recolección telefónica marzo–julio. Módulo de migración y algunos módulos temáticos suspendidos. Cobertura de sexo = 85.6%, educación = 82%. Considerar excluir meses marzo–julio para comparaciones estrictas.** |
 | 2021 | 2018 | Primer año Marco 2018 — hay un quiebre de serie respecto a 2019–2020 (ver sección 3.2) |
@@ -173,54 +212,80 @@ Para el análisis de ingresos usa siempre `ing_mes` con los filtros anteriores, 
 
 ## Códigos de posición ocupacional (posicion_ocup)
 
-| Código | Categoría |
-|--------|-----------|
-| 1 | Obrero o empleado del gobierno |
-| 2 | Obrero o empleado de empresa particular |
-| 3 | Empleado doméstico |
-| 4 | Trabajador por cuenta propia |
-| 5 | Patrón o empleador |
-| 6 | Trabajador familiar sin remuneración |
-| 7 | Trabajador sin remuneración en otras empresas |
-| 8 | Jornalero o peón |
-| 9 | Otro |
+| Código | Categoría                                     |
+|--------|-----------------------------------------------|
+| 1      | Obrero o empleado del gobierno                |
+| 2      | Obrero o empleado de empresa particular       |
+| 3      | Empleado doméstico                            |
+| 4      | Trabajador por cuenta propia                  |
+| 5      | Patrón o empleador                            |
+| 6      | Trabajador familiar sin remuneración          |
+| 7      | Trabajador sin remuneración en otras empresas |
+| 8      | Jornalero o peón                              |
+| 9      | Otro                                          |
 
----
+------------------------------------------------------------------------
 
 # La GEIH — Marco metodológico
 
 ## Qué es la GEIH
 
-La **Gran Encuesta Integrada de Hogares (GEIH)** es la encuesta de fuerza de trabajo de Colombia, producida mensualmente por el DANE. Es continua (se aplica los 12 meses del año) y cubre toda la población en edad de trabajar (PET: 10 años o más, aunque el análisis estándar usa 15+). Es la fuente oficial para las tasas de ocupación, desempleo y participación laboral del país.
+La **Gran Encuesta Integrada de Hogares (GEIH)** es la encuesta de
+fuerza de trabajo de Colombia, producida mensualmente por el DANE. Es
+continua (se aplica los 12 meses del año) y cubre toda la población en
+edad de trabajar (PET: 10 años o más, aunque el análisis estándar usa
+15+). Es la fuente oficial para las tasas de ocupación, desempleo y
+participación laboral del país.
 
-La GEIH se aplica en muestra compleja estratificada por bietápica: primero se seleccionan Unidades Primarias de Muestreo (UPMs, segmentos cartográficos), luego viviendas dentro de cada UPM. Esta estructura tiene consecuencias para el cálculo de errores estándar (ver sección 4).
+La GEIH se aplica en muestra compleja estratificada por bietápica:
+primero se seleccionan Unidades Primarias de Muestreo (UPMs, segmentos
+cartográficos), luego viviendas dentro de cada UPM. Esta estructura
+tiene consecuencias para el cálculo de errores estándar (ver sección 4).
 
 ## Marco Muestral 2005 vs Marco 2018 {#sec-marcos}
 
-Colombia realizó un nuevo Censo Nacional de Población en 2018. Con base en ese censo, el DANE diseñó un nuevo **Marco Muestral** para la GEIH que entró en vigor en 2021. Esto implica:
+Colombia realizó un nuevo Censo Nacional de Población en 2018. Con base
+en ese censo, el DANE diseñó un nuevo **Marco Muestral** para la GEIH
+que entró en vigor en 2021. Esto implica:
 
-- **Marco 2005 (años 2019–2020):** diseño muestral basado en proyecciones del Censo 2005. Factor de expansión: `fex_c_2011` (actualizado en 2011).
-- **Marco 2018 (años 2021–2025):** diseño muestral basado en el Censo 2018. Factor de expansión: `FEX_C18`.
+-   **Marco 2005 (años 2019–2020):** diseño muestral basado en
+    proyecciones del Censo 2005. Factor de expansión: `fex_c_2011`
+    (actualizado en 2011).
+-   **Marco 2018 (años 2021–2025):** diseño muestral basado en el
+    Censo 2018. Factor de expansión: `FEX_C18`.
 
 **¿Por qué esto importa para el análisis?**
 
-Los dos marcos proyectan a bases poblacionales diferentes. El Censo 2018 encontró que las proyecciones del Censo 2005 habían sobreestimado la población colombiana. Como resultado, los factores de expansión del Marco 2018 son más pequeños y proyectan a una población total menor.
+Los dos marcos proyectan a bases poblacionales diferentes. El Censo 2018
+encontró que las proyecciones del Censo 2005 habían sobreestimado la
+población colombiana. Como resultado, los factores de expansión del
+Marco 2018 son más pequeños y proyectan a una población total menor.
 
-Consecuencia práctica: **no puedes comparar directamente totales de población** (suma de fex) entre 2019–2020 y 2021–2025. Sin embargo, **sí puedes comparar tasas, proporciones y brechas relativas** (TGP, TO, TD, brecha salarial %, composición porcentual), porque en esas métricas numerador y denominador se escalan con el mismo factor y éste se cancela.
+Consecuencia práctica: **no puedes comparar directamente totales de
+población** (suma de fex) entre 2019–2020 y 2021–2025. Sin embargo, **sí
+puedes comparar tasas, proporciones y brechas relativas** (TGP, TO, TD,
+brecha salarial %, composición porcentual), porque en esas métricas
+numerador y denominador se escalan con el mismo factor y éste se
+cancela.
 
-::: {.callout-tip}
+::: callout-tip
 **Regla práctica:**
 
-✅ `Brecha salarial (%) = (mediana_H - mediana_M) / mediana_H` → comparable entre todos los años
+✅ `Brecha salarial (%) = (mediana_H - mediana_M) / mediana_H` →
+comparable entre todos los años
 
-✅ `TGP femenina (%) = PEA_mujeres / PET_mujeres` → comparable entre todos los años
+✅ `TGP femenina (%) = PEA_mujeres / PET_mujeres` → comparable entre
+todos los años
 
-❌ `Total mujeres ocupadas (millones)` → NO comparable entre Marco 2005 y Marco 2018
+❌ `Total mujeres ocupadas (millones)` → NO comparable entre Marco 2005
+y Marco 2018
 :::
 
 **Cómo marcar el quiebre en visualizaciones:**
 
-En toda gráfica de serie de tiempo 2019–2025, añadir una línea vertical en 2021 con la anotación "Cambio de Marco Muestral". Esto comunica transparencia metodológica al lector.
+En toda gráfica de serie de tiempo 2019–2025, añadir una línea vertical
+en 2021 con la anotación "Cambio de Marco Muestral". Esto comunica
+transparencia metodológica al lector.
 
 ```{r}
 library(ggplot2)
@@ -235,16 +300,21 @@ ggplot(datos_año, aes(x = anio, y = brecha_pct)) +
 
 ## El Factor de Expansión (fex) {#sec-fex}
 
-El factor de expansión (`fex`) le asigna a cada persona encuestada un **peso** que representa cuántas personas reales en la población representa esa observación. Es la herramienta que permite pasar de una muestra (~40.000 hogares/mes) a estimaciones para toda Colombia.
+El factor de expansión (`fex`) le asigna a cada persona encuestada un
+**peso** que representa cuántas personas reales en la población
+representa esa observación. Es la herramienta que permite pasar de una
+muestra (\~40.000 hogares/mes) a estimaciones para toda Colombia.
 
-En el parquet, la columna `fex` ya contiene el factor correcto para cada año:
+En el parquet, la columna `fex` ya contiene el factor correcto para cada
+año:
 
-| Años | Factor original | Proyecta a |
-|------|----------------|------------|
-| 2019–2020 | `fex_c_2011` | Base Censo 2005 |
-| 2021–2025 | `FEX_C18` | Base Censo 2018 |
+| Años      | Factor original | Proyecta a      |
+|-----------|-----------------|-----------------|
+| 2019–2020 | `fex_c_2011`    | Base Censo 2005 |
+| 2021–2025 | `FEX_C18`       | Base Censo 2018 |
 
-**No tienes que hacer ninguna selección** — el parquet ya resolvió esto. Simplemente usa `fex` en todos los cálculos ponderados.
+**No tienes que hacer ninguna selección** — el parquet ya resolvió esto.
+Simplemente usa `fex` en todos los cálculos ponderados.
 
 **Cómo usar fex:**
 
@@ -267,62 +337,95 @@ svyquantile(~ing_mes, disenio, quantiles = 0.5, na.rm = TRUE)
 svymean(~ing_mes, disenio, na.rm = TRUE)
 ```
 
-::: {.callout-note}
-**¿Por qué no puedo simplemente usar `weighted.mean()` o multiplicar por fex sin más?**
+::: callout-note
+**¿Por qué no puedo simplemente usar `weighted.mean()` o multiplicar por
+fex sin más?**
 
-Para calcular el **valor puntual** (la mediana, la media, el total), sí basta con ponderar por `fex`. Pero para calcular el **error estándar** — y por ende el **Coeficiente de Variación (CV)** — necesitas respetar la estructura de diseño complejo de la encuesta (estratos + conglomerados). El paquete `survey` hace esto correctamente. Los errores estándar calculados sin considerar el diseño son sistemáticamente subestimados.
+Para calcular el **valor puntual** (la mediana, la media, el total), sí
+basta con ponderar por `fex`. Pero para calcular el **error estándar** —
+y por ende el **Coeficiente de Variación (CV)** — necesitas respetar la
+estructura de diseño complejo de la encuesta (estratos + conglomerados).
+El paquete `survey` hace esto correctamente. Los errores estándar
+calculados sin considerar el diseño son sistemáticamente subestimados.
 :::
 
 ## COVID-19 y el año 2020
 
-La pandemia afectó la recolección de la GEIH en 2020 de forma significativa:
+La pandemia afectó la recolección de la GEIH en 2020 de forma
+significativa:
 
-- **Marzo–julio 2020:** recolección exclusivamente telefónica (CATI). No se aplicaron módulos de observación directa.
-- **Módulos suspendidos:** Migración (SAS94), algunos módulos de condiciones de vida.
-- **Consecuencia en los datos:** cobertura reducida en varias variables (sexo=85.6%, educación=82%, etnia=82%). Los meses con mayor afectación son abril–junio.
-- **Recomendación metodológica:** para análisis donde la comparabilidad es crítica (especialmente el O-B), considerar excluir o marcar los meses marzo–julio 2020. Para el descriptivo, se puede mantener el año completo con una nota de advertencia.
+-   **Marzo–julio 2020:** recolección exclusivamente telefónica (CATI).
+    No se aplicaron módulos de observación directa.
+-   **Módulos suspendidos:** Migración (SAS94), algunos módulos de
+    condiciones de vida.
+-   **Consecuencia en los datos:** cobertura reducida en varias
+    variables (sexo=85.6%, educación=82%, etnia=82%). Los meses con
+    mayor afectación son abril–junio.
+-   **Recomendación metodológica:** para análisis donde la
+    comparabilidad es crítica (especialmente el O-B), considerar excluir
+    o marcar los meses marzo–julio 2020. Para el descriptivo, se puede
+    mantener el año completo con una nota de advertencia.
 
 ## La transición 2021
 
-El año 2021 es el **primer año del Marco 2018**, pero también el último año en que el DANE publicó datos paralelos con el Marco 2005 (para permitir empalme). En el parquet:
+El año 2021 es el **primer año del Marco 2018**, pero también el último
+año en que el DANE publicó datos paralelos con el Marco 2005 (para
+permitir empalme). En el parquet:
 
-- `marco == "2018"` para 2021
-- `fex = FEX_C18` para 2021
-- Todos los módulos disponibles, sin interrupciones COVID
+-   `marco == "2018"` para 2021
+-   `fex = FEX_C18` para 2021
+-   Todos los módulos disponibles, sin interrupciones COVID
 
-Para el análisis descriptivo, 2021 se trata como el inicio de la serie del Marco 2018. El quiebre visual en las gráficas está entre 2020 y 2021.
+Para el análisis descriptivo, 2021 se trata como el inicio de la serie
+del Marco 2018. El quiebre visual en las gráficas está entre 2020 y
+2021.
 
----
+------------------------------------------------------------------------
 
 # Coeficientes de Variación (CV)
 
 ## Por qué el CV importa
 
-El CV mide la **precisión relativa** de una estimación. Una cifra con CV alto (>20%) tiene tanta incertidumbre que no puede reportarse como un dato confiable — el intervalo de confianza es demasiado amplio.
+El CV mide la **precisión relativa** de una estimación. Una cifra con CV
+alto (\>20%) tiene tanta incertidumbre que no puede reportarse como un
+dato confiable — el intervalo de confianza es demasiado amplio.
 
-Esto es especialmente relevante cuando desagregas el análisis en subgrupos pequeños. Por ejemplo:
-- La brecha salarial **nacional por sexo** → muestra grande, CV bajo → confiable
-- La brecha salarial **en el Vaupés, para mujeres de etnia minoritaria** → muestra muy pequeña, CV alto → podría ser no publicable
+Esto es especialmente relevante cuando desagregas el análisis en
+subgrupos pequeños. Por ejemplo: - La brecha salarial **nacional por
+sexo** → muestra grande, CV bajo → confiable - La brecha salarial **en
+el Vaupés, para mujeres de etnia minoritaria** → muestra muy pequeña, CV
+alto → podría ser no publicable
 
 El DANE establece umbrales oficiales que usaremos en el dashboard:
 
-| CV | Semáforo | Decisión |
-|----|----------|----------|
-| ≤ 7% | 🟢 Preciso | Reportar sin advertencia |
-| 8%–14% | 🟡 Aceptable | Reportar con nota |
-| 15%–20% | 🟠 Regular | Reportar con advertencia visible |
-| > 20% | 🔴 No confiable | No reportar como estimación puntual |
+| CV      | Semáforo        | Decisión                            |
+|---------|-----------------|-------------------------------------|
+| ≤ 7%    | 🟢 Preciso      | Reportar sin advertencia            |
+| 8%–14%  | 🟡 Aceptable    | Reportar con nota                   |
+| 15%–20% | 🟠 Regular      | Reportar con advertencia visible    |
+| \> 20%  | 🔴 No confiable | No reportar como estimación puntual |
 
 ## El diseño muestral complejo y su efecto en los errores
 
-En una muestra aleatoria simple (MAS), el error estándar de una media es `σ/√n`. Pero la GEIH **no es una MAS** — tiene estratificación y conglomerados. Esto afecta los errores de dos maneras:
+En una muestra aleatoria simple (MAS), el error estándar de una media es
+`σ/√n`. Pero la GEIH **no es una MAS** — tiene estratificación y
+conglomerados. Esto afecta los errores de dos maneras:
 
-1. **Estratificación** (por departamento, zona): **reduce** el error estándar (ganancia de precisión).
-2. **Conglomeración** (hogares dentro de segmentos): **aumenta** el error estándar porque las personas del mismo segmento se parecen más entre sí que dos personas aleatorias (intra-class correlation ρ > 0).
+1.  **Estratificación** (por departamento, zona): **reduce** el error
+    estándar (ganancia de precisión).
+2.  **Conglomeración** (hogares dentro de segmentos): **aumenta** el
+    error estándar porque las personas del mismo segmento se parecen más
+    entre sí que dos personas aleatorias (intra-class correlation ρ \>
+    0).
 
-El **Efecto de Diseño (DEFF)** captura el efecto neto: `DEFF = Var_diseño / Var_MAS`. Si DEFF > 1, la encuesta es menos precisa que una MAS del mismo tamaño. En la GEIH, DEFF típico para indicadores nacionales es 1.5–2.5.
+El **Efecto de Diseño (DEFF)** captura el efecto neto:
+`DEFF = Var_diseño / Var_MAS`. Si DEFF \> 1, la encuesta es menos
+precisa que una MAS del mismo tamaño. En la GEIH, DEFF típico para
+indicadores nacionales es 1.5–2.5.
 
-Ignorar el diseño complejo (usar `var()` o `lm()` directamente sin ponderar por diseño) produce errores estándar subestimados y CVs demasiado optimistas.
+Ignorar el diseño complejo (usar `var()` o `lm()` directamente sin
+ponderar por diseño) produce errores estándar subestimados y CVs
+demasiado optimistas.
 
 ## Cómo calcular el CV con `survey`
 
@@ -360,17 +463,27 @@ resultados <- df_analisis |>
   })
 ```
 
-::: {.callout-important}
-**Regla de oro:** Toda cifra que presentes en el dashboard debe ir acompañada de su CV calculado. Las cifras con semáforo 🔴 no se muestran como estimaciones puntuales. En su lugar, puedes usar rangos intercuartílicos, notas de cautela, o directamente ocultar el valor y mostrar el mensaje "muestra insuficiente".
+::: callout-important
+**Regla de oro:** Toda cifra que presentes en el dashboard debe ir
+acompañada de su CV calculado. Las cifras con semáforo 🔴 no se muestran
+como estimaciones puntuales. En su lugar, puedes usar rangos
+intercuartílicos, notas de cautela, o directamente ocultar el valor y
+mostrar el mensaje "muestra insuficiente".
 :::
 
 ## Cuando el CV sube: efecto de la desagregación
 
-A medida que desagregas (por ejemplo, pasas de nacional → departamento → municipio, o añades un cruce de etnia), la muestra efectiva disminuye y el CV aumenta. Esto es esperado y no es un error — es la limitación estadística de la encuesta para estimaciones muy desagregadas.
+A medida que desagregas (por ejemplo, pasas de nacional → departamento →
+municipio, o añades un cruce de etnia), la muestra efectiva disminuye y
+el CV aumenta. Esto es esperado y no es un error — es la limitación
+estadística de la encuesta para estimaciones muy desagregadas.
 
-**Ejemplo práctico:** la brecha salarial en el Chocó para mujeres de etnia minoritaria probablemente tenga CV > 20%. La solución no es ignorarlo sino reportar con honestidad: "datos insuficientes para estimación precisa en este nivel de desagregación."
+**Ejemplo práctico:** la brecha salarial en el Chocó para mujeres de
+etnia minoritaria probablemente tenga CV \> 20%. La solución no es
+ignorarlo sino reportar con honestidad: "datos insuficientes para
+estimación precisa en este nivel de desagregación."
 
----
+------------------------------------------------------------------------
 
 # Librerías R necesarias
 
@@ -389,7 +502,7 @@ lapply(paquetes, instalar_si_no)
 ```
 
 | Paquete | Para qué sirve |
-|---------|----------------|
+|--------------------------|----------------------------------------------|
 | `arrow` | Leer el archivo `.parquet` de forma eficiente |
 | `dplyr` / `tidyr` | Manipulación y transformación de datos |
 | `ggplot2` | Visualizaciones estáticas de publicación |
@@ -400,15 +513,18 @@ lapply(paquetes, instalar_si_no)
 | `crosstalk` | Filtros interactivos compartidos entre gráficas en HTML |
 | `DT` | Tablas interactivas con búsqueda y paginación |
 
----
+------------------------------------------------------------------------
 
 # Estructura del dashboard Quarto
 
 ## Arquitectura general
 
-El dashboard se construye en Quarto con `format: dashboard`. Cada página es una sección de primer nivel (`#`). Los filtros de interseccionalidad se implementan con `crosstalk` para que sean compartidos entre todas las visualizaciones de la página.
+El dashboard se construye en Quarto con `format: dashboard`. Cada página
+es una sección de primer nivel (`#`). Los filtros de interseccionalidad
+se implementan con `crosstalk` para que sean compartidos entre todas las
+visualizaciones de la página.
 
-```yaml
+``` yaml
 ---
 title: "Radar de Brechas Laborales"
 format:
@@ -420,23 +536,33 @@ format:
 
 ## Los filtros de interseccionalidad
 
-Todas las páginas deben permitir filtrar por estas dimensiones de interseccionalidad. El filtro se aplica sobre los datos **antes** de cualquier cálculo con `survey`:
+Todas las páginas deben permitir filtrar por estas dimensiones de
+interseccionalidad. El filtro se aplica sobre los datos **antes** de
+cualquier cálculo con `survey`:
 
 | Dimensión | Variable en parquet | Valores |
-|-----------|--------------------|---------|
+|--------------------|-----------------------------------|------------------|
 | Sexo | `sexo` | `1` = Hombre, `2` = Mujer |
 | Año | `anio` | 2019 a 2025 |
 | Pertenencia étnica | `etnia_bin` | `0` = No, `1` = Sí |
 | Zona | `clase_zona` | `1` = Cabecera, `2` = Resto |
 | Educación (agrupada) | `niv_edu_armon` | 1-5 básica/secundaria, 6-11 superior |
 
-::: {.callout-note}
-**Nota sobre etnia_bin:** la variable es binaria — indica si la persona se autoidentifica con algún grupo étnico (indígena, afrodescendiente, raizal, etc.), pero no distingue cuál grupo específico. Esto es una limitación de la GEIH en el período 2019–2025: el código P6160 está colapsado a binario. Entre los ocupados, el 2.3–2.8% se autoidentifica con algún grupo étnico por año (equivale a ~9–10K observaciones por año en la muestra). Suficiente para nivel nacional; verifique siempre el CV para desagregaciones departamentales.
+::: callout-note
+**Nota sobre etnia_bin:** la variable es binaria — indica si la persona
+se autoidentifica con algún grupo étnico (indígena, afrodescendiente,
+raizal, etc.), pero no distingue cuál grupo específico. Esto es una
+limitación de la GEIH en el período 2019–2025: el código P6160 está
+colapsado a binario. Entre los ocupados, el 2.3–2.8% se autoidentifica
+con algún grupo étnico por año (equivale a \~9–10K observaciones por año
+en la muestra). Suficiente para nivel nacional; verifique siempre el CV
+para desagregaciones departamentales.
 :::
 
 ## Reportar con semáforo de CV en Quarto
 
-En el archivo de trabajo, cada `value box` o cifra destacada debe calcular y mostrar su CV:
+En el archivo de trabajo, cada `value box` o cifra destacada debe
+calcular y mostrar su CV:
 
 ```{r}
 # Estructura recomendada para una value box con CV
@@ -454,36 +580,43 @@ calcular_indicador <- function(datos, variable, diseno) {
 }
 ```
 
----
+------------------------------------------------------------------------
 
 # Página 1 — Acceso e indicadores laborales
 
-**Responsable:** _________ \
-**Objetivo:** Mostrar cómo hombres y mujeres acceden al mercado laboral a través del tiempo (2019–2025), con desagregación nacional, departamental y por grupos de interseccionalidad.
+**Responsable:** \_\_\_\_\_\_\_\_\_\
+**Objetivo:** Mostrar cómo hombres y mujeres acceden al mercado laboral
+a través del tiempo (2019–2025), con desagregación nacional,
+departamental y por grupos de interseccionalidad.
 
 ## Definiciones formales
 
 Los tres indicadores centrales de esta página son:
 
 **Tasa Global de Participación (TGP):**
-$$TGP = \frac{PEA}{PET} \times 100$$
-Donde PEA = Población Económicamente Activa (ocupados + desocupados) y PET = Población en Edad de Trabajar (≥15 años). Mide qué proporción de la población en edad de trabajar está activa en el mercado laboral.
+$$TGP = \frac{PEA}{PET} \times 100$$ Donde PEA = Población
+Económicamente Activa (ocupados + desocupados) y PET = Población en Edad
+de Trabajar (≥15 años). Mide qué proporción de la población en edad de
+trabajar está activa en el mercado laboral.
 
 **Tasa de Ocupación (TO):**
-$$TO = \frac{\text{Ocupados}}{PET} \times 100$$
-Mide qué proporción de la PET tiene trabajo.
+$$TO = \frac{\text{Ocupados}}{PET} \times 100$$ Mide qué proporción de
+la PET tiene trabajo.
 
 **Tasa de Desempleo (TD):**
-$$TD = \frac{\text{Desocupados}}{PEA} \times 100$$
-Mide qué proporción de la PEA busca trabajo activamente sin encontrarlo.
+$$TD = \frac{\text{Desocupados}}{PEA} \times 100$$ Mide qué proporción
+de la PEA busca trabajo activamente sin encontrarlo.
 
-**Brecha de participación:**
-$$\text{Brecha TGP} = TGP_H - TGP_M$$
-Una brecha positiva indica que los hombres participan más. En Colombia es históricamente positiva (~15–20 pp).
+**Brecha de participación:** $$\text{Brecha TGP} = TGP_H - TGP_M$$ Una
+brecha positiva indica que los hombres participan más. En Colombia es
+históricamente positiva (\~15–20 pp).
 
 ## Parquet a usar en esta página
 
-Esta página usa **`geih_pet_2019_2025.parquet`** — el único que contiene el denominador completo (PET). Todos los cálculos de TGP, TO y TD se calculan directamente desde el microdata, lo que permite desagregarlos por cualquier combinación de interseccionalidad que el DANE no publica.
+Esta página usa **`geih_pet_2019_2025.parquet`** — el único que contiene
+el denominador completo (PET). Todos los cálculos de TGP, TO y TD se
+calculan directamente desde el microdata, lo que permite desagregarlos
+por cualquier combinación de interseccionalidad que el DANE no publica.
 
 ```{r}
 df_pet <- read_parquet("ruta/geih_pet_2019_2025.parquet")
@@ -503,20 +636,22 @@ df_p1 <- df_p1 |>
 
 ## Indicadores a calcular
 
-| Indicador | Desagregación mínima | Desagregación ampliada |
-|-----------|---------------------|----------------------|
-| TGP por sexo | Año, nacional | + departamento, + zona, + etnia |
-| TO por sexo | Año, nacional | + departamento, + sector |
-| TD por sexo | Año, nacional | + departamento, + educación |
-| Brecha TGP (pp) | Año, serie temporal | + por departamento (mapa) |
-| Brecha TO (pp) | Año, serie temporal | + por zona |
+| Indicador       | Desagregación mínima | Desagregación ampliada           |
+|-----------------|----------------------|----------------------------------|
+| TGP por sexo    | Año, nacional        | \+ departamento, + zona, + etnia |
+| TO por sexo     | Año, nacional        | \+ departamento, + sector        |
+| TD por sexo     | Año, nacional        | \+ departamento, + educación     |
+| Brecha TGP (pp) | Año, serie temporal  | \+ por departamento (mapa)       |
+| Brecha TO (pp)  | Año, serie temporal  | \+ por zona                      |
 
 ## Visualizaciones sugeridas
 
-- Línea de tiempo (2019–2025) de TGP por sexo, con banda de confianza (IC 95%) y marcador del quiebre de marco en 2021
-- Mapa de calor departamental de brecha TGP más reciente (2024–2025)
-- Barras comparativas de TO y TD por sexo para el año seleccionado en el filtro
-- Tabla resumen con semáforo de CV por departamento
+-   Línea de tiempo (2019–2025) de TGP por sexo, con banda de confianza
+    (IC 95%) y marcador del quiebre de marco en 2021
+-   Mapa de calor departamental de brecha TGP más reciente (2024–2025)
+-   Barras comparativas de TO y TD por sexo para el año seleccionado en
+    el filtro
+-   Tabla resumen con semáforo de CV por departamento
 
 ## Código base orientativo
 
@@ -589,47 +724,58 @@ g <- ggplot(tasas_cv, aes(x = anio, y = TGP, color = sexo_label, group = sexo_la
 ggplotly(g)
 ```
 
----
+------------------------------------------------------------------------
 
 # Página 2 — Permanencia y calidad del empleo
 
-**Responsable:** _________ \
-**Objetivo:** Analizar las condiciones bajo las cuales hombres y mujeres permanecen en el mercado laboral: tipo de empleo, sector, intensidad horaria y segregación.
+**Responsable:** \_\_\_\_\_\_\_\_\_\
+**Objetivo:** Analizar las condiciones bajo las cuales hombres y mujeres
+permanecen en el mercado laboral: tipo de empleo, sector, intensidad
+horaria y segregación.
 
 ## Marco conceptual
 
-La "calidad del empleo" es multidimensional. Para este dashboard la operacionalizamos en cuatro dimensiones disponibles en el parquet:
+La "calidad del empleo" es multidimensional. Para este dashboard la
+operacionalizamos en cuatro dimensiones disponibles en el parquet:
 
 | Dimensión | Variable | Proxy |
-|-----------|----------|-------|
+|----------------------------|--------------------------|------------------|
 | **Tipo de vinculación** | `posicion_ocup` | Asalariado vs cuenta propia vs familiar no remunerado |
 | **Intensidad horaria** | `horas_sem` | Tiempo completo (≥40h), parcial voluntario, parcial involuntario |
 | **Segregación sectorial** | `rama2d_orig` | Concentración de mujeres en ciertos sectores |
 | **Informalidad (proxy)** | `posicion_ocup` | Trabajador familiar no remunerado, cuenta propia sin registro |
 
-::: {.callout-note}
-**Sobre informalidad:** la GEIH tiene una definición más precisa de informalidad que requiere variables adicionales (tamaño de empresa, cotización a pensiones). Con el parquet actual, el mejor proxy disponible es la `posicion_ocup`: código 3 (empleado doméstico), 4 (cuenta propia), 6 (familiar no remunerado) y 8 (jornalero) son categorías con alta correlación con informalidad. Esta es una aproximación; si se necesita la tasa de informalidad oficial del DANE, usar la serie publicada.
+::: callout-note
+**Sobre informalidad:** la GEIH tiene una definición más precisa de
+informalidad que requiere variables adicionales (tamaño de empresa,
+cotización a pensiones). Con el parquet actual, el mejor proxy
+disponible es la `posicion_ocup`: código 3 (empleado doméstico), 4
+(cuenta propia), 6 (familiar no remunerado) y 8 (jornalero) son
+categorías con alta correlación con informalidad. Esta es una
+aproximación; si se necesita la tasa de informalidad oficial del DANE,
+usar la serie publicada.
 :::
 
 ## Indicadores a calcular
 
 | Indicador | Descripción |
-|-----------|-------------|
-| Distribución por posición ocupacional | % de hombres y mujeres en cada categoría de posicion_ocup, por año |
+|---------------------------------|---------------------------------------|
+| Distribución por posición ocupacional | \% de hombres y mujeres en cada categoría de posicion_ocup, por año |
 | Composición sectorial por sexo | Top sectores por concentración femenina vs masculina (CIIU 2 dígitos) |
 | Índice de segregación horizontal | Índice de Duncan: mide cuánto difieren las distribuciones sectoriales de H y M |
-| Distribución de horas trabajadas | % por banda horaria (<20h, 20-39h, 40-48h, >48h) por sexo |
+| Distribución de horas trabajadas | \% por banda horaria (\<20h, 20-39h, 40-48h, \>48h) por sexo |
 | Brecha de horas | Media de horas_sem hombre vs mujer, año a año |
-| "Sobreempleo" involuntario | % con >48h/semana por sexo (proxy de precariedad o de intensidad) |
-| Proxy de informalidad | % en posición_ocup 4+6+8 por sexo |
+| "Sobreempleo" involuntario | \% con \>48h/semana por sexo (proxy de precariedad o de intensidad) |
+| Proxy de informalidad | \% en posición_ocup 4+6+8 por sexo |
 
 ## Visualizaciones sugeridas
 
-- Gráfica de barras apiladas por posición ocupacional, separada por sexo, filtrable por año
-- Treemap o barras horizontales de composición sectorial por sexo
-- Distribución de horas (histograma o violin) superpuesta por sexo
-- Serie de tiempo del proxy de informalidad por sexo (2019–2025)
-- Mapa o tabla departamental de segregación sectorial
+-   Gráfica de barras apiladas por posición ocupacional, separada por
+    sexo, filtrable por año
+-   Treemap o barras horizontales de composición sectorial por sexo
+-   Distribución de horas (histograma o violin) superpuesta por sexo
+-   Serie de tiempo del proxy de informalidad por sexo (2019–2025)
+-   Mapa o tabla departamental de segregación sectorial
 
 ## Código base orientativo
 
@@ -679,38 +825,52 @@ horas_dist <- df_analisis |>
   mutate(pct = round(100 * pob / sum(pob), 1))
 ```
 
----
+------------------------------------------------------------------------
 
 # Página 3 — Brechas salariales
 
-**Responsable:** _________ \
-**Objetivo:** Cuantificar y caracterizar la brecha salarial bruta entre hombres y mujeres, con desagregación temporal, sectorial, educativa e interseccional.
+**Responsable:** \_\_\_\_\_\_\_\_\_\
+**Objetivo:** Cuantificar y caracterizar la brecha salarial bruta entre
+hombres y mujeres, con desagregación temporal, sectorial, educativa e
+interseccional.
 
 ## Definición de brecha salarial
 
-La **brecha salarial bruta** compara los ingresos medianos sin controlar por ningún otro factor (horas, educación, sector). Es un indicador de resultado — refleja la desigualdad real observada, incluyendo diferencias en composición del empleo, sectores y horas trabajadas:
+La **brecha salarial bruta** compara los ingresos medianos sin controlar
+por ningún otro factor (horas, educación, sector). Es un indicador de
+resultado — refleja la desigualdad real observada, incluyendo
+diferencias en composición del empleo, sectores y horas trabajadas:
 
 $$\text{Brecha bruta} (\%) = \frac{Mediana_H - Mediana_M}{Mediana_H} \times 100$$
 
-Una brecha positiva indica que los hombres ganan en mediana más que las mujeres. En Colombia históricamente es 15–25% dependiendo del año y el segmento.
+Una brecha positiva indica que los hombres ganan en mediana más que las
+mujeres. En Colombia históricamente es 15–25% dependiendo del año y el
+segmento.
 
-::: {.callout-note}
-**Brecha bruta vs. brecha ajustada:** el análisis descriptivo calcula la brecha **bruta** (sin controles). La brecha **ajustada** (controlando por educación, sector, horas, experiencia) es el resultado del modelo Oaxaca-Blinder, que Alejandra calcula por separado. El descriptivo sirve de contexto y motivación para el O-B.
+::: callout-note
+**Brecha bruta vs. brecha ajustada:** el análisis descriptivo calcula la
+brecha **bruta** (sin controles). La brecha **ajustada** (controlando
+por educación, sector, horas, experiencia) es el resultado del modelo
+Oaxaca-Blinder, que Alejandra calcula por separado. El descriptivo sirve
+de contexto y motivación para el O-B.
 :::
 
 ## Advertencia sobre `ing_mes` vs `ing_total`
 
 | Variable | Qué mide | Cobertura | Recomendación |
-|----------|----------|-----------|---------------|
+|-----------------|-----------------|-----------------|----------------------|
 | `ing_mes` | Salario mensual (P6500) — solo asalariados con salario fijo | 49.8% | Para análisis de brecha entre asalariados |
 | `ing_total` | Ingreso laboral total (INGLABO) — incluye otras fuentes | 90.5% | **Preferir para análisis general de brechas** |
 
-Para análisis de brechas use **`ing_total`** siempre que sea posible — captura mejor a trabajadores informales, cuenta propia y otros. Aplique igualmente los filtros: `filter(!is.na(ing_total), !ing_total %in% c(0, 98, 99))`.
+Para análisis de brechas use **`ing_total`** siempre que sea posible —
+captura mejor a trabajadores informales, cuenta propia y otros. Aplique
+igualmente los filtros:
+`filter(!is.na(ing_total), !ing_total %in% c(0, 98, 99))`.
 
 ## Indicadores a calcular
 
 | Indicador | Descripción |
-|-----------|-------------|
+|---------------------------------|---------------------------------------|
 | Mediana salarial por sexo × año | Serie temporal 2019–2025, con IC 95% y CV |
 | Brecha salarial bruta (%) | Por año — serie temporal |
 | Brecha por decil | Brecha en cada decil de la distribución de ingresos |
@@ -722,12 +882,14 @@ Para análisis de brechas use **`ing_total`** siempre que sea posible — captur
 
 ## Visualizaciones sugeridas
 
-- Línea doble (mediana H vs M) con banda de confianza IC95%, quiebre de marco en 2021
-- Barra de brecha bruta (%) por año — con color según magnitud
-- Curva de Lorenz por sexo (desigualdad interna)
-- Brecha por decil: barras horizontales mostrando la brecha en cada decil
-- Gráfica de calor: brecha por sector × año
-- Value boxes: mediana H, mediana M, brecha % — con semáforo de CV
+-   Línea doble (mediana H vs M) con banda de confianza IC95%, quiebre
+    de marco en 2021
+-   Barra de brecha bruta (%) por año — con color según magnitud
+-   Curva de Lorenz por sexo (desigualdad interna)
+-   Brecha por decil: barras horizontales mostrando la brecha en cada
+    decil
+-   Gráfica de calor: brecha por sector × año
+-   Value boxes: mediana H, mediana M, brecha % — con semáforo de CV
 
 ## Código base orientativo
 
@@ -777,11 +939,12 @@ brecha_edu <- df_ing |>
   mutate(brecha_pct = round(100 * (mediana_1 - mediana_2) / mediana_1, 1))
 ```
 
----
+------------------------------------------------------------------------
 
 # Convenciones de reporte
 
-Estas convenciones deben ser consistentes entre las tres páginas del dashboard:
+Estas convenciones deben ser consistentes entre las tres páginas del
+dashboard:
 
 ## Colores
 
@@ -829,22 +992,23 @@ format_miles <- function(x) scales::number(x, big.mark = ".", decimal.mark = ","
 
 ## Pie de página obligatorio en todas las gráficas
 
-```
+```         
 Fuente: DANE, Gran Encuesta Integrada de Hogares (GEIH) 2019–2025.
 Cálculos: EQUILAB — DAT4CCIÓN 2026.
 Nota: estimaciones ponderadas con factor de expansión fex.
 Marco Muestral 2005 (2019–2020) y Marco 2018 (2021–2025) — ver sección metodológica.
 ```
 
-## Qué hacer cuando el CV es > 20%
+## Qué hacer cuando el CV es \> 20%
 
-No suprimas el dato sin explicación. Opciones:
-1. Mostrar el valor con nota visible: *"CV > 20% — estimación con alta incertidumbre"*
-2. Reemplazar con rango intercuartílico (P25–P75) en lugar de mediana puntual
-3. Agregar años o categorías para aumentar la muestra efectiva
-4. Mostrar el tamaño muestral (n_obs) en la tooltip del gráfico interactivo
+No suprimas el dato sin explicación. Opciones: 1. Mostrar el valor con
+nota visible: *"CV \> 20% — estimación con alta incertidumbre"* 2.
+Reemplazar con rango intercuartílico (P25–P75) en lugar de mediana
+puntual 3. Agregar años o categorías para aumentar la muestra efectiva
+4. Mostrar el tamaño muestral (n_obs) en la tooltip del gráfico
+interactivo
 
----
+------------------------------------------------------------------------
 
-*Documento elaborado por EQUILAB · DAT4CCIÓN 2026* \
+*Documento elaborado por EQUILAB · DAT4CCIÓN 2026*\
 *Última actualización: `r format(Sys.Date(), "%d de %B de %Y")`*
