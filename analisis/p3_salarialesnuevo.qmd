@@ -22,7 +22,7 @@ library(dplyr)
 library(tidyr)
 library(ggplot2)
 library(plotly)
-library(Hmisc)   # wtd.quantile para medianas ponderadas
+library(Hmisc)
 
 COLOR_HOMBRES <- "#2166AC"
 COLOR_MUJERES <- "#D6604D"
@@ -31,23 +31,18 @@ COLOR_MUJERES <- "#D6604D"
 ```{r cargar-datos}
 #| include: false
 df_ocup <- read_parquet("../datos/geih_ocupados_2019_2025.parquet")
-
 glimpse(df_ocup)
 ```
 
 ```{r filtros}
 #| include: false
-# Filtros para análisis de ingresos
-# IMPORTANTE: ing_total (INGLABO) tiene más cobertura que ing_mes
-# Los códigos 98 (no sabe) y 99 (no informa) son valores numéricos — tratarlos como NA
-
 df_base <- df_ocup |>
   filter(
     condicion_activ == 1,
     edad >= 15, edad <= 99,
     sexo %in% c(1, 2),
     !is.na(ing_total),
-    !ing_total %in% c(0, 98, 99)   # excluir no respuesta y cero
+    !ing_total %in% c(0, 98, 99)
   ) |>
   mutate(
     sexo_label = if_else(sexo == 1, "Hombres", "Mujeres"),
@@ -64,34 +59,122 @@ df_base <- df_ocup |>
   )
 ```
 
-```{r viz-mediana}
-# Mediana ponderada del ingreso laboral total por año y sexo
-mediana_anual <- df_base |>
-  group_by(anio, sexo_label) |>
-  summarise(
-    mediana_ing = wtd.quantile(ing_total, weights = fex, probs = 0.5, na.rm = TRUE),
-    .groups = "drop"
+## Row {height="100%"}
+
+### {width="50%"}
+
+```{r espacio-izq}
+#| echo: false
+plot_ly() |>
+  layout(
+    xaxis = list(visible = FALSE),
+    yaxis = list(visible = FALSE),
+    paper_bgcolor = "rgba(0,0,0,0)",
+    plot_bgcolor  = "rgba(0,0,0,0)",
+    margin = list(t = 0, b = 0, l = 0, r = 0)
+  )
+```
+
+### {width="50%"}
+
+```{r viz-boxplot}
+#| echo: false
+# Boxplot vertical: ingresos en eje Y, sexo en eje X — cuartiles ponderados por fex
+
+boxstat_pond <- function(x, w) {
+  q   <- wtd.quantile(x, weights = w, probs = c(0.25, 0.5, 0.75), na.rm = TRUE)
+  iqr <- unname(q[3] - q[1])
+  list(
+    q1     = unname(q[1]),
+    median = unname(q[2]),
+    q3     = unname(q[3]),
+    low    = max(min(x[x >= unname(q[1]) - 1.5 * iqr], na.rm = TRUE), unname(q[1]) - 1.5 * iqr),
+    high   = min(max(x[x <= unname(q[3]) + 1.5 * iqr], na.rm = TRUE), unname(q[3]) + 1.5 * iqr)
+  )
+}
+
+anios <- 2019:2025
+pasos <- list()
+
+stats_list <- list()
+for (i in seq_along(anios)) {
+  yr  <- anios[i]
+  dat <- df_base |> filter(anio == yr)
+  for (sx in c("Hombres", "Mujeres")) {
+    d  <- dat |> filter(sexo_label == sx)
+    stats_list[[paste(yr, sx)]] <- boxstat_pond(d$ing_total / 1e6, d$fex)
+  }
+}
+
+fig_box <- plot_ly()
+
+for (i in seq_along(anios)) {
+  yr <- anios[i]
+
+  for (sx in c("Hombres", "Mujeres")) {
+    bs  <- stats_list[[paste(yr, sx)]]
+    col <- if (sx == "Hombres") COLOR_HOMBRES else COLOR_MUJERES
+
+    fig_box <- fig_box |> add_trace(
+      type        = "box",
+      name        = sx,
+      q1          = list(bs$q1),
+      median      = list(bs$median),
+      q3          = list(bs$q3),
+      lowerfence  = list(bs$low),
+      upperfence  = list(bs$high),
+      x0          = sx,
+      marker      = list(color = paste0(col, "99")),
+      line        = list(color = col, width = 2),
+      fillcolor   = paste0(col, "44"),
+      width       = 0.5,
+      visible     = (i == 1),
+      showlegend  = (i == 1),
+      legendgroup = sx
+    )
+  }
+
+  vis <- rep(FALSE, length(anios) * 2)
+  vis[c(2 * i - 1, 2 * i)] <- TRUE
+
+  pasos[[i]] <- list(
+    method = "update",
+    label  = as.character(yr),
+    args   = list(list(visible = vis))
+  )
+}
+
+fig_box <- fig_box |>
+  layout(
+    title = list(
+      text = "Distribución del ingreso laboral mensual por sexo<br><sup>Cuartiles ponderados por factor de expansión (fex) — GEIH Colombia</sup>",
+      font = list(size = 14),
+      x    = 0.03
+    ),
+    xaxis = list(
+      title         = "",
+      categoryorder = "array",
+      categoryarray = c("Hombres", "Mujeres")
+    ),
+    yaxis = list(
+      title      = "Ingreso mensual (millones COP)",
+      tickprefix = "$",
+      ticksuffix = "M",
+      zeroline   = FALSE,
+      gridcolor  = "rgba(0,0,0,0.08)"
+    ),
+    legend  = list(orientation = "h", y = 1.12, x = 0),
+    boxmode = "group",
+    plot_bgcolor  = "white",
+    paper_bgcolor = "white",
+    sliders = list(list(
+      active       = 0,
+      currentvalue = list(prefix = "Año: ", font = list(size = 13)),
+      steps        = pasos,
+      pad          = list(t = 40)
+    )),
+    margin = list(t = 110, b = 90, l = 80, r = 30)
   )
 
-p_mediana <- ggplot(mediana_anual,
-       aes(x = anio, y = mediana_ing / 1000,  # en miles de pesos
-           color = sexo_label, group = sexo_label)) +
-  geom_line(linewidth = 1.2) +
-  geom_point(size = 3) +
-  geom_vline(xintercept = 2021, linetype = "dashed", color = "gray50") +
-  annotate("text", x = 2021.1, y = max(mediana_anual$mediana_ing / 1000) * 0.97,
-           label = "Cambio Marco\nMuestral", hjust = 0, size = 3, color = "gray40") +
-  scale_color_manual(values = c("Hombres" = COLOR_HOMBRES, "Mujeres" = COLOR_MUJERES)) +
-  scale_x_continuous(breaks = 2019:2025) +
-  scale_y_continuous(labels = scales::label_dollar(prefix = "$", suffix = "K", big.mark = ".")) +
-  labs(
-    title = "Ingreso laboral total — mediana ponderada por sexo",
-    subtitle = "Colombia 2019–2025 (pesos corrientes)",
-    x = NULL, y = "Mediana ingreso (miles COP)", color = NULL,
-    caption = "Fuente: DANE, GEIH 2019–2025 (INGLABO). Cálculos: EQUILAB — DAT4CCIÓN 2026."
-  ) +
-  theme_minimal(base_size = 13) +
-  theme(legend.position = "top")
-
-ggplotly(p_mediana)
+fig_box
 ```
