@@ -15,7 +15,63 @@ execute:
   message: false
 ---
 
-## Quarto
+# configuración inicial
+```{r librerias}
+library(arrow)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(plotly)
+
+COLOR_HOMBRES <- "#2166AC"
+COLOR_MUJERES <- "#D6604D"
+```
+
+```{r cargar-datos}
+df_ocup <- read_parquet("../datos/geih_ocupados_2019_2025.parquet")
+```
+
+```{r}
+#| label: grafica-ocupacion
+#| warning: false
+
+# 1. Filtrar y preparar los datos (Reglas obligatorias)
+df_grafica <- df_ocup |>
+  filter(
+    condicion_activ == 1,      # Solo ocupados
+    edad >= 15, edad <= 99,    # Edad válida
+    sexo %in% c(1, 2)          # Sexo válido
+  ) |>
+  # Convertir sexo a texto para que la leyenda sea clara
+  mutate(sexo = ifelse(sexo == 1, "Hombres", "Mujeres")) |>
+  # 2. Agrupar y sumar usando el factor de expansión (fex)
+  group_by(anio, sexo) |>
+  summarise(total_personas = sum(fex, na.rm = TRUE), .groups = "drop")
+
+# 3. Crear la gráfica
+ggplot(df_grafica, aes(x = anio, y = total_personas, color = sexo)) +
+  geom_line(size = 1.2) +
+  geom_point(size = 3) +
+  # Aplicar colores obligatorios
+  scale_color_manual(values = c("Hombres" = COLOR_HOMBRES, "Mujeres" = COLOR_MUJERES)) +
+  # Formatear el eje Y para que no salga en notación científica
+  scale_y_continuous(labels = scales::label_number(big.mark = ".", decimal.mark = ",")) +
+  # Añadir línea de cambio de marco (Regla obligatoria)
+  geom_vline(xintercept = 2021, linetype = "dashed", color = "gray50") +
+  annotate("text", x = 2021.1, y = Inf, vjust = 1.5, hjust = 0, 
+           label = "Cambio Marco\nMuestral", size = 3, color = "gray40") +
+  # Etiquetas y pie de página (Regla obligatoria)
+  labs(
+    title = "Evolución de la Población Ocupada por Sexo",
+    subtitle = "Periodo 2019 - 2025",
+    x = "Año",
+    y = "Número de personas",
+    color = "Sexo",
+    caption = "Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026."
+  ) +
+  theme_minimal()
+```
+
 
 Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
 
