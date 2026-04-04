@@ -40,3 +40,32 @@ df_base <- df_pet |>
   )
 ```
 
+
+```{r}
+
+# Calcular tasas
+tasas_anuales <- df_base |>
+  group_by(anio, sexo) |>
+  summarise(
+    PET         = sum(fex, na.rm = TRUE),
+    PEA         = sum(fex[condicion_activ %in% c(1, 2, 3)], na.rm = TRUE),
+    Ocupados    = sum(fex[condicion_activ %in% c(1, 2)], na.rm = TRUE),
+    Desocupados = sum(fex[condicion_activ == 3], na.rm = TRUE),
+    .groups = "drop"
+  ) |>
+  mutate(
+    TGP        = round(PEA / PET * 100, 2),
+    TO         = round(Ocupados / PET * 100, 2),
+    TD         = round(Desocupados / PEA * 100, 2),
+    sexo_label = if_else(sexo == 1, "Hombres", "Mujeres")
+  ) |>
+  select(Año = anio, Sexo = sexo_label, `TGP (%)` = TGP, `TO (%)` = TO, `TD (%)` = TD)
+
+# Tabla
+tasas_anuales |>
+  knitr::kable(
+    col.names = c("Año", "Sexo", "TGP (%)", "TO (%)", "TD (%)"),
+    align = c("c", "l", "c", "c", "c")
+  )
+
+```
