@@ -4,7 +4,7 @@ subtitle: "EQUILAB · DAT4CCIÓN 2026"
 date: today
 lang: es
 format:
-  html:
+  dashboard:
     toc: true
     toc-depth: 2
     theme: cosmo
@@ -15,3 +15,83 @@ execute:
   message: false
 ---
 
+```{r librerias}
+#| include: false
+library(arrow)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(plotly)
+library(Hmisc)   # wtd.quantile para medianas ponderadas
+
+COLOR_HOMBRES <- "#2166AC"
+COLOR_MUJERES <- "#D6604D"
+```
+
+```{r cargar-datos}
+#| include: false
+df_ocup <- read_parquet("../datos/geih_ocupados_2019_2025.parquet")
+
+glimpse(df_ocup)
+```
+
+```{r filtros}
+#| include: false
+# Filtros para análisis de ingresos
+# IMPORTANTE: ing_total (INGLABO) tiene más cobertura que ing_mes
+# Los códigos 98 (no sabe) y 99 (no informa) son valores numéricos — tratarlos como NA
+
+df_base <- df_ocup |>
+  filter(
+    condicion_activ == 1,
+    edad >= 15, edad <= 99,
+    sexo %in% c(1, 2),
+    !is.na(ing_total),
+    !ing_total %in% c(0, 98, 99)   # excluir no respuesta y cero
+  ) |>
+  mutate(
+    sexo_label = if_else(sexo == 1, "Hombres", "Mujeres"),
+    niv_edu_label = case_when(
+      niv_edu_armon %in% c(1, 2) ~ "Sin educación / Preescolar",
+      niv_edu_armon == 3         ~ "Primaria",
+      niv_edu_armon == 4         ~ "Secundaria",
+      niv_edu_armon == 5         ~ "Media",
+      niv_edu_armon == 6         ~ "Técnico / Tecnológico",
+      niv_edu_armon == 7         ~ "Universitario",
+      niv_edu_armon == 8         ~ "Posgrado",
+      TRUE                       ~ "Sin información"
+    )
+  )
+```
+
+```{r viz-mediana}
+# Mediana ponderada del ingreso laboral total por año y sexo
+mediana_anual <- df_base |>
+  group_by(anio, sexo_label) |>
+  summarise(
+    mediana_ing = wtd.quantile(ing_total, weights = fex, probs = 0.5, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+p_mediana <- ggplot(mediana_anual,
+       aes(x = anio, y = mediana_ing / 1000,  # en miles de pesos
+           color = sexo_label, group = sexo_label)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 3) +
+  geom_vline(xintercept = 2021, linetype = "dashed", color = "gray50") +
+  annotate("text", x = 2021.1, y = max(mediana_anual$mediana_ing / 1000) * 0.97,
+           label = "Cambio Marco\nMuestral", hjust = 0, size = 3, color = "gray40") +
+  scale_color_manual(values = c("Hombres" = COLOR_HOMBRES, "Mujeres" = COLOR_MUJERES)) +
+  scale_x_continuous(breaks = 2019:2025) +
+  scale_y_continuous(labels = scales::label_dollar(prefix = "$", suffix = "K", big.mark = ".")) +
+  labs(
+    title = "Ingreso laboral total — mediana ponderada por sexo",
+    subtitle = "Colombia 2019–2025 (pesos corrientes)",
+    x = NULL, y = "Mediana ingreso (miles COP)", color = NULL,
+    caption = "Fuente: DANE, GEIH 2019–2025 (INGLABO). Cálculos: EQUILAB — DAT4CCIÓN 2026."
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(legend.position = "top")
+
+ggplotly(p_mediana)
+```
