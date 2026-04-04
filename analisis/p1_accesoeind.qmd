@@ -1,0 +1,42 @@
+---
+title: "Página 1 — Acceso e Indicadores Laborales"
+subtitle: "EQUILAB · DAT4CCIÓN 2026"
+date: today
+lang: es
+format:
+  dashboard:
+    toc: true
+    toc-depth: 2
+    theme: cosmo
+    self-contained: true
+    code-fold: true
+execute:
+  warning: false
+  message: false
+---
+
+## 
+```{r}
+library(arrow)     
+library(dplyr)      
+library(ggplot2)    
+library(plotly)    
+library(Hmisc)      
+```
+
+```{r}
+df_pet <- read_parquet("../datos/geih_pet_2019_2025.parquet")
+
+glimpse(df_pet)
+
+```
+
+```{r}
+df_base <- df_pet |>
+  filter(
+    sexo %in% c(1, 2),    
+    edad >= 15,            
+    edad <= 99             
+  )
+```
+
