@@ -71,23 +71,41 @@ ggplot(df_grafica, aes(x = anio, y = total_personas, color = sexo)) +
   ) +
   theme_minimal()
 ```
+---
 
+# Filtros base
 
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+```{r filtros}
+# Filtros obligatorios para el parquet de ocupados
+df_base <- df_ocup |>
+  filter(
+    condicion_activ == 1,   # solo ocupados confirmados
+    edad >= 15, edad <= 99,
+    sexo %in% c(1, 2)
+  )
 
-## Running Code
+# Etiquetas de posición ocupacional
+posicion_labels <- c(
+  "1" = "Empleado gobierno",
+  "2" = "Empleado empresa privada",
+  "3" = "Empleado doméstico",
+  "4" = "Cuenta propia",
+  "5" = "Empleador",
+  "6" = "Familiar sin remuneración",
+  "7" = "Sin remuneración (otras emp.)",
+  "8" = "Jornalero / peón",
+  "9" = "Otro"
+)
 
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
-
-```{r}
-1 + 1
+df_base <- df_base |>
+  mutate(
+    sexo_label     = if_else(sexo == 1, "Hombres", "Mujeres"),
+    posicion_label = posicion_labels[as.character(posicion_ocup)]
+  )
+# 2. AGREGA ESTO AL FINAL para ver que funcionó:
+print("Filtros aplicados con éxito")
+df_base |> select(anio, sexo_label, posicion_label, fex) |> head()
 ```
 
-You can add options to executable code like this
 
-```{r}
-#| echo: false
-2 * 2
-```
 
-The `echo: false` option disables the printing of code (only output is displayed).
