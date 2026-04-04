@@ -21,13 +21,15 @@ library(arrow)
 library(dplyr)      
 library(ggplot2)    
 library(plotly)    
-library(Hmisc)      
+library(Hmisc)
+library(survey)
+COLOR_HOMBRES <- "#2166AC"
+COLOR_MUJERES <- "#D6604D"
 ```
 
 ```{r}
 df_pet <- read_parquet("../datos/geih_pet_2019_2025.parquet")
 
-glimpse(df_pet)
 
 ```
 
@@ -42,30 +44,61 @@ df_base <- df_pet |>
 
 
 ```{r}
+#| echo: false
+#| output: false
 
-# Calcular tasas
-tasas_anuales <- df_base |>
-  group_by(anio, sexo) |>
-  summarise(
-    PET         = sum(fex, na.rm = TRUE),
-    PEA         = sum(fex[condicion_activ %in% c(1, 2, 3)], na.rm = TRUE),
-    Ocupados    = sum(fex[condicion_activ %in% c(1, 2)], na.rm = TRUE),
-    Desocupados = sum(fex[condicion_activ == 3], na.rm = TRUE),
-    .groups = "drop"
-  ) |>
+df_base2 <- df_base |>
   mutate(
-    TGP        = round(PEA / PET * 100, 2),
-    TO         = round(Ocupados / PET * 100, 2),
-    TD         = round(Desocupados / PEA * 100, 2),
-    sexo_label = if_else(sexo == 1, "Hombres", "Mujeres")
-  ) |>
-  select(Año = anio, Sexo = sexo_label, `TGP (%)` = TGP, `TO (%)` = TO, `TD (%)` = TD)
-
-# Tabla
-tasas_anuales |>
-  knitr::kable(
-    col.names = c("Año", "Sexo", "TGP (%)", "TO (%)", "TD (%)"),
-    align = c("c", "l", "c", "c", "c")
+    es_pea      = condicion_activ %in% c(1, 2, 3),
+    es_ocupado  = condicion_activ %in% c(1, 2),
+    es_desocup  = condicion_activ == 3,
+    sexo_label  = if_else(sexo == 1, "Hombres", "Mujeres")
   )
+
+# Función semáforo CV (según umbrales DANE de la guía)
+semaforo_cv <- function(cv) {
+  case_when(
+    cv <= 7  ~ "🟢 Preciso",
+    cv <= 14 ~ "🟡 Aceptable",
+    cv <= 20 ~ "🟠 Regular",
+    TRUE     ~ "🔴 No confiable"
+  )
+}
+
+# Calcular tasas con CV por año y sexo
+tasas_cv <- df_base2 |>
+  group_by(anio, sexo_label) |>
+  group_modify(~ {
+    dis <- svydesign(ids = ~1, strata = ~dpto_cod, weights = ~fex, data = .x)
+
+    # TGP y TO (sobre PET)
+    tgp_stat <- svymean(~es_pea,     dis, na.rm = TRUE)
+    to_stat  <- svymean(~es_ocupado, dis, na.rm = TRUE)
+
+    # TD (solo sobre PEA)
+    dis_pea  <- svydesign(ids = ~1, strata = ~dpto_cod, weights = ~fex,
+                          data = filter(.x, es_pea))
+    td_stat  <- svymean(~es_desocup, dis_pea, na.rm = TRUE)
+
+    tibble(
+    TGP    = round(100 * coef(tgp_stat)["es_peaTRUE"], 1),
+cv_TGP = round(100 * SE(tgp_stat)["es_peaTRUE"] / coef(tgp_stat)["es_peaTRUE"], 1),
+TO     = round(100 * coef(to_stat)["es_ocupadoTRUE"],  1),
+cv_TO  = round(100 * SE(to_stat)["es_ocupadoTRUE"] / coef(to_stat)["es_ocupadoTRUE"], 1),
+TD     = round(100 * coef(td_stat)["es_desocupTRUE"],  1),
+cv_TD  = round(100 * SE(td_stat)["es_desocupTRUE"] / coef(td_stat)["es_desocupTRUE"], 1),
+      n_obs    = nrow(.x)
+    )
+  }) |>
+  ungroup() |>
+  mutate(
+    cal_TGP = semaforo_cv(cv_TGP),
+    cal_TO  = semaforo_cv(cv_TO),
+    cal_TD  = semaforo_cv(cv_TD)
+  )
+
+# Ver resultado
+tasas_cv |> select(anio, sexo_label, TGP, cv_TGP, cal_TGP, TO, cv_TO, cal_TO, TD, cv_TD, cal_TD)
+  
 
 ```
