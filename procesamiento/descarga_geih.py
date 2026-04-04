@@ -31,7 +31,7 @@ from bs4 import BeautifulSoup
 # Configuración
 # ---------------------------------------------------------------------------
 
-DESTINO_DEFAULT = r"C:\Users\Alejandra Otero\OneDrive\Documentos\DANE"
+DESTINO_DEFAULT = Path(__file__).parent / "datos"
 
 CATALOGO_GEIH = {
     2019: 599,
