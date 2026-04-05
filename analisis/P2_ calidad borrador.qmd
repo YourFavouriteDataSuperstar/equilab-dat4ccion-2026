@@ -49,13 +49,7 @@ df_base <- df_ocup |>
     sexo_label     = if_else(sexo == 1, "Hombres", "Mujeres"),
     posicion_label = posicion_labels[as.character(posicion_ocup)]
   )
-```
 
-## Row
-
-### Composición por posición ocupacional {width="100%"}
-
-```{r viz-posicion}
 data_plot <- df_base |>
   group_by(anio, posicion_label, sexo_label) |>
   summarise(n_pond = sum(fex, na.rm = TRUE), .groups = "drop") |>
@@ -63,42 +57,6 @@ data_plot <- df_base |>
   mutate(pct = n_pond / sum(n_pond) * 100) |>
   ungroup() |>
   filter(!is.na(posicion_label))
-
-hombres <- data_plot |> filter(sexo_label == "Hombres")
-mujeres <- data_plot |> filter(sexo_label == "Mujeres")
-
-plot_ly() |>
-  add_bars(
-    data = hombres,
-    x = ~pct, y = ~posicion_label,
-    frame = ~anio,
-    name = "Hombres",
-    marker = list(color = COLOR_HOMBRES),
-    orientation = "h"
-  ) |>
-  add_bars(
-    data = mujeres,
-    x = ~pct, y = ~posicion_label,
-    frame = ~anio,
-    name = "Mujeres",
-    marker = list(color = COLOR_MUJERES),
-    orientation = "h"
-  ) |>
-  layout(
-    barmode = "stack",
-    xaxis = list(title = "Proporción (%)", ticksuffix = "%", range = c(0, 100)),
-    yaxis = list(title = ""),
-    legend = list(orientation = "h", x = 0, y = 1.1),
-    annotations = list(list(
-      text = "Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026.",
-      showarrow = FALSE, x = 0, y = -0.15,
-      xref = "paper", yref = "paper",
-      font = list(size = 10), xanchor = "left"
-    ))
-  ) |>
-  animation_opts(frame = 0, transition = 0, redraw = TRUE) |>
-  animation_slider(currentvalue = list(prefix = "Año: ")) |>
-  layout(updatemenus = list(list(type = "buttons", visible = FALSE)))
 ```
 
 ## Row
@@ -106,7 +64,7 @@ plot_ly() |>
 ### Proporción por sexo y categoría ocupacional (2019–2025) {width="100%"}
 
 ```{r viz-heatmap}
-# Datos para heatmap: % mujeres + población total estimada por categoría y año
+# Datos: % mujeres + población total estimada por categoría y año
 heatmap_data <- data_plot |>
   group_by(anio, posicion_label) |>
   mutate(n_total = sum(n_pond)) |>
