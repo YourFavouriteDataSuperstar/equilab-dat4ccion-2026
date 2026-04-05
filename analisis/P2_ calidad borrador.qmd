@@ -251,17 +251,97 @@ plot_ly(
     yaxis = list(
       title      = "% de trabajadores",
       ticksuffix = "%",
-      range      = c(0, 100)
+      range      = c(0, 115)   # espacio extra arriba para que la leyenda no tape las barras
     ),
-    legend        = list(orientation = "h", x = 0.5, xanchor = "center", y = 1.1),
+    legend        = list(orientation = "h", x = 0.5, xanchor = "center", y = 1.18),
     plot_bgcolor  = "white",
     paper_bgcolor = "white",
     annotations   = list(list(
-      x = 1, y = -0.22, xref = "paper", yref = "paper",
+      x = 1, y = -0.38, xref = "paper", yref = "paper",
       text = paste0("Fuente: DANE, GEIH ", anio_ref, ". Cálculos: EQUILAB — DAT4CCIÓN 2026."),
       showarrow = FALSE, xanchor = "right",
       font = list(size = 9, color = "gray50")
     )),
-    margin = list(l = 60, r = 20, t = 50, b = 90)
+    margin = list(l = 60, r = 20, t = 70, b = 130)
+  )
+```
+
+## Row
+
+### Informalidad laboral por sexo — Colombia 2019–2025 {width="100%"}
+
+```{r viz-informalidad}
+# Total informal por sexo y año (proxy corregido 4+6+7+8)
+df_inf_linea <- df_base |>
+  mutate(informal = posicion_ocup %in% c(4, 6, 7, 8)) |>
+  group_by(anio, sexo_label) |>
+  summarise(
+    pct_inf = sum(fex[informal], na.rm = TRUE) / sum(fex, na.rm = TRUE) * 100,
+    n_mill  = sum(fex[informal], na.rm = TRUE) / 1e6,
+    .groups = "drop"
+  )
+
+h_l <- df_inf_linea |> filter(sexo_label == "Hombres") |> arrange(anio)
+m_l <- df_inf_linea |> filter(sexo_label == "Mujeres")  |> arrange(anio)
+y_max_l <- ceiling(max(df_inf_linea$pct_inf)) + 5
+
+plot_ly() |>
+  add_polygons(
+    x = c(h_l$anio, rev(m_l$anio)),
+    y = c(h_l$pct_inf, rev(m_l$pct_inf)),
+    fillcolor = "#d1d9e6", opacity = 0.45,
+    line = list(color = "transparent"),
+    showlegend = FALSE, hoverinfo = "none"
+  ) |>
+  add_lines(
+    data = h_l, x = ~anio, y = ~pct_inf, name = "Hombres",
+    line = list(color = COLOR_HOMBRES, width = 2.5),
+    mode = "lines+markers",
+    marker = list(color = COLOR_HOMBRES, size = 9,
+                  line = list(color = "white", width = 1.5)),
+    text = ~paste0("<b>Hombres</b><br>Año: ", anio, "<br>",
+                   round(pct_inf, 1), "% informales<br>",
+                   round(n_mill, 2), " millones"),
+    hovertemplate = "%{text}<extra></extra>"
+  ) |>
+  add_lines(
+    data = m_l, x = ~anio, y = ~pct_inf, name = "Mujeres",
+    line = list(color = COLOR_MUJERES, width = 2.5),
+    mode = "lines+markers",
+    marker = list(color = COLOR_MUJERES, size = 9,
+                  line = list(color = "white", width = 1.5)),
+    text = ~paste0("<b>Mujeres</b><br>Año: ", anio, "<br>",
+                   round(pct_inf, 1), "% informales<br>",
+                   round(n_mill, 2), " millones"),
+    hovertemplate = "%{text}<extra></extra>"
+  ) |>
+  layout(
+    title  = list(text = "Proxy de informalidad laboral por sexo — Colombia 2019–2025",
+                  font = list(size = 13), x = 0),
+    xaxis  = list(title = "", tickvals = 2019:2025,
+                  ticktext = as.character(2019:2025), zeroline = FALSE),
+    yaxis  = list(title = "% del total de ocupados", ticksuffix = "%",
+                  range = c(0, y_max_l)),
+    legend = list(orientation = "h", x = 0.5, xanchor = "center", y = 1.08),
+    shapes = list(list(type = "line", x0 = 2021, x1 = 2021,
+                       y0 = 0, y1 = 1, yref = "paper",
+                       line = list(color = "gray60", dash = "dot", width = 1.2))),
+    annotations = list(
+      list(x = 2021, y = y_max_l - 2, xref = "x", yref = "y",
+           text = "Cambio<br>Marco 2021", showarrow = FALSE,
+           xanchor = "left", xshift = 5,
+           font = list(size = 8, color = "gray50")),
+      list(x = 0.99, y = 0.97, xref = "paper", yref = "paper",
+           text = "<b>Proxy incluye:</b><br>· Cuenta propia<br>· Familiar sin remuneración<br>· Jornalero / peón",
+           showarrow = FALSE, xanchor = "right", yanchor = "top", align = "left",
+           bgcolor = "#f8f9fa", bordercolor = "gray80", borderwidth = 1,
+           font = list(size = 9, color = "gray40")),
+      list(x = 1, y = -0.1, xref = "paper", yref = "paper",
+           text = "Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026.",
+           showarrow = FALSE, xanchor = "right",
+           font = list(size = 9, color = "gray50"))
+    ),
+    plot_bgcolor = "white", paper_bgcolor = "white",
+    margin = list(t = 60, b = 60, l = 60, r = 20)
   )
 ```
