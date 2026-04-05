@@ -173,21 +173,27 @@ p_tgp_ic <- ggplot(tasas_final, aes(x = Año, y = `TGP (%)`, color = Sexo, fill 
 
 # 2. CONVERTIR A INTERACTIVA Y LIMPIAR (Aquí está la magia)
 p_plotly <- ggplotly(p_tgp_ic, tooltip = "text") |> 
-  layout(
-    legend = list(orientation = "h", x = 0.25, y = 1.1),
-    hovermode = "closest"
-    )
+layout(
+  legend    = list(orientation = "h", x = 0.20, y = 1.1),
+  hovermode = "closest",
+  margin    = list(b = 80),          # ← aumentar margen inferior
+  annotations = list(list(
+    text      = "Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026.",
+    xref      = "paper", yref = "paper",
+    x = 0, y = -0.25,               # ← bajar más el texto
+    showarrow = FALSE,
+    font      = list(size = 10, color = "gray50"),
+    align     = "left"
+  ))
+)
 
 p_plotly
 ```
-
-**Fuente:** DANE, GEIH 2019-2025. **Cálculos:** EQUILAB – DAT4CCIÓN 2026.
 
 
 ## Tasa de Ocupación y Desempleo por Sexo y Año
 
 ```{r viz-to-td}
-#| title: Tasa de Ocupación y Desempleo por Sexo
 #| echo: false
 #| message: false
 #| warning: false
@@ -224,7 +230,11 @@ sd_laboral <- SharedData$new(datos_para_filtro)
 
 
 ```{r}
+#| title: Tasa de Ocupación y Desempleo por Sexo
 #| echo: false
+#| message: false
+#| warning: false
+
 
 library(htmltools)
 
@@ -263,16 +273,22 @@ p_barras_final <- ggplot(sd_laboral,
 # 5. Convertir a Plotly con leyenda arriba
 ggplotly(p_barras_final, tooltip = "text") |>
   layout(
-    barmode   = "group",
-    showlegend = TRUE,
-    legend    = list(orientation = "h", x = 0.35, y = 1.2),
-    margin    = list(t = 80, b = 70),
-    hovermode = "closest"
-  )
+  legend    = list(orientation = "h", x = 0.20, y = 1.1),
+  hovermode = "closest",
+  margin    = list(b = 80),          # ← aumentar margen inferior
+  annotations = list(list(
+    text      = "Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026.",
+    xref      = "paper", yref = "paper",
+    x = 0, y = -0.25,               # ← bajar más el texto
+    showarrow = FALSE,
+    font      = list(size = 10, color = "gray50"),
+    align     = "left"
+  ))
+)
+
   
 ```
 
-**Fuente:** DANE, GEIH 2019-2025. **Cálculos:** EQUILAB – DAT4CCIÓN 2026.
 
 ```{r}
 #| label: calculo-cv-departamental   #Calculos Tabla Departamental
@@ -369,7 +385,84 @@ tasas_dpto_cv |>
   tab_options(
     container.height = px(500), # Para que no ocupe toda la pantalla
     table.font.size = px(12)
-  )
+  ) |>
+tab_footnote("Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026.")
 ```
 
-**Fuente:** DANE, GEIH 2019-2025. **Cálculos:** EQUILAB – DAT4CCIÓN 2026.
+## Brecha de Participación Laboral
+
+```{r}
+
+#| title: Brecha de Participación Laboral — TGP Hombres − Mujeres (pp)
+#| echo: false
+#| message: false
+#| warning: false
+
+library(tidyr)
+
+# Calcular brecha TGP, TO y TD por año
+brecha_pp <- tasas_cv |>
+  select(anio, sexo_label, TGP, TO, TD) |>
+  pivot_wider(
+    names_from  = sexo_label,
+    values_from = c(TGP, TO, TD)
+  ) |>
+  mutate(
+    brecha_TGP = round(TGP_Hombres - TGP_Mujeres, 1),
+    brecha_TO  = round(TO_Hombres  - TO_Mujeres,  1),
+    brecha_TD  = round(TD_Hombres  - TD_Mujeres,  1)
+  ) |>
+  select(
+    Año          = anio,
+    `TGP H`      = TGP_Hombres,
+    `TGP M`      = TGP_Mujeres,
+    `Brecha TGP` = brecha_TGP,
+    `TO H`       = TO_Hombres,
+    `TO M`       = TO_Mujeres,
+    `Brecha TO`  = brecha_TO,
+    `TD H`       = TD_Hombres,
+    `TD M`       = TD_Mujeres,
+    `Brecha TD`  = brecha_TD
+  )
+
+# Tabla con gt
+library(gt)
+
+brecha_pp |>
+  gt() |>
+  tab_header(
+    title    = "Brecha de género en indicadores laborales",
+    subtitle = "TGP, TO y TD — Hombres vs Mujeres (en puntos porcentuales)"
+  ) |>
+  tab_spanner(label = "Participación (TGP)", columns = c(`TGP H`, `TGP M`, `Brecha TGP`)) |>
+  tab_spanner(label = "Ocupación (TO)",      columns = c(`TO H`,  `TO M`,  `Brecha TO`))  |>
+  tab_spanner(label = "Desempleo (TD)",      columns = c(`TD H`,  `TD M`,  `Brecha TD`))  |>
+  data_color(
+    columns = c(`Brecha TGP`, `Brecha TO`),
+    fn = function(x) {
+      scales::col_numeric(
+        palette = c("#D6604D", "#F7F7F7", "#2166AC"),
+        domain  = c(0, 40)
+      )(x)
+    }
+  ) |>
+  data_color(
+    columns = `Brecha TD`,
+    fn = function(x) {
+      scales::col_numeric(
+        palette = c("#2166AC", "#F7F7F7", "#D6604D"),
+        domain  = c(-15, 15)
+      )(x)
+    }
+  ) |>
+  cols_label(
+    `TGP H` = "Hombres", `TGP M` = "Mujeres", `Brecha TGP` = "Brecha (pp)",
+    `TO H`  = "Hombres", `TO M`  = "Mujeres", `Brecha TO`  = "Brecha (pp)",
+    `TD H`  = "Hombres", `TD M`  = "Mujeres", `Brecha TD`  = "Brecha (pp)"
+  ) |>
+  tab_options(
+    table.font.size     = px(12),
+    container.height    = px(400)
+  ) |>
+  tab_footnote("Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026.")
+```
