@@ -17,6 +17,7 @@ execute:
 
 ```{r librerias}
 #| include: false
+#| context: setup
 library(arrow)
 library(dplyr)
 library(tidyr)
@@ -30,12 +31,14 @@ COLOR_MUJERES <- "#D6604D"
 
 ```{r cargar-datos}
 #| include: false
+#| context: setup
 df_ocup <- read_parquet("../datos/geih_ocupados_2019_2025.parquet")
 glimpse(df_ocup)
 ```
 
 ```{r filtros}
 #| include: false
+#| context: setup
 df_base <- df_ocup |>
   filter(
     condicion_activ == 1,
@@ -59,7 +62,9 @@ df_base <- df_ocup |>
   )
 ```
 
-## Row {height="100%"}
+Visualizacion 1 - Distribución ingresos mensuales
+
+## Column {height="100%"}
 
 ### {width="50%"}
 
@@ -177,4 +182,54 @@ fig_box <- fig_box |>
   )
 
 fig_box
+```
+
+```{r calculo-mediana}
+#| include: false
+#| context: setup
+mediana_anual <- df_base |>
+  group_by(anio, sexo_label) |>
+  summarise(
+    mediana_ing = Hmisc::wtd.quantile(ing_total, weights = fex, probs = 0.5, na.rm = TRUE),
+    .groups = "drop"
+  )
+```
+
+## Column {height="100%"}
+
+### {width="50%"}
+
+Visualización 2 — Brecha salarial porcentual por año
+
+```{r viz-brecha-pct}
+# Media ponderada por fex — captura la brecha incluso cuando la mediana se iguala
+brecha_anual <- df_base |>
+  group_by(anio, sexo_label) |>
+  summarise(
+    media_pond = weighted.mean(ing_total, w = fex, na.rm = TRUE),
+    .groups = "drop"
+  ) |>
+  pivot_wider(names_from = sexo_label, values_from = media_pond) |>
+  mutate(
+    brecha_pct = (Hombres - Mujeres) / Hombres * 100,
+    anio_f     = factor(anio)
+  )
+
+p_brecha <- ggplot(brecha_anual, aes(x = anio_f, y = brecha_pct)) +
+  geom_col(fill = "#762A83", alpha = 0.8, width = 0.6) +
+  geom_text(aes(label = paste0(round(brecha_pct, 1), "%")),
+            vjust = -0.5, size = 3.5, fontface = "bold") +
+  geom_vline(xintercept = 2.5, linetype = "dashed", color = "gray50") +
+  annotate("text", x = 3.1, y = max(brecha_anual$brecha_pct, na.rm = TRUE) * 0.95,
+           label = "Cambio Marco\nMuestral", hjust = 0, size = 3, color = "gray40") +
+  labs(
+    title    = "Brecha salarial de género — (Media H − M) / Media H",
+    subtitle = "Colombia 2019–2025 (medias ponderadas por fex)",
+    x = NULL, y = "Brecha (%)",
+    caption  = "Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026."
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(panel.grid.major.x = element_blank())
+
+ggplotly(p_brecha)
 ```
