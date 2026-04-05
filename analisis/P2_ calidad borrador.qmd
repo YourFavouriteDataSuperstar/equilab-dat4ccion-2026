@@ -212,3 +212,144 @@ plot_ly(lollipop_data) |>
     margin = list(l = 160, r = 20, t = 40, b = 40)
   )
 ```
+
+## Row
+
+### Horas trabajadas promedio por tipo de empleo y sexo {width="100%"}
+
+```{r viz-horas}
+# Media ponderada de horas por posición ocupacional y sexo — año más reciente
+anio_ref <- max(df_base$anio)
+
+horas_cat <- df_base |>
+  filter(anio == anio_ref, !is.na(horas_sem), horas_sem > 0,
+         !is.na(posicion_label)) |>
+  group_by(posicion_label, sexo_label) |>
+  summarise(
+    horas_prom = weighted.mean(horas_sem, w = fex, na.rm = TRUE),
+    n_mill     = sum(fex, na.rm = TRUE) / 1e6,
+    .groups    = "drop"
+  )
+
+# Ordenar categorías por promedio de hombres (de mayor a menor arriba)
+orden_cats <- horas_cat |>
+  filter(sexo_label == "Hombres") |>
+  arrange(horas_prom) |>
+  pull(posicion_label)
+
+horas_cat <- horas_cat |>
+  mutate(posicion_label = factor(posicion_label, levels = orden_cats))
+
+x_max <- ceiling(max(horas_cat$horas_prom)) + 8
+
+plot_ly(
+  horas_cat,
+  x             = ~horas_prom,
+  y             = ~posicion_label,
+  color         = ~sexo_label,
+  colors        = c("Hombres" = COLOR_HOMBRES, "Mujeres" = COLOR_MUJERES),
+  type          = "bar",
+  orientation   = "h",
+  text          = ~paste0(round(horas_prom, 1), "h"),
+  textposition  = "outside",
+  textfont      = list(size = 11, color = "gray30"),
+  hovertemplate = ~paste0(
+    "<b>", posicion_label, "</b><br>",
+    sexo_label, ": ", round(horas_prom, 1), " h/semana<br>",
+    round(n_mill, 2), " millones de personas",
+    "<extra></extra>"
+  )
+) |>
+  layout(
+    barmode = "group",
+    bargap  = 0.25,
+    title   = list(
+      text = paste0("Horas trabajadas por semana según tipo de empleo — Colombia ", anio_ref),
+      font = list(size = 13), x = 0
+    ),
+    xaxis = list(
+      title    = "Horas trabajadas por semana (promedio ponderado)",
+      range    = c(0, x_max),
+      zeroline = FALSE,
+      showgrid = TRUE,
+      gridcolor = "#f0f0f0"
+    ),
+    yaxis  = list(title = ""),
+    legend = list(orientation = "h", x = 0.5, xanchor = "center", y = 1.08),
+    plot_bgcolor  = "white",
+    paper_bgcolor = "white",
+    annotations   = list(list(
+      x = 1, y = -0.08, xref = "paper", yref = "paper",
+      text = paste0("Fuente: DANE, GEIH ", anio_ref, ". Cálculos: EQUILAB — DAT4CCIÓN 2026."),
+      showarrow = FALSE, xanchor = "right",
+      font = list(size = 9, color = "gray50")
+    )),
+    margin = list(l = 170, r = 80, t = 50, b = 50)
+  )
+```
+
+## Row
+
+### ¿Cuántas personas trabajan en cada categoría? {width="100%"}
+
+```{r viz-horas-tamano}
+# Composición por sexo (%) — mismo año y mismo orden que la gráfica de horas
+composicion_cat <- df_base |>
+  filter(anio == anio_ref, !is.na(posicion_label)) |>
+  group_by(posicion_label, sexo_label) |>
+  summarise(n_pond = sum(fex, na.rm = TRUE), .groups = "drop") |>
+  group_by(posicion_label) |>
+  mutate(
+    pct    = n_pond / sum(n_pond) * 100,
+    n_mill = round(n_pond / 1e6, 2)
+  ) |>
+  ungroup() |>
+  mutate(posicion_label = factor(posicion_label, levels = orden_cats))
+
+plot_ly(
+  composicion_cat,
+  x             = ~posicion_label,
+  y             = ~pct,
+  color         = ~sexo_label,
+  colors        = c("Hombres" = COLOR_HOMBRES, "Mujeres" = COLOR_MUJERES),
+  type          = "bar",
+  text          = ~paste0(round(pct, 0), "%"),
+  textposition  = "inside",
+  insidetextanchor = "middle",
+  textfont      = list(size = 11, color = "white", family = "Arial Bold"),
+  hovertemplate = ~paste0(
+    "<b>", posicion_label, "</b><br>",
+    sexo_label, ": ", round(pct, 1), "%<br>",
+    round(n_mill, 2), " millones de personas",
+    "<extra></extra>"
+  )
+) |>
+  layout(
+    barmode       = "stack",
+    bargap        = 0.3,
+    title         = list(
+      text = paste0("Composición por sexo según tipo de empleo — Colombia ", anio_ref),
+      font = list(size = 13), x = 0
+    ),
+    xaxis = list(
+      title     = "",
+      tickangle = -30,
+      tickfont  = list(size = 10)
+    ),
+    yaxis = list(
+      title      = "% de trabajadores",
+      ticksuffix = "%",
+      range      = c(0, 100)
+    ),
+    legend        = list(orientation = "h", x = 0.5, xanchor = "center", y = 1.1),
+    plot_bgcolor  = "white",
+    paper_bgcolor = "white",
+    annotations   = list(list(
+      x = 1, y = -0.22, xref = "paper", yref = "paper",
+      text = paste0("Fuente: DANE, GEIH ", anio_ref, ". Cálculos: EQUILAB — DAT4CCIÓN 2026."),
+      showarrow = FALSE, xanchor = "right",
+      font = list(size = 9, color = "gray50")
+    )),
+    margin = list(l = 60, r = 20, t = 50, b = 90)
+  )
+```
