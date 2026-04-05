@@ -172,10 +172,7 @@ p_plotly <- ggplotly(p_tgp_ic, tooltip = "text") |>
 p_plotly
 ```
 
-**Fuente:** DANE, Gran Encuesta Integrada de Hogares (GEIH) 2019–2025.  
-**Cálculos:** EQUILAB — DAT4CCIÓN 2026.  
-**Nota:** Estimaciones ponderadas con factor de expansión *fex*.  
-**Marco Muestral:** 2005 (2019–2020) y 2018 (2021–2025).
+**Fuente:** DANE, GEIH 2019-2025. **Cálculos:** EQUILAB – DAT4CCIÓN 2026.
 
 ## Fila 2: Ocupación y Desempleo
 ```{r viz-to-td}
@@ -239,7 +236,10 @@ ggplotly(p_barras, tooltip = "text") |>
 ```
 
 
-**Fuente:** DANE, Gran Encuesta Integrada de Hogares (GEIH) 2019–2025.  
-**Cálculos:** EQUILAB — DAT4CCIÓN 2026.  
-**Nota:** Estimaciones ponderadas con factor de expansión *fex*.  
-**Marco Muestral:** 2005 (2019–2020) y 2018 (2021–2025).
+**Fuente:** DANE, GEIH 2019-2025. **Cálculos:** EQUILAB – DAT4CCIÓN 2026.
+
+
+
+## Row
+### Brecha TGP departamental — 2024–2025
+
