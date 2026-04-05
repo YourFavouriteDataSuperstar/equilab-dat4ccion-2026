@@ -1,22 +1,21 @@
 ---
 title: "Página 2 — Calidad del Empleo"
-author: "EQUILAB . DAT4CCION"
+subtitle: "EQUILAB · DAT4CCIÓN 2026"
 date: today
 lang: es
 format:
-  html:
-    toc: true
-    toc-depth: 2
+  dashboard:
     theme: cosmo
+    scrolling: true
     self-contained: true
-    code-fold: true
 execute:
+  echo: false
   warning: false
   message: false
 ---
 
-# configuración inicial
-```{r librerias}
+```{r setup}
+#| include: false
 library(arrow)
 library(dplyr)
 library(tidyr)
@@ -25,69 +24,12 @@ library(plotly)
 
 COLOR_HOMBRES <- "#2166AC"
 COLOR_MUJERES <- "#D6604D"
-```
 
-```{r cargar-datos}
 df_ocup <- read_parquet("../datos/geih_ocupados_2019_2025.parquet")
-```
 
-```{r}
-#| label: grafica-ocupacion
-#| warning: false
-
-# 1. Filtrar y preparar los datos (Reglas obligatorias)
-df_grafica <- df_ocup |>
-  filter(
-    condicion_activ == 1,      # Solo ocupados
-    edad >= 15, edad <= 99,    # Edad válida
-    sexo %in% c(1, 2)          # Sexo válido
-  ) |>
-  # Convertir sexo a texto para que la leyenda sea clara
-  mutate(sexo = ifelse(sexo == 1, "Hombres", "Mujeres")) |>
-  # 2. Agrupar y sumar usando el factor de expansión (fex)
-  group_by(anio, sexo) |>
-  summarise(total_personas = sum(fex, na.rm = TRUE), .groups = "drop")
-
-# 3. Crear la gráfica
-ggplot(df_grafica, aes(x = anio, y = total_personas, color = sexo)) +
-  geom_line(size = 1.2) +
-  geom_point(size = 3) +
-  # Aplicar colores obligatorios
-  scale_color_manual(values = c("Hombres" = COLOR_HOMBRES, "Mujeres" = COLOR_MUJERES)) +
-  # Formatear el eje Y para que no salga en notación científica
-  scale_y_continuous(labels = scales::label_number(big.mark = ".", decimal.mark = ",")) +
-  # Añadir línea de cambio de marco (Regla obligatoria)
-  geom_vline(xintercept = 2021, linetype = "dashed", color = "gray50") +
-  annotate("text", x = 2021.1, y = Inf, vjust = 1.5, hjust = 0, 
-           label = "Cambio Marco\nMuestral", size = 3, color = "gray40") +
-  # Etiquetas y pie de página (Regla obligatoria)
-  labs(
-    title = "Evolución de la Población Ocupada por Sexo",
-    subtitle = "Periodo 2019 - 2025",
-    x = "Año",
-    y = "Número de personas",
-    color = "Sexo",
-    caption = "Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026."
-  ) +
-  theme_minimal()
-```
----
-
-# Filtros base
-
-```{r filtros}
-# Filtros obligatorios para el parquet de ocupados
-df_base <- df_ocup |>
-  filter(
-    condicion_activ == 1,   # solo ocupados confirmados
-    edad >= 15, edad <= 99,
-    sexo %in% c(1, 2)
-  )
-
-# Etiquetas de posición ocupacional
 posicion_labels <- c(
-  "1" = "Empleado gobierno",
-  "2" = "Empleado empresa privada",
+  "1" = "Empleado empresa particular",
+  "2" = "Empleado gobierno",
   "3" = "Empleado doméstico",
   "4" = "Cuenta propia",
   "5" = "Empleador",
@@ -97,15 +39,121 @@ posicion_labels <- c(
   "9" = "Otro"
 )
 
-df_base <- df_base |>
+df_base <- df_ocup |>
+  filter(
+    condicion_activ == 1,
+    edad >= 15, edad <= 99,
+    sexo %in% c(1, 2)
+  ) |>
   mutate(
     sexo_label     = if_else(sexo == 1, "Hombres", "Mujeres"),
     posicion_label = posicion_labels[as.character(posicion_ocup)]
   )
-# 2. AGREGA ESTO AL FINAL para ver que funcionó:
-print("Filtros aplicados con éxito")
-df_base |> select(anio, sexo_label, posicion_label, fex) |> head()
 ```
 
+## Row
 
+### Composición por posición ocupacional {width="100%"}
 
+```{r viz-posicion}
+data_plot <- df_base |>
+  group_by(anio, posicion_label, sexo_label) |>
+  summarise(n_pond = sum(fex, na.rm = TRUE), .groups = "drop") |>
+  group_by(anio, posicion_label) |>
+  mutate(pct = n_pond / sum(n_pond) * 100) |>
+  ungroup() |>
+  filter(!is.na(posicion_label))
+
+hombres <- data_plot |> filter(sexo_label == "Hombres")
+mujeres <- data_plot |> filter(sexo_label == "Mujeres")
+
+plot_ly() |>
+  add_bars(
+    data = hombres,
+    x = ~pct, y = ~posicion_label,
+    frame = ~anio,
+    name = "Hombres",
+    marker = list(color = COLOR_HOMBRES),
+    orientation = "h"
+  ) |>
+  add_bars(
+    data = mujeres,
+    x = ~pct, y = ~posicion_label,
+    frame = ~anio,
+    name = "Mujeres",
+    marker = list(color = COLOR_MUJERES),
+    orientation = "h"
+  ) |>
+  layout(
+    barmode = "stack",
+    xaxis = list(title = "Proporción (%)", ticksuffix = "%", range = c(0, 100)),
+    yaxis = list(title = ""),
+    legend = list(orientation = "h", x = 0, y = 1.1),
+    annotations = list(list(
+      text = "Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026.",
+      showarrow = FALSE, x = 0, y = -0.15,
+      xref = "paper", yref = "paper",
+      font = list(size = 10), xanchor = "left"
+    ))
+  ) |>
+  animation_opts(frame = 0, transition = 0, redraw = TRUE) |>
+  animation_slider(currentvalue = list(prefix = "Año: ")) |>
+  layout(updatemenus = list(list(type = "buttons", visible = FALSE)))
+```
+
+## Row
+
+### Proporción por sexo y categoría ocupacional (2019–2025) {width="100%"}
+
+```{r viz-heatmap}
+# Datos para heatmap: % mujeres + población total estimada por categoría y año
+heatmap_data <- data_plot |>
+  group_by(anio, posicion_label) |>
+  mutate(n_total = sum(n_pond)) |>
+  ungroup() |>
+  filter(sexo_label == "Mujeres") |>
+  mutate(n_mill = round(n_total / 1e6, 2)) |>
+  select(anio, posicion_label, pct, n_mill)
+
+# Ordenar categorías de más feminizada a más masculinizada (promedio histórico)
+orden_cats <- heatmap_data |>
+  group_by(posicion_label) |>
+  summarise(pct_promedio = mean(pct, na.rm = TRUE)) |>
+  arrange(desc(pct_promedio)) |>
+  pull(posicion_label)
+
+heatmap_data <- heatmap_data |>
+  mutate(posicion_label = factor(posicion_label, levels = rev(orden_cats)))
+
+p_heat <- ggplot(heatmap_data,
+    aes(x = factor(anio), y = posicion_label,
+        fill = pct,
+        text = paste0(
+          "<b>", posicion_label, "</b><br>",
+          "Año: ", anio, "<br>",
+          "% mujeres: ", round(pct, 1), "%<br>",
+          "Personas aprox.: ", format(n_mill, nsmall = 2), " millones"
+        ))) +
+  geom_tile(color = "white", linewidth = 0.8) +
+  geom_text(aes(label = paste0(round(pct, 0), "%")), size = 3, color = "white", fontface = "bold") +
+  scale_fill_gradient2(
+    low  = COLOR_HOMBRES,
+    mid  = "#f7f7f7",
+    high = COLOR_MUJERES,
+    midpoint = 50,
+    limits = c(0, 100),
+    name = "% Mujeres"
+  ) +
+  labs(
+    x = NULL, y = NULL,
+    caption = "Categorías ordenadas de más feminizada (arriba) a más masculinizada (abajo) según promedio 2019–2025\nAzul = mayoría hombres · Rojo = mayoría mujeres · Blanco = paridad (50%)\nFuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026."
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    legend.position = "right",
+    axis.text.y = element_text(size = 9),
+    plot.caption = element_text(size = 7, color = "gray50")
+  )
+
+ggplotly(p_heat, tooltip = "text")
+```
