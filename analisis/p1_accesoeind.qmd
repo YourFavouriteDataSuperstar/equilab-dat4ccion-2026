@@ -24,6 +24,10 @@ library(ggplot2)
 library(plotly)    
 library(Hmisc)
 library(survey)
+library(gt)
+library(crosstalk)
+library(plotly)
+library(tidyr)
 COLOR_HOMBRES <- "#2166AC"
 COLOR_MUJERES <- "#D6604D"
 ```
@@ -134,7 +138,7 @@ tasas_final <- tasas_cv |>
 
 ::: {.panel-tabset}
 
-## Tasa Global de Participacion Por Sexo y Año 
+### Tasa Global de Participacion Por Sexo y Año 
 
 ```{r viz-tgp}
 #| title: Tasa Global De Participación (TGP) Por Sexo y Año
@@ -191,16 +195,13 @@ p_plotly
 ```
 
 
-## Tasa de Ocupación y Desempleo por Sexo y Año
+### Tasa de Ocupación y Desempleo por Sexo y Año
 
 ```{r viz-to-td}
 #| echo: false
 #| message: false
 #| warning: false
-
-library(tidyr)
-library(crosstalk)
-library(plotly)
+#| output: false
 
 # Modifica tu preparación de datos así:
 datos_para_filtro <- tasas_cv |>
@@ -294,6 +295,7 @@ ggplotly(p_barras_final, tooltip = "text") |>
 #| label: calculo-cv-departamental   #Calculos Tabla Departamental
 #| echo: false
 #| message: false
+#| output: false
 
 # 1. Crear el objeto con el cálculo por departamento y sexo
 tasas_dpto_cv <- df_base2 |>
@@ -329,14 +331,11 @@ tasas_dpto_cv <- df_base2 |>
 ```
 
 
-## Tabla Departamental CV
+### Tabla Departamental CV
 
 ```{r}
 #| title: Análisis de Calidad y Brechas Departamentales (2025)
 #| echo: false
-
-library(gt)
-
 # Definición de nombres 
 nombres_dpto <- c(
   "05" = "Antioquia", "08" = "Atlántico", "11" = "Bogotá D.C.",
@@ -389,10 +388,10 @@ tasas_dpto_cv |>
 tab_footnote("Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026.")
 ```
 
-## Brecha de Participación Laboral
+
+### Brecha de Participación Laboral
 
 ```{r}
-
 #| title: Brecha de Participación Laboral — TGP Hombres − Mujeres (pp)
 #| echo: false
 #| message: false
@@ -424,9 +423,6 @@ brecha_pp <- tasas_cv |>
     `TD M`       = TD_Mujeres,
     `Brecha TD`  = brecha_TD
   )
-
-# Tabla con gt
-library(gt)
 
 brecha_pp |>
   gt() |>
