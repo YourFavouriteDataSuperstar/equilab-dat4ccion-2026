@@ -5,7 +5,7 @@ date: today
 lang: es
 format:
   dashboard:
-    orientation: rows
+    orientation: columns
     toc: true
     toc-depth: 2
     theme: cosmo
@@ -126,8 +126,7 @@ tasas_final <- tasas_cv |>
   )
 ```
 
-
-###Gráfica 1 TGP por sexo y año
+## Fila 1: Participación Laboral
 ```{r viz-tgp}
 #| title: Tasa Global De Participación (TGP) Por Sexo y Año
 #| label: viz-tgp-ic-final
@@ -178,5 +177,69 @@ p_plotly
 **Nota:** Estimaciones ponderadas con factor de expansión *fex*.  
 **Marco Muestral:** 2005 (2019–2020) y 2018 (2021–2025).
 
+## Fila 2: Ocupación y Desempleo
+```{r viz-to-td}
+#| title: Tasa de Ocupación y Desempleo por Sexo
+#| echo: false
+#| message: false
+#| warning: false
+
+library(tidyr)
+
+# Año a mostrar (se reemplazará por filtro crosstalk más adelante)
+anio_sel <- 2025
+
+# Preparar datos en formato largo
+barras_data <- tasas_cv |>
+  select(anio, sexo_label, TO, TD, cv_TO, cv_TD, cal_TO, cal_TD) |>
+  pivot_longer(
+    cols      = c(TO, TD),
+    names_to  = "Indicador",
+    values_to = "Tasa"
+  ) |>
+  mutate(
+    cv  = if_else(Indicador == "TO", cv_TO, cv_TD),
+    cal = if_else(Indicador == "TO", cal_TO, cal_TD),
+    se  = (cv * Tasa) / 100,
+    li  = round(Tasa - 1.96 * se, 1),
+    ls  = round(Tasa + 1.96 * se, 1),
+   Indicador_label = if_else(
+  Indicador == "TO", "Tasa de Ocupación\n(TO)", "Tasa de Desempleo\n(TD)"
+)
+  ) |>
+  filter(anio == anio_sel)
+
+# Gráfica de barras
+p_barras <- ggplot(barras_data,
+    aes(x = Indicador_label, y = Tasa, fill = sexo_label,
+        text = paste0(
+          "Sexo: ", sexo_label,
+  "\nTasa: ", Tasa, "%",
+  "\nCV: ", cv, "% ", cal
+        ))) +
+  geom_col(position = "dodge", width = 0.5) +
+  scale_fill_manual(
+    values = c("Hombres" = COLOR_HOMBRES, "Mujeres" = COLOR_MUJERES)
+  ) +
+  scale_y_continuous(limits = c(0, 100)) +
+  labs(
+    x = NULL, y = "Tasa (%)", fill = "Sexo",
+    caption = paste("Año seleccionado:", anio_sel)
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "top")
+
+ggplotly(p_barras, tooltip = "text") |>
+  layout(
+    barmode   = "group",
+    hovermode = "closest",
+    legend    = list(orientation = "h", x = 0.35, y = 1.1),
+    margin    = list(b = 70)
+  )
+```
 
 
+**Fuente:** DANE, Gran Encuesta Integrada de Hogares (GEIH) 2019–2025.  
+**Cálculos:** EQUILAB — DAT4CCIÓN 2026.  
+**Nota:** Estimaciones ponderadas con factor de expansión *fex*.  
+**Marco Muestral:** 2005 (2019–2020) y 2018 (2021–2025).
