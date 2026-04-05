@@ -17,6 +17,7 @@ execute:
 ---
 
 ## 
+
 ```{r}
 library(arrow)     
 library(dplyr)      
@@ -29,12 +30,16 @@ COLOR_MUJERES <- "#D6604D"
 ```
 
 ```{r}
+#| echo: false
+#| output: false
 df_pet <- read_parquet("../datos/geih_pet_2019_2025.parquet")
 
 
 ```
 
 ```{r}
+#| echo: false
+#| output: false
 df_base <- df_pet |>
   filter(
     sexo %in% c(1, 2),    
@@ -42,7 +47,6 @@ df_base <- df_pet |>
     edad <= 99             
   )
 ```
-
 
 ```{r}
 #| echo: false
@@ -104,8 +108,9 @@ tasas_cv |> select(anio, sexo_label, TGP, cv_TGP, cal_TGP, TO, cv_TO, cal_TO, TD
 
 ```
 
-
 ```{r}
+#| echo: false
+#| output: false
 # Calculamos los límites para un Intervalo de Confianza del 95%
 # La fórmula es: Valor +/- (1.96 * Error Estándar)
 
@@ -126,7 +131,12 @@ tasas_final <- tasas_cv |>
   )
 ```
 
-## Fila 1: Participación Laboral
+
+
+::: {.panel-tabset}
+
+## Tasa Global de Participacion Por Sexo y Año 
+
 ```{r viz-tgp}
 #| title: Tasa Global De Participación (TGP) Por Sexo y Año
 #| label: viz-tgp-ic-final
@@ -174,7 +184,9 @@ p_plotly
 
 **Fuente:** DANE, GEIH 2019-2025. **Cálculos:** EQUILAB – DAT4CCIÓN 2026.
 
-## Fila 2: Ocupación y Desempleo
+
+## Tasa de ocupación y Desempleo por Sexo
+
 ```{r viz-to-td}
 #| title: Tasa de Ocupación y Desempleo por Sexo
 #| echo: false
@@ -235,11 +247,7 @@ ggplotly(p_barras, tooltip = "text") |>
   )
 ```
 
-
 **Fuente:** DANE, GEIH 2019-2025. **Cálculos:** EQUILAB – DAT4CCIÓN 2026.
-
-
-
 
 ```{r}
 #| label: calculo-cv-departamental   #Calculos Tabla Departamental
@@ -280,13 +288,11 @@ tasas_dpto_cv <- df_base2 |>
 ```
 
 
+## Tabla Departamental CV
 
-## Fila 3: Tabla Departamental CV
 ```{r}
 #| title: Análisis de Calidad y Brechas Departamentales (2025)
 #| echo: false
-#| output: asis
-#| results: hide
 
 library(gt)
 
@@ -339,8 +345,6 @@ tasas_dpto_cv |>
     container.height = px(500), # Para que no ocupe toda la pantalla
     table.font.size = px(12)
   )
-``` 
+```
 
 **Fuente:** DANE, GEIH 2019-2025. **Cálculos:** EQUILAB – DAT4CCIÓN 2026.
-
-
