@@ -103,15 +103,112 @@ p_heat <- ggplot(heatmap_data,
     name = "% Mujeres"
   ) +
   labs(
-    x = NULL, y = NULL,
-    caption = "Categorías ordenadas de más feminizada (arriba) a más masculinizada (abajo) según promedio 2019–2025\nAzul = mayoría hombres · Rojo = mayoría mujeres · Blanco = paridad (50%)\nFuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026."
+    title = "Composición por sexo según tipo de empleo — Colombia 2019–2025",
+    x = NULL, y = NULL
   ) +
   theme_minimal(base_size = 11) +
   theme(
     legend.position = "right",
     axis.text.y = element_text(size = 9),
-    plot.caption = element_text(size = 7, color = "gray50")
+    plot.title = element_text(size = 12, face = "bold")
   )
 
-ggplotly(p_heat, tooltip = "text")
+ggplotly(p_heat, tooltip = "text") |>
+  layout(
+    margin = list(b = 60),
+    annotations = list(list(
+      x = 0, y = -0.12, xref = "paper", yref = "paper",
+      text = "Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026.",
+      showarrow = FALSE, xanchor = "left",
+      font = list(size = 9, color = "gray50")
+    ))
+  )
+```
+
+## Row
+
+### ¿Cuántas personas hay en cada categoría y qué tan equitativa es? {width="100%"}
+
+```{r viz-lollipop}
+anio_max <- max(data_plot$anio)
+
+lollipop_data <- data_plot |>
+  filter(anio == anio_max) |>
+  group_by(posicion_label) |>
+  mutate(n_total = sum(n_pond)) |>
+  ungroup() |>
+  filter(sexo_label == "Mujeres") |>
+  mutate(
+    n_mill      = round(n_total / 1e6, 2),
+    color_punto = if_else(pct >= 50, COLOR_MUJERES, COLOR_HOMBRES),
+    etiqueta    = paste0(round(pct, 1), "% — ", format(n_mill, nsmall = 2), "M personas"),
+    posicion_label = reorder(posicion_label, pct)
+  )
+
+plot_ly(lollipop_data) |>
+  # Líneas del lollipop
+  add_segments(
+    x = 50, xend = ~pct,
+    y = ~posicion_label, yend = ~posicion_label,
+    line = list(color = "gray80", width = 2),
+    showlegend = FALSE,
+    hoverinfo = "none"
+  ) |>
+  # Línea de referencia de paridad
+  add_segments(
+    x = 50, xend = 50,
+    y = 0.5, yend = nrow(lollipop_data) + 0.5,
+    line = list(color = "gray50", dash = "dash", width = 1.5),
+    showlegend = FALSE,
+    hoverinfo = "none"
+  ) |>
+  # Puntos
+  add_markers(
+    x = ~pct,
+    y = ~posicion_label,
+    marker = list(color = ~color_punto, size = 14,
+                  line = list(color = "white", width = 1.5)),
+    text = ~paste0(
+      "<b>", posicion_label, "</b><br>",
+      "% mujeres: ", round(pct, 1), "%<br>",
+      "Personas aprox.: ", format(n_mill, nsmall = 2), " millones"
+    ),
+    hovertemplate = "%{text}<extra></extra>",
+    showlegend = FALSE
+  ) |>
+  # Etiquetas a la derecha de cada punto
+  add_annotations(
+    x = ~pct,
+    y = ~posicion_label,
+    text = ~etiqueta,
+    xanchor = ~if_else(pct >= 50, "left", "right"),
+    xshift = ~if_else(pct >= 50, 8, -8),
+    showarrow = FALSE,
+    font = list(size = 10, color = ~color_punto)
+  ) |>
+  layout(
+    title = list(
+      text = paste0("Magnitud y equidad de género por categoría ocupacional — Colombia ", anio_max),
+      font = list(size = 13), x = 0
+    ),
+    xaxis = list(
+      title = paste0("% mujeres en la categoría (", anio_max, ")"),
+      ticksuffix = "%", range = c(0, 115),
+      zeroline = FALSE
+    ),
+    yaxis = list(title = ""),
+    annotations = list(
+      list(x = 48, y = nrow(lollipop_data) + 0.8,
+           text = "← Mayoría hombres", showarrow = FALSE,
+           xanchor = "right", font = list(color = COLOR_HOMBRES, size = 10)),
+      list(x = 52, y = nrow(lollipop_data) + 0.8,
+           text = "Mayoría mujeres →", showarrow = FALSE,
+           xanchor = "left", font = list(color = COLOR_MUJERES, size = 10)),
+      list(x = 1, y = -0.08, xref = "paper", yref = "paper",
+           text = paste0("Fuente: DANE, GEIH ", anio_max, ". Cálculos: EQUILAB — DAT4CCIÓN 2026."),
+           showarrow = FALSE, xanchor = "right",
+           font = list(color = "gray50", size = 9))
+    ),
+    margin = list(l = 160, r = 20, t = 40, b = 40)
+  )
 ```
