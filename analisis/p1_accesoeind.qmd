@@ -16,7 +16,6 @@ execute:
   message: false
 ---
 
-## 
 
 ```{r}
 library(arrow)     
@@ -185,7 +184,7 @@ p_plotly
 **Fuente:** DANE, GEIH 2019-2025. **Cálculos:** EQUILAB – DAT4CCIÓN 2026.
 
 
-## Tasa de ocupación y Desempleo por Sexo
+## Tasa de Ocupación y Desempleo por Sexo y Año
 
 ```{r viz-to-td}
 #| title: Tasa de Ocupación y Desempleo por Sexo
@@ -194,13 +193,14 @@ p_plotly
 #| warning: false
 
 library(tidyr)
+library(crosstalk)
+library(plotly)
 
-# Año a mostrar (se reemplazará por filtro crosstalk más adelante)
-anio_sel <- 2025
-
-# Preparar datos en formato largo
-barras_data <- tasas_cv |>
+# Modifica tu preparación de datos así:
+datos_para_filtro <- tasas_cv |>
   select(anio, sexo_label, TO, TD, cv_TO, cv_TD, cal_TO, cal_TD) |>
+  # AQUÍ AGREGAMOS EL PREFIJO
+  mutate(sexo_legend = paste("Sexo:", sexo_label)) |> 
   pivot_longer(
     cols      = c(TO, TD),
     names_to  = "Indicador",
@@ -209,42 +209,67 @@ barras_data <- tasas_cv |>
   mutate(
     cv  = if_else(Indicador == "TO", cv_TO, cv_TD),
     cal = if_else(Indicador == "TO", cal_TO, cal_TD),
-    se  = (cv * Tasa) / 100,
-    li  = round(Tasa - 1.96 * se, 1),
-    ls  = round(Tasa + 1.96 * se, 1),
-   Indicador_label = if_else(
-  Indicador == "TO", "Tasa de Ocupación\n(TO)", "Tasa de Desempleo\n(TD)"
-)
-  ) |>
-  filter(anio == anio_sel)
+    Indicador_label = if_else(
+      Indicador == "TO", "Tasa de Ocupación\n(TO)", "Tasa de Desempleo\n(TD)"
+    )
+  )
 
-# Gráfica de barras
-p_barras <- ggplot(barras_data,
+# Ahora el SharedData usa esta nueva columna
+sd_laboral <- SharedData$new(datos_para_filtro)
+
+
+
+```
+
+
+
+```{r}
+#| echo: false
+
+library(htmltools)
+
+# 1. El filtro con un contenedor que nos permita esconder el "All"
+div(
+  style = "margin-bottom: 20px;", # Un poquito de espacio abajo
+  tags$style(HTML("
+    .selectize-dropdown-content [data-value=''] { display: none !important; }
+    .selectize-input [data-value=''] { display: none !important; }
+    .selectize-dropdown-content .option:first-child { display: none !important; }
+  ")),
+  filter_select(
+    id = "selector_anio", 
+    label = "Elija el Año de Análisis:", 
+    sharedData = sd_laboral, 
+    group = ~anio, 
+    multiple = FALSE
+  )
+)
+# 4. Gráfica de barras original
+p_barras_final <- ggplot(sd_laboral, 
     aes(x = Indicador_label, y = Tasa, fill = sexo_label,
         text = paste0(
-          "Sexo: ", sexo_label,
-  "\nTasa: ", Tasa, "%",
-  "\nCV: ", cv, "% ", cal
+          "<b>Año:</b> ", anio,
+          "<br><b>Sexo:</b> ", sexo_label,
+          "<br><b>Tasa:</b> ", Tasa, "%",
+          "<br><b>CV:</b> ", cv, "% ", cal
         ))) +
-  geom_col(position = "dodge", width = 0.5) +
-  scale_fill_manual(
-    values = c("Hombres" = COLOR_HOMBRES, "Mujeres" = COLOR_MUJERES)
-  ) +
+  geom_col(position = position_dodge(width = 0.7), width = 0.6) +
+  scale_fill_manual(values = c("Hombres" = COLOR_HOMBRES, "Mujeres" = COLOR_MUJERES)) +
   scale_y_continuous(limits = c(0, 100)) +
-  labs(
-    x = NULL, y = "Tasa (%)", fill = "Sexo",
-    caption = paste("Año seleccionado:", anio_sel)
-  ) +
+  labs(x = NULL, y = "Tasa (%)", fill = "") +
   theme_minimal(base_size = 12) +
-  theme(legend.position = "top")
+  theme(legend.position = "none")
 
-ggplotly(p_barras, tooltip = "text") |>
+# 5. Convertir a Plotly con leyenda arriba
+ggplotly(p_barras_final, tooltip = "text") |>
   layout(
     barmode   = "group",
-    hovermode = "closest",
-    legend    = list(orientation = "h", x = 0.35, y = 1.1),
-    margin    = list(b = 70)
+    showlegend = TRUE,
+    legend    = list(orientation = "h", x = 0.35, y = 1.2),
+    margin    = list(t = 80, b = 70),
+    hovermode = "closest"
   )
+  
 ```
 
 **Fuente:** DANE, GEIH 2019-2025. **Cálculos:** EQUILAB – DAT4CCIÓN 2026.
