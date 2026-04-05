@@ -5,6 +5,7 @@ date: today
 lang: es
 format:
   dashboard:
+    orientation: rows
     toc: true
     toc-depth: 2
     theme: cosmo
@@ -102,3 +103,80 @@ tasas_cv |> select(anio, sexo_label, TGP, cv_TGP, cal_TGP, TO, cv_TO, cal_TO, TD
   
 
 ```
+
+
+```{r}
+# Calculamos los límites para un Intervalo de Confianza del 95%
+# La fórmula es: Valor +/- (1.96 * Error Estándar)
+
+tasas_final <- tasas_cv |> 
+  mutate(
+    # Calculamos el SE (Error Estándar) a partir del CV que ya tienes
+    se_tgp = (cv_TGP * TGP) / 100,
+    
+    # Creamos los límites del "colchón"
+    li = TGP - (1.96 * se_tgp),
+    ls = TGP + (1.96 * se_tgp)
+  ) |> 
+  select(
+    Año = anio, 
+    Sexo = sexo_label, 
+    `TGP (%)` = TGP, li, ls,
+    cv_TGP, cal_TGP 
+  )
+```
+
+
+###Gráfica 1 TGP por sexo y año
+```{r viz-tgp}
+#| title: Tasa Global De Participación (TGP) Por Sexo y Año
+#| label: viz-tgp-ic-final
+#| echo: false
+#| message: false
+#| warning: false
+
+
+# 1. Crear el ggplot base (Asegúrate de tener li y ls calculados arriba)
+p_tgp_ic <- ggplot(tasas_final, aes(x = Año, y = `TGP (%)`, color = Sexo, fill = Sexo, group = Sexo)) +
+  
+  
+  # Línea y puntos - El aes(text=...) es clave para limpiar el tooltip
+  geom_line(linewidth = 1.1) +
+  geom_point(size = 2.5, aes(text = paste( "Año: ", Año,
+  "\nSexo: ", Sexo,
+  "\nTGP: ", `TGP (%)`, "%",
+  "\nIC 95%: [", round(li, 1), "% – ", round(ls, 1), "%]",
+  "\nCV: ", cv_TGP, "% ", cal_TGP
+))) +
+  
+  # Marcador quiebre marco 2021
+  geom_vline(xintercept = 2021, linetype = "dashed", color = "gray50", linewidth = 0.8) +
+  annotate("text", x = 2021.7, y = max(tasas_final$`TGP (%)`) * 0.88, 
+           label = "Cambio de Marco\nMuestral", hjust = 0, size = 3, color = "gray40", fontface = "italic") +
+  
+  # Colores y Estética (Temas manuales para asegurar que Plotly los lea bien)
+  scale_color_manual(values = c("Hombres" = "#2166AC", "Mujeres" = "#D6604D")) +
+  scale_fill_manual(values = c("Hombres" = "#2166AC", "Mujeres" = "#D6604D")) +
+  scale_x_continuous(breaks = 2019:2025) +
+  
+  labs(x = "Año", y = "Tasa (%)", color = "Género", fill = "Género") +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "none") # Desactivamos la leyenda de ggplot
+
+# 2. CONVERTIR A INTERACTIVA Y LIMPIAR (Aquí está la magia)
+p_plotly <- ggplotly(p_tgp_ic, tooltip = "text") |> 
+  layout(
+    legend = list(orientation = "h", x = 0.25, y = 1.1),
+    hovermode = "closest"
+    )
+
+p_plotly
+```
+
+**Fuente:** DANE, Gran Encuesta Integrada de Hogares (GEIH) 2019–2025.  
+**Cálculos:** EQUILAB — DAT4CCIÓN 2026.  
+**Nota:** Estimaciones ponderadas con factor de expansión *fex*.  
+**Marco Muestral:** 2005 (2019–2020) y 2018 (2021–2025).
+
+
+
