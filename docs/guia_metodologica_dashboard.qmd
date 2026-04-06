@@ -214,14 +214,14 @@ completo.
 
 | Código | Categoría                                     |
 |--------|-----------------------------------------------|
-| 1      | Obrero o empleado del gobierno                |
-| 2      | Obrero o empleado de empresa particular       |
+| 1      | Obrero o empleado de empresa particular                |
+| 2      | Obrero o empleado del gobierno       |
 | 3      | Empleado doméstico                            |
 | 4      | Trabajador por cuenta propia                  |
 | 5      | Patrón o empleador                            |
 | 6      | Trabajador familiar sin remuneración          |
-| 7      | Trabajador sin remuneración en otras empresas |
-| 8      | Jornalero o peón                              |
+| 7      | Jornalero o peeración en otras empresas |
+| 8      | Trabajador sin remun. en otras empresasón                              |
 | 9      | Otro                                          |
 
 ------------------------------------------------------------------------
@@ -782,8 +782,8 @@ usar la serie publicada.
 ```{r}
 # Distribución por posición ocupacional, ponderada
 pos_labels <- c(
-  "1" = "Empleado público",
-  "2" = "Empleado particular",
+  "1" = "Empleado particular",
+  "2" = "Empleado público",
   "3" = "Empleado doméstico",
   "4" = "Cuenta propia",
   "5" = "Empleador",
@@ -807,7 +807,7 @@ informalidad <- df_analisis |>
   summarise(
     n       = n(),
     pob     = sum(fex, na.rm = TRUE),
-    informal = sum(fex[posicion_ocup %in% c(4, 6, 8)], na.rm = TRUE),
+    informal = sum(fex[posicion_ocup %in% c(4, 6, 7, 8)], na.rm = TRUE),
     .groups = "drop"
   ) |>
   mutate(tasa_informal = round(100 * informal / pob, 1))
