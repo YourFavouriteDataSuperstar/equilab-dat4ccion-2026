@@ -401,7 +401,10 @@ seg_data <- df_base |>
     color_bar  = if_else(pct_m >= 50, COLOR_MUJERES, COLOR_HOMBRES)
   ) |>
   arrange(pct_m) |>
-  mutate(seccion = factor(seccion, levels = seccion))
+  mutate(
+    seccion = as.character(seccion),
+    parents = ""
+  )
 
 # Índice de Duncan — año más reciente
 duncan_val <- df_base |>
@@ -418,73 +421,63 @@ duncan_val <- df_base |>
   summarise(duncan = round(0.5 * sum(abs(Mujeres - Hombres)) * 100, 1)) |>
   pull(duncan)
 
-n_sec <- nrow(seg_data)
-
 plot_ly(
-  seg_data,
-  x             = ~pct_m,
-  y             = ~seccion,
-  type          = "bar",
-  orientation   = "h",
-  marker        = list(color = ~color_bar),
+  data          = seg_data,
+  type          = "treemap",
+  labels        = ~seccion,
+  parents       = ~parents,
+  values        = ~pob,
+  text          = ~paste0(round(pct_m, 1), "%"),
+  textinfo      = "label+text",
   hovertemplate = ~paste0(
     "<b>", seccion, "</b><br>",
     round(pct_m, 1), "% mujeres<br>",
     total_mill, " millones de ocupados",
     "<extra></extra>"
   ),
-  showlegend = FALSE
+  marker = list(
+    colors     = ~pct_m,
+    colorscale = list(
+      list(0,   COLOR_HOMBRES),
+      list(0.5, "#f7f7f7"),
+      list(1,   COLOR_MUJERES)
+    ),
+    cmin      = 0,
+    cmax      = 100,
+    showscale = TRUE,
+    colorbar  = list(
+      title     = list(text = "% mujeres"),
+      ticksuffix = "%",
+      len       = 0.6,
+      x         = 1.01
+    )
+  )
 ) |>
   layout(
-    title  = list(
+    title = list(
       text = paste0("Segregación sectorial por sexo — Colombia ", anio_ref_seg),
       font = list(size = 13), x = 0
     ),
-    xaxis = list(
-      title      = "% de mujeres en el sector",
-      ticksuffix = "%",
-      range      = c(0, 108),
-      zeroline   = FALSE,
-      showgrid   = TRUE,
-      gridcolor  = "#f0f0f0"
-    ),
-    yaxis = list(title = ""),
-    shapes = list(list(
-      type = "line",
-      x0 = 50, x1 = 50, y0 = -0.5, y1 = n_sec - 0.5,
-      xref = "x", yref = "y",
-      line = list(color = "gray50", dash = "dot", width = 1.2)
-    )),
     annotations = list(
       list(
-        x = 50, y = n_sec - 0.5, xref = "x", yref = "y",
-        text = "50%", showarrow = FALSE,
-        xanchor = "left", xshift = 4,
-        font = list(size = 9, color = "gray50")
-      ),
-      list(
-        x = 0.99, y = 0.97, xref = "paper", yref = "paper",
+        x = 0.01, y = -0.06, xref = "paper", yref = "paper",
         text = paste0(
-          "<b>Índice de Duncan ", anio_ref_seg, ": ", duncan_val, "%</b><br>",
-          "El ", duncan_val, "% de las mujeres ocupadas<br>",
-          "tendría que cambiar de sector para<br>",
-          "igualar la distribución de los hombres.<br>",
-          "<span style='color:gray'>(2019: 34.4% · ↑ tras la pandemia)</span>"
+          "<b>Índice de Duncan ", anio_ref_seg, ": ", duncan_val, "%</b>  —  ",
+          "El ", duncan_val, "% de las mujeres ocupadas tendría que cambiar de sector ",
+          "para igualar la distribución masculina (2019: 34.4%)."
         ),
-        showarrow = FALSE, xanchor = "right", yanchor = "top", align = "left",
-        bgcolor = "#f8f9fa", bordercolor = "gray80", borderwidth = 1,
+        showarrow = FALSE, xanchor = "left",
         font = list(size = 9, color = "gray40")
       ),
       list(
-        x = 1, y = -0.05, xref = "paper", yref = "paper",
+        x = 1, y = -0.06, xref = "paper", yref = "paper",
         text = paste0("Fuente: DANE, GEIH ", anio_ref_seg,
                       ". Cálculos: EQUILAB — DAT4CCIÓN 2026."),
         showarrow = FALSE, xanchor = "right",
         font = list(size = 9, color = "gray50")
       )
     ),
-    plot_bgcolor  = "white",
     paper_bgcolor = "white",
-    margin = list(l = 220, r = 20, t = 60, b = 60)
+    margin = list(l = 10, r = 10, t = 60, b = 70)
   )
 ```
