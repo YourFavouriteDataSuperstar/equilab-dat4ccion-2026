@@ -268,3 +268,55 @@ p_edu <- ggplot(brecha_edu, aes(x = niv_edu_label, y = brecha_pct)) +
 
 ggplotly(p_edu)
 ```
+
+Visualización 4 - Brecha salarial por sector económico
+
+```{r viz-brecha-sector}
+# Sectores simplificados (misma clasificación que Página 2)
+df_sector <- df_base |>
+  filter(anio == anio_reciente, !is.na(rama2d_orig)) |>
+  mutate(
+    sector = case_when(
+      rama2d_orig %in% c("01","02","03") ~ "Agropecuario",
+      rama2d_orig %in% c("10","11","12","13","14","15","16","17","18","19",
+                         "20","21","22","23","24","25","26","27","28","29",
+                         "30","31","32","33") ~ "Industria",
+      rama2d_orig %in% c("41","42","43") ~ "Construcción",
+      rama2d_orig %in% c("45","46","47") ~ "Comercio",
+      rama2d_orig %in% c("49","50","51","52","53") ~ "Transporte",
+      rama2d_orig %in% c("55","56") ~ "Alojamiento / restaurantes",
+      rama2d_orig %in% c("84") ~ "Adm. pública",
+      rama2d_orig %in% c("85") ~ "Educación",
+      rama2d_orig %in% c("86","87","88") ~ "Salud",
+      rama2d_orig %in% c("97","98") ~ "Hogares / doméstico",
+      TRUE ~ "Otros servicios"
+    )
+  ) |>
+  group_by(sector, sexo_label) |>
+  summarise(
+    mediana_ing = wtd.quantile(ing_total, weights = fex, probs = 0.5, na.rm = TRUE),
+    n_obs = n(),
+    .groups = "drop"
+  ) |>
+  pivot_wider(names_from = sexo_label, values_from = c(mediana_ing, n_obs)) |>
+  filter(
+    !is.na(mediana_ing_Hombres), !is.na(mediana_ing_Mujeres),
+    n_obs_Hombres >= 100, n_obs_Mujeres >= 100
+  ) |>
+  mutate(brecha_pct = (mediana_ing_Hombres - mediana_ing_Mujeres) / mediana_ing_Hombres * 100)
+
+p_sector <- ggplot(df_sector, aes(x = reorder(sector, brecha_pct), y = brecha_pct)) +
+  geom_col(fill = "#4393C3", alpha = 0.8) +
+  geom_text(aes(label = paste0(round(brecha_pct, 1), "%"),
+                hjust = if_else(brecha_pct >= 0, -0.2, 1.2)), size = 3.5) +
+  coord_flip() +
+  labs(
+    title = paste("Brecha salarial por sector económico —", anio_reciente),
+    x = NULL, y = "Brecha (%)",
+    caption = "Fuente: DANE, GEIH. Cálculos: EQUILAB — DAT4CCIÓN 2026."
+  ) +
+  theme_minimal(base_size = 12)
+
+# Nota: si el objeto no tiene la columna sector, reemplazar brecha_edu por df_sector arriba
+ggplotly(p_sector)
+```
