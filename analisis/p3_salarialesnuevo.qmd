@@ -1,0 +1,294 @@
+---
+title: "Página 3 — Brechas Salariales"
+subtitle: "EQUILAB · DAT4CCIÓN 2026"
+date: today
+lang: es
+format:
+  dashboard:
+    theme: cosmo
+    self-contained: true
+    code-fold: true
+execute:
+  warning: false
+  message: false
+---
+
+```{r librerias}
+#| include: false
+#| context: setup
+library(arrow)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(plotly)
+library(Hmisc)
+
+COLOR_HOMBRES <- "#2166AC"
+COLOR_MUJERES <- "#D6604D"
+```
+
+```{r cargar-datos}
+#| include: false
+#| context: setup
+df_ocup <- read_parquet("../datos/geih_ocupados_2019_2025.parquet")
+```
+
+```{r filtros}
+#| include: false
+#| context: setup
+df_base <- df_ocup |>
+  filter(
+    condicion_activ == 1,
+    edad >= 15, edad <= 99,
+    sexo %in% c(1, 2),
+    !is.na(ing_total),
+    !ing_total %in% c(0, 98, 99)
+  ) |>
+  mutate(
+    sexo_label = if_else(sexo == 1, "Hombres", "Mujeres"),
+    niv_edu_label = case_when(
+      niv_edu_armon %in% c(1, 2) ~ "Sin educación / Preescolar",
+      niv_edu_armon == 3         ~ "Primaria",
+      niv_edu_armon == 4         ~ "Secundaria",
+      niv_edu_armon == 5         ~ "Media",
+      niv_edu_armon == 6         ~ "Técnico / Tecnológico",
+      niv_edu_armon == 7         ~ "Universitario",
+      niv_edu_armon == 8         ~ "Posgrado",
+      TRUE                       ~ "Sin información"
+    )
+  )
+```
+
+```{r calculo-mediana}
+#| include: false
+#| context: setup
+mediana_anual <- df_base |>
+  group_by(anio, sexo_label) |>
+  summarise(
+    mediana_ing = Hmisc::wtd.quantile(ing_total, weights = fex, probs = 0.5, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+anio_reciente <- max(df_base$anio)
+```
+
+## Row {height="50%"}
+
+### Distribución del ingreso mensual por sexo {width="50%"}
+
+```{r viz-boxplot}
+#| echo: false
+boxstat_pond <- function(x, w) {
+  q   <- wtd.quantile(x, weights = w, probs = c(0.25, 0.5, 0.75), na.rm = TRUE)
+  iqr <- unname(q[3] - q[1])
+  list(
+    q1     = unname(q[1]),
+    median = unname(q[2]),
+    q3     = unname(q[3]),
+    low    = max(min(x[x >= unname(q[1]) - 1.5 * iqr], na.rm = TRUE), unname(q[1]) - 1.5 * iqr),
+    high   = min(max(x[x <= unname(q[3]) + 1.5 * iqr], na.rm = TRUE), unname(q[3]) + 1.5 * iqr)
+  )
+}
+
+anios <- 2019:2025
+pasos <- list()
+stats_list <- list()
+
+for (i in seq_along(anios)) {
+  yr  <- anios[i]
+  dat <- df_base |> filter(anio == yr)
+  for (sx in c("Hombres", "Mujeres")) {
+    d  <- dat |> filter(sexo_label == sx)
+    stats_list[[paste(yr, sx)]] <- boxstat_pond(d$ing_total / 1e6, d$fex)
+  }
+}
+
+fig_box <- plot_ly()
+
+for (i in seq_along(anios)) {
+  yr <- anios[i]
+  for (sx in c("Hombres", "Mujeres")) {
+    bs  <- stats_list[[paste(yr, sx)]]
+    col <- if (sx == "Hombres") COLOR_HOMBRES else COLOR_MUJERES
+    fig_box <- fig_box |> add_trace(
+      type        = "box",
+      name        = sx,
+      q1          = list(bs$q1),
+      median      = list(bs$median),
+      q3          = list(bs$q3),
+      lowerfence  = list(bs$low),
+      upperfence  = list(bs$high),
+      x0          = sx,
+      marker      = list(color = paste0(col, "99")),
+      line        = list(color = col, width = 2),
+      fillcolor   = paste0(col, "44"),
+      width       = 0.5,
+      visible     = (i == 1),
+      showlegend  = (i == 1),
+      legendgroup = sx
+    )
+  }
+  vis <- rep(FALSE, length(anios) * 2)
+  vis[c(2 * i - 1, 2 * i)] <- TRUE
+  pasos[[i]] <- list(
+    method = "update",
+    label  = as.character(yr),
+    args   = list(list(visible = vis))
+  )
+}
+
+fig_box <- fig_box |>
+  layout(
+    title = list(
+      text = "Distribución del ingreso laboral mensual por sexo<br><sup>Cuartiles ponderados por factor de expansión (fex) — GEIH Colombia</sup>",
+      font = list(size = 13),
+      x    = 0.03
+    ),
+    xaxis = list(
+      title         = "",
+      categoryorder = "array",
+      categoryarray = c("Hombres", "Mujeres")
+    ),
+    yaxis = list(
+      title      = "Ingreso mensual (millones COP)",
+      tickprefix = "$",
+      ticksuffix = "M",
+      zeroline   = FALSE,
+      gridcolor  = "rgba(0,0,0,0.08)"
+    ),
+    legend  = list(orientation = "h", y = 1.12, x = 0),
+    boxmode = "group",
+    plot_bgcolor  = "white",
+    paper_bgcolor = "white",
+    sliders = list(list(
+      active       = 0,
+      currentvalue = list(prefix = "Año: ", font = list(size = 13)),
+      steps        = pasos,
+      pad          = list(t = 40)
+    )),
+    margin = list(t = 110, b = 90, l = 80, r = 30)
+  )
+
+fig_box
+```
+
+### Brecha salarial porcentual por año {width="50%"}
+
+```{r viz-brecha-pct}
+#| echo: false
+brecha_anual <- mediana_anual |>
+  pivot_wider(names_from = sexo_label, values_from = mediana_ing) |>
+  mutate(
+    brecha_pct = (Hombres - Mujeres) / Hombres * 100,
+    anio_f     = factor(anio)
+  )
+
+p_brecha <- ggplot(brecha_anual, aes(x = anio_f, y = brecha_pct)) +
+  geom_col(fill = "#762A83", alpha = 0.8, width = 0.6) +
+  geom_text(aes(label = paste0(round(brecha_pct, 1), "%")),
+            vjust = -0.5, size = 3.5, fontface = "bold") +
+  geom_vline(xintercept = 2.5, linetype = "dashed", color = "gray50") +
+  annotate("text", x = 3.1, y = max(brecha_anual$brecha_pct, na.rm = TRUE) * 0.95,
+           label = "Cambio Marco\nMuestral", hjust = 0, size = 3, color = "gray40") +
+  labs(
+    title    = "Brecha salarial de género — (Mediana H − M) / Mediana H",
+    subtitle = "Colombia 2019–2025 (medianas ponderadas por fex)",
+    x = NULL, y = "Brecha (%)",
+    caption  = "Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026."
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(panel.grid.major.x = element_blank())
+
+ggplotly(p_brecha)
+```
+
+## Row {height="50%"}
+
+### Brecha salarial por nivel educativo {width="50%"}
+
+```{r viz-brecha-educacion}
+#| echo: false
+brecha_edu <- df_base |>
+  filter(
+    anio == anio_reciente,
+    !niv_edu_label %in% c("Sin educación / Preescolar", "Sin información")
+  ) |>
+  group_by(niv_edu_label, niv_edu_armon, sexo_label) |>
+  summarise(
+    mediana_ing = wtd.quantile(ing_total, weights = fex, probs = 0.5, na.rm = TRUE),
+    .groups = "drop"
+  ) |>
+  pivot_wider(names_from = sexo_label, values_from = mediana_ing) |>
+  mutate(
+    brecha_pct = (Hombres - Mujeres) / Hombres * 100,
+    niv_edu_label = factor(niv_edu_label,
+                           levels = c("Primaria", "Secundaria", "Media",
+                                      "Técnico / Tecnológico", "Universitario", "Posgrado"))
+  )
+
+p_edu <- ggplot(brecha_edu, aes(x = niv_edu_label, y = brecha_pct)) +
+  geom_col(fill = "#D6604D", alpha = 0.8) +
+  geom_text(aes(label = paste0(round(brecha_pct, 1), "%")),
+            hjust = -0.2, size = 3.5) +
+  coord_flip() +
+  labs(
+    title = paste("Brecha salarial por nivel educativo —", anio_reciente),
+    subtitle = "(Mediana H − M) / Mediana H, ponderado con fex",
+    x = NULL, y = "Brecha (%)",
+    caption = "Fuente: DANE, GEIH. Cálculos: EQUILAB — DAT4CCIÓN 2026."
+  ) +
+  theme_minimal(base_size = 13)
+
+ggplotly(p_edu)
+```
+
+### Brecha salarial por sector económico {width="50%"}
+
+```{r viz-brecha-sector}
+#| echo: false
+df_sector <- df_base |>
+  filter(anio == anio_reciente, !is.na(rama2d_orig)) |>
+  mutate(
+    sector = case_when(
+      rama2d_orig %in% c("01","02","03") ~ "Agropecuario",
+      rama2d_orig %in% c("10","11","12","13","14","15","16","17","18","19",
+                         "20","21","22","23","24","25","26","27","28","29",
+                         "30","31","32","33") ~ "Industria",
+      rama2d_orig %in% c("41","42","43") ~ "Construcción",
+      rama2d_orig %in% c("45","46","47") ~ "Comercio",
+      rama2d_orig %in% c("49","50","51","52","53") ~ "Transporte",
+      rama2d_orig %in% c("55","56") ~ "Alojamiento / restaurantes",
+      rama2d_orig %in% c("84") ~ "Adm. pública",
+      rama2d_orig %in% c("85") ~ "Educación",
+      rama2d_orig %in% c("86","87","88") ~ "Salud",
+      rama2d_orig %in% c("97","98") ~ "Hogares / doméstico",
+      TRUE ~ "Otros servicios"
+    )
+  ) |>
+  group_by(sector, sexo_label) |>
+  summarise(
+    mediana_ing = wtd.quantile(ing_total, weights = fex, probs = 0.5, na.rm = TRUE),
+    n_obs = n(),
+    .groups = "drop"
+  ) |>
+  pivot_wider(names_from = sexo_label, values_from = c(mediana_ing, n_obs)) |>
+  filter(
+    !is.na(mediana_ing_Hombres), !is.na(mediana_ing_Mujeres),
+    n_obs_Hombres >= 100, n_obs_Mujeres >= 100
+  ) |>
+  mutate(brecha_pct = (mediana_ing_Hombres - mediana_ing_Mujeres) / mediana_ing_Hombres * 100)
+
+p_sector <- ggplot(df_sector, aes(x = reorder(sector, brecha_pct), y = brecha_pct)) +
+  geom_col(fill = "#4393C3", alpha = 0.8) +
+  geom_text(aes(label = paste0(round(brecha_pct, 1), "%"),
+                hjust = if_else(brecha_pct >= 0, -0.2, 1.2)), size = 3.5) +
+  coord_flip() +
+  labs(
+    title = paste("Brecha salarial por sector económico —", anio_reciente),
+    x = NULL, y = "Brecha (%)",
+    caption = "Fuente: DANE, GEIH. Cálculos: EQUILAB — DAT4CCIÓN 2026."
+  ) +
+  theme_minimal(base_size = 12)
+
+ggplotly(p_sector)
+```
