@@ -73,7 +73,7 @@ repetitivos.
 El equipo recibe **dos parquets**. Cada página usa el que corresponde:
 
 | Parquet | Filas | Peso | Usa quién |
-|------------------|----------------|----------------|----------------------|
+|-----------------|-----------------|-----------------|---------------------|
 | `geih_ocupados_2019_2025.parquet` | 2.633.461 | 48 MB | **Páginas 2 y 3** — calidad del empleo y brechas salariales |
 | `geih_pet_2019_2025.parquet` | 4.923.878 | 46 MB | **Página 1** — TGP, TO, TD (incluye toda la PET: ocupados + desocupados + inactivos) |
 
@@ -102,7 +102,7 @@ Contiene solo personas **con trabajo**. Tiene todas las variables de
 ingreso, horas, sector y posición ocupacional.
 
 | Variable | Tipo | Cobertura | Descripción |
-|-----------------|-----------------|------------------|----------------------|
+|-----------------|-----------------|-----------------|---------------------|
 | `marco` | texto | 100% | Marco muestral: `"2005"` (años 2019–2020) o `"2018"` (años 2021–2025) |
 | `anio` | entero | 100% | Año: 2019 a 2025 |
 | `mes` | texto | 100% | Mes en español minúscula (p.ej. `"enero"`) |
@@ -204,7 +204,7 @@ completo.
 ## Advertencias por año
 
 | Año | Marco | Advertencia |
-|-----------------|-------------------|------------------------------------|
+|------------------|-------------------|-----------------------------------|
 | 2019 | 2005 | Sin advertencias mayores |
 | **2020** | **2005** | **COVID-19: recolección telefónica marzo–julio. Módulo de migración y algunos módulos temáticos suspendidos. Cobertura de sexo = 85.6%, educación = 82%. Considerar excluir meses marzo–julio para comparaciones estrictas.** |
 | 2021 | 2018 | Primer año Marco 2018 — hay un quiebre de serie respecto a 2019–2020 (ver sección 3.2) |
@@ -541,7 +541,7 @@ interseccionalidad. El filtro se aplica sobre los datos **antes** de
 cualquier cálculo con `survey`:
 
 | Dimensión | Variable en parquet | Valores |
-|--------------------|-----------------------------------|------------------|
+|--------------------|----------------------------------|------------------|
 | Sexo | `sexo` | `1` = Hombre, `2` = Mujer |
 | Año | `anio` | 2019 a 2025 |
 | Pertenencia étnica | `etnia_bin` | `0` = No, `1` = Sí |
@@ -858,7 +858,7 @@ de contexto y motivación para el O-B.
 ## Advertencia sobre `ing_mes` vs `ing_total`
 
 | Variable | Qué mide | Cobertura | Recomendación |
-|-----------------|-----------------|-----------------|----------------------|
+|-----------------|-----------------|-----------------|---------------------|
 | `ing_mes` | Salario mensual (P6500) — solo asalariados con salario fijo | 49.8% | Para análisis de brecha entre asalariados |
 | `ing_total` | Ingreso laboral total (INGLABO) — incluye otras fuentes | 90.5% | **Preferir para análisis general de brechas** |
 
