@@ -28,6 +28,7 @@ library(gt)
 library(crosstalk)
 library(plotly)
 library(tidyr)
+library(htmltools)
 COLOR_HOMBRES <- "#2166AC"
 COLOR_MUJERES <- "#D6604D"
 ```
@@ -236,9 +237,6 @@ sd_laboral <- SharedData$new(datos_para_filtro)
 #| message: false
 #| warning: false
 
-
-library(htmltools)
-
 # 1. El filtro con un contenedor que nos permita esconder el "All"
 div(
   style = "margin-bottom: 20px;", # Un poquito de espacio abajo
@@ -291,6 +289,9 @@ ggplotly(p_barras_final, tooltip = "text") |>
 ```
 
 
+
+### Tabla Departamental CV
+
 ```{r}
 #| label: calculo-cv-departamental   #Calculos Tabla Departamental
 #| echo: false
@@ -330,8 +331,6 @@ tasas_dpto_cv <- df_base2 |>
   )
 ```
 
-
-### Tabla Departamental CV
 
 ```{r}
 #| title: Análisis de Calidad y Brechas Departamentales (2025)
