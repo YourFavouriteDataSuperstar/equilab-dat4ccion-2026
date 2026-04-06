@@ -202,14 +202,9 @@ mediana_anual <- df_base |>
 Visualización 2 — Brecha salarial porcentual por año
 
 ```{r viz-brecha-pct}
-# Media ponderada por fex — captura la brecha incluso cuando la mediana se iguala
-brecha_anual <- df_base |>
-  group_by(anio, sexo_label) |>
-  summarise(
-    media_pond = weighted.mean(ing_total, w = fex, na.rm = TRUE),
-    .groups = "drop"
-  ) |>
-  pivot_wider(names_from = sexo_label, values_from = media_pond) |>
+# Brecha salarial — usa mediana_anual calculado en el chunk anterior
+brecha_anual <- mediana_anual |>
+  pivot_wider(names_from = sexo_label, values_from = mediana_ing) |>
   mutate(
     brecha_pct = (Hombres - Mujeres) / Hombres * 100,
     anio_f     = factor(anio)
@@ -223,8 +218,8 @@ p_brecha <- ggplot(brecha_anual, aes(x = anio_f, y = brecha_pct)) +
   annotate("text", x = 3.1, y = max(brecha_anual$brecha_pct, na.rm = TRUE) * 0.95,
            label = "Cambio Marco\nMuestral", hjust = 0, size = 3, color = "gray40") +
   labs(
-    title    = "Brecha salarial de género — (Media H − M) / Media H",
-    subtitle = "Colombia 2019–2025 (medias ponderadas por fex)",
+    title    = "Brecha salarial de género — (Mediana H − M) / Mediana H",
+    subtitle = "Colombia 2019–2025 (medianas ponderadas por fex)",
     x = NULL, y = "Brecha (%)",
     caption  = "Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026."
   ) +
@@ -232,4 +227,44 @@ p_brecha <- ggplot(brecha_anual, aes(x = anio_f, y = brecha_pct)) +
   theme(panel.grid.major.x = element_blank())
 
 ggplotly(p_brecha)
+```
+
+Visualización 3 - Brecha salarial por nivel educativo
+
+```{r viz-brecha-educacion}
+# Solo el año más reciente para claridad
+anio_reciente <- max(df_base$anio)
+
+brecha_edu <- df_base |>
+  filter(
+    anio == anio_reciente,
+    !niv_edu_label %in% c("Sin educación / Preescolar", "Sin información")
+  ) |>
+  group_by(niv_edu_label, niv_edu_armon, sexo_label) |>
+  summarise(
+    mediana_ing = wtd.quantile(ing_total, weights = fex, probs = 0.5, na.rm = TRUE),
+    .groups = "drop"
+  ) |>
+  pivot_wider(names_from = sexo_label, values_from = mediana_ing) |>
+  mutate(
+    brecha_pct = (Hombres - Mujeres) / Hombres * 100,
+    niv_edu_label = factor(niv_edu_label,
+                           levels = c("Primaria", "Secundaria", "Media",
+           "Técnico / Tecnológico"))
+  )
+
+p_edu <- ggplot(brecha_edu, aes(x = niv_edu_label, y = brecha_pct)) +
+  geom_col(fill = "#D6604D", alpha = 0.8) +
+  geom_text(aes(label = paste0(round(brecha_pct, 1), "%")),
+            hjust = -0.2, size = 3.5) +
+  coord_flip() +
+  labs(
+    title = paste("Brecha salarial por nivel educativo —", anio_reciente),
+    subtitle = "(Mediana H − M) / Mediana H, ponderado con fex",
+    x = NULL, y = "Brecha (%)",
+    caption = "Fuente: DANE, GEIH. Cálculos: EQUILAB — DAT4CCIÓN 2026."
+  ) +
+  theme_minimal(base_size = 13)
+
+ggplotly(p_edu)
 ```
