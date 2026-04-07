@@ -1,0 +1,289 @@
+/* ============================================================
+   EQUILAB DAT4CCIÓN 2026 — Estilos globales
+   Archivo central de diseño. Se aplica a todas las páginas
+   del sitio via _quarto.yml
+   ============================================================ */
+
+/* ── Variables de marca ────────────────────────────────────── */
+:root {
+  --color-fondo:       #1a1a2e;
+  --color-acento:      #16213e;
+  --color-primario:    #0f3460;
+  --color-hombres:     #2166AC;
+  --color-mujeres:     #D6604D;
+  --color-neutro:      #6c757d;
+  --color-blanco:      #ffffff;
+  --color-texto:       #212529;
+  --color-texto-claro: #f8f9fa;
+  --color-borde:       #dee2e6;
+  --color-superficie:  #f8f9fa;
+
+  --fuente-titulo:  'Segoe UI', system-ui, sans-serif;
+  --fuente-cuerpo:  'Segoe UI', system-ui, sans-serif;
+
+  --radio-card:    0.5rem;
+  --sombra-card:   0 2px 8px rgba(0,0,0,0.10);
+  --sombra-hover:  0 4px 16px rgba(0,0,0,0.18);
+  --transicion:    0.2s ease;
+}
+
+/* ── Reset y base ───────────────────────────────────────────── */
+body {
+  font-family: var(--fuente-cuerpo);
+  color: var(--color-texto);
+  background-color: var(--color-blanco);
+  background-image:
+    linear-gradient(rgba(150,150,150,0.2) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(150,150,150,0.2) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+}
+
+/* ── Navbar ─────────────────────────────────────────────────── */
+.navbar {
+  background-color: var(--color-fondo) !important;
+  border-bottom: 2px solid var(--color-primario);
+  padding: 0.6rem 1.5rem;
+}
+
+.navbar-brand {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--color-blanco) !important;
+  letter-spacing: 0.02em;
+}
+
+.navbar-nav .nav-link {
+  color: rgba(255,255,255,0.85) !important;
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  transition: background-color var(--transicion), color var(--transicion);
+}
+
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link.active {
+  color: var(--color-blanco) !important;
+  background-color: rgba(255,255,255,0.12);
+}
+
+/* ── Footer ─────────────────────────────────────────────────── */
+.page-footer {
+  background-color: var(--color-fondo) !important;
+  color: rgba(255,255,255,0.7) !important;
+  font-size: 0.8rem;
+  padding: 1rem 0;
+  border-top: 1px solid var(--color-primario);
+}
+
+/* ── Cards de navegación (portada) ─────────────────────────── */
+.eq-nav-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.2rem;
+  margin: 2rem 0;
+}
+
+.eq-card {
+  background: var(--color-blanco);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-card);
+  padding: 1.5rem;
+  box-shadow: var(--sombra-card);
+  text-decoration: none !important;
+  color: var(--color-texto) !important;
+  transition: box-shadow var(--transicion), transform var(--transicion);
+  display: block;
+}
+
+.eq-card:hover {
+  box-shadow: var(--sombra-hover);
+  transform: translateY(-2px);
+}
+
+.eq-card-icon {
+  font-size: 2rem;
+  margin-bottom: 0.6rem;
+  display: block;
+}
+
+.eq-card-titulo {
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 0.3rem;
+  color: var(--color-primario);
+}
+
+.eq-card-desc {
+  font-size: 0.85rem;
+  color: var(--color-neutro);
+  line-height: 1.4;
+}
+
+/* ── Hero de portada ────────────────────────────────────────── */
+.eq-hero {
+  background: linear-gradient(135deg, var(--color-fondo) 0%, var(--color-primario) 100%);
+  color: var(--color-blanco);
+  padding: 4rem 2rem 3rem;
+  border-radius: 0 0 var(--radio-card) var(--radio-card);
+  margin-bottom: 2rem;
+}
+
+.eq-hero h1 {
+  font-size: 2.2rem;
+  margin-bottom: 0.5rem;
+  color: var(--color-blanco);
+}
+
+.eq-hero p {
+  font-size: 1.05rem;
+  opacity: 0.85;
+  max-width: 640px;
+}
+
+.eq-hero-badge {
+  display: inline-block;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 2rem;
+  padding: 0.25rem 0.9rem;
+  font-size: 0.8rem;
+  margin-bottom: 1rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* ── Value boxes (dashboards) ───────────────────────────────── */
+.eq-valuebox {
+  background: var(--color-superficie);
+  border-left: 4px solid var(--color-primario);
+  border-radius: var(--radio-card);
+  padding: 1rem 1.2rem;
+  box-shadow: var(--sombra-card);
+}
+
+.eq-valuebox.hombres {
+  border-left-color: var(--color-hombres);
+}
+
+.eq-valuebox.mujeres {
+  border-left-color: var(--color-mujeres);
+}
+
+.eq-valuebox-valor {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--color-primario);
+}
+
+.eq-valuebox.hombres .eq-valuebox-valor { color: var(--color-hombres); }
+.eq-valuebox.mujeres .eq-valuebox-valor { color: var(--color-mujeres); }
+
+.eq-valuebox-label {
+  font-size: 0.82rem;
+  color: var(--color-neutro);
+  margin-top: 0.2rem;
+}
+
+/* ── Indicador de brecha (badge) ────────────────────────────── */
+.eq-brecha {
+  display: inline-block;
+  background: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffc107;
+  border-radius: 0.3rem;
+  padding: 0.15rem 0.6rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* ── Closeread: estilos de secciones narrativas ─────────────── */
+.cr-section {
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.cr-section h2 {
+  font-size: 1.4rem;
+  color: var(--color-primario);
+  margin-bottom: 0.8rem;
+}
+
+.eq-sticky-card {
+  background: var(--color-superficie);
+  border-radius: var(--radio-card);
+  padding: 1.5rem;
+  box-shadow: var(--sombra-card);
+  border-top: 4px solid var(--color-primario);
+}
+
+.eq-sticky-card.hombres { border-top-color: var(--color-hombres); }
+.eq-sticky-card.mujeres { border-top-color: var(--color-mujeres); }
+
+.eq-sticky-stat {
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--color-primario);
+  display: block;
+  line-height: 1;
+  margin-bottom: 0.3rem;
+}
+
+.eq-sticky-label {
+  font-size: 0.9rem;
+  color: var(--color-neutro);
+}
+
+/* ── Línea de cambio muestral (2021) ────────────────────────── */
+/* Aplicada en gráficos plotly via layout shapes, no CSS puro   */
+/* Documentado aquí como referencia:                            */
+/* shape: {type:'line', x0:'2021', x1:'2021',                  */
+/*          line: {color:'#adb5bd', dash:'dot', width:1.5}}     */
+
+/* ── Filtros crosstalk ──────────────────────────────────────── */
+.crosstalk-input-select select,
+.crosstalk-input-checkboxgroup label {
+  font-size: 0.88rem;
+}
+
+.crosstalk-input .control-label {
+  font-weight: 600;
+  font-size: 0.82rem;
+  color: var(--color-neutro);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.3rem;
+  display: block;
+}
+
+/* ── Tabla metodológica ─────────────────────────────────────── */
+.eq-tabla-metodologica {
+  font-size: 0.88rem;
+}
+
+.eq-tabla-metodologica th {
+  background-color: var(--color-fondo);
+  color: var(--color-blanco);
+  font-weight: 600;
+}
+
+/* ── Chips de fuente / nota ─────────────────────────────────── */
+.eq-fuente {
+  font-size: 0.75rem;
+  color: var(--color-neutro);
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+
+/* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .eq-hero h1   { font-size: 1.5rem; }
+  .eq-nav-cards { grid-template-columns: 1fr; }
+  .eq-sticky-stat { font-size: 2.2rem; }
+}

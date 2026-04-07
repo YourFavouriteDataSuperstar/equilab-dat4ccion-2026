@@ -1,0 +1,139 @@
+---
+title: "Acceso Laboral"
+format:
+  dashboard:
+    orientation: rows
+    scrolling: true
+    theme: [cosmo, styles/equilab.css]
+    nav-buttons:
+      - icon: house
+        href: index.qmd
+      - icon: github
+        href: https://github.com/equilab-ean/equilab-dat4ccion-2026
+---
+
+```{r setup}
+#| include: false
+
+# ── Librerías ────────────────────────────────────────────────
+# Agregar aquí todas las librerías que el análisis necesite
+library(ggplot2)
+library(plotly)
+
+# ── Constantes globales (NO modificar) ──────────────────────
+COLOR_HOMBRES <- "#2166AC"
+COLOR_MUJERES <- "#D6604D"
+CAPTION       <- "Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026."
+
+# ── Carga de datos ───────────────────────────────────────────
+# Pegar aquí el bloque de lectura y preparación de datos
+# Ejemplo:
+#   library(arrow)
+#   library(dplyr)
+#   dat <- read_parquet("datos/mi_archivo.parquet") |>
+#     filter(...)
+```
+
+# Pestaña 1 {.tabset}
+
+## Row {height="15%"}
+
+```{r}
+#| content: valuebox
+#| title: "Indicador A — Mujeres"
+# Reemplazar el valor por el calculado en setup
+list(value = "–", color = "#D6604D", icon = "person-fill")
+```
+
+```{r}
+#| content: valuebox
+#| title: "Indicador A — Hombres"
+list(value = "–", color = "#2166AC", icon = "person-fill")
+```
+
+```{r}
+#| content: valuebox
+#| title: "Brecha"
+list(value = "–", color = "#0f3460", icon = "arrow-left-right")
+```
+
+## Row {height="85%"}
+
+### Visualización principal {width="60%"}
+
+```{r}
+#| title: "Título del gráfico principal"
+# ── PEGAR AQUÍ el gráfico principal de esta pestaña ─────────
+# El objeto final debe ser un plotly (usar ggplotly() o plot_ly())
+```
+
+### Visualización secundaria {width="40%"}
+
+```{r}
+#| title: "Título del gráfico secundario"
+# ── PEGAR AQUÍ el gráfico de apoyo (puede ser tabla gt también)
+```
+
+# Pestaña 2 {.tabset}
+
+## Row {height="15%"}
+
+```{r}
+#| content: valuebox
+#| title: "Indicador B — Mujeres"
+list(value = "–", color = "#D6604D", icon = "graph-up")
+```
+
+```{r}
+#| content: valuebox
+#| title: "Indicador B — Hombres"
+list(value = "–", color = "#2166AC", icon = "graph-up")
+```
+
+```{r}
+#| content: valuebox
+#| title: "Brecha"
+list(value = "–", color = "#0f3460", icon = "arrow-left-right")
+```
+
+## Row {height="85%"}
+
+### Visualización principal {width="60%"}
+
+```{r}
+#| title: "Título del gráfico principal"
+# ── PEGAR AQUÍ el gráfico principal de esta pestaña ─────────
+```
+
+### Visualización secundaria {width="40%"}
+
+```{r}
+#| title: "Título del gráfico secundario"
+# ── PEGAR AQUÍ el gráfico de apoyo ──────────────────────────
+```
+
+# Pestaña 3 {.tabset}
+
+## Row {height="15%"}
+
+```{r}
+#| content: valuebox
+#| title: "Indicador C — Mujeres"
+list(value = "–", color = "#D6604D", icon = "table")
+```
+
+```{r}
+#| content: valuebox
+#| title: "Indicador C — Hombres"
+list(value = "–", color = "#2166AC", icon = "table")
+```
+
+## Row {height="85%"}
+
+### Visualización principal {width="100%"}
+
+```{r}
+#| title: "Título del gráfico o tabla"
+# ── PEGAR AQUÍ el gráfico o tabla de esta pestaña ───────────
+# Para tablas gt: el objeto gt() se renderiza directamente
+```

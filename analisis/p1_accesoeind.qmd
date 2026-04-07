@@ -1,0 +1,463 @@
+---
+title: "Página 1 — Acceso e Indicadores Laborales"
+subtitle: "EQUILAB · DAT4CCIÓN 2026"
+date: today
+lang: es
+format:
+  dashboard:
+    orientation: columns
+    toc: true
+    toc-depth: 2
+    theme: cosmo
+    self-contained: true
+    code-fold: true
+execute:
+  warning: false
+  message: false
+---
+
+
+```{r}
+library(arrow)     
+library(dplyr)      
+library(ggplot2)    
+library(plotly)    
+library(Hmisc)
+library(survey)
+library(gt)
+library(crosstalk)
+library(plotly)
+library(tidyr)
+library(htmltools)
+COLOR_HOMBRES <- "#2166AC"
+COLOR_MUJERES <- "#D6604D"
+```
+
+```{r}
+#| echo: false
+#| output: false
+df_pet <- read_parquet("../datos/geih_pet_2019_2025.parquet")
+
+
+```
+
+```{r}
+#| echo: false
+#| output: false
+df_base <- df_pet |>
+  filter(
+    sexo %in% c(1, 2),    
+    edad >= 15,            
+    edad <= 99             
+  )
+```
+
+```{r}
+#| echo: false
+#| output: false
+
+df_base2 <- df_base |>
+  mutate(
+    es_pea      = condicion_activ %in% c(1, 2, 3),
+    es_ocupado  = condicion_activ %in% c(1, 2),
+    es_desocup  = condicion_activ == 3,
+    sexo_label  = if_else(sexo == 1, "Hombres", "Mujeres")
+  )
+
+# Función semáforo CV (según umbrales DANE de la guía)
+semaforo_cv <- function(cv) {
+  case_when(
+    cv <= 7  ~ "🟢 Preciso",
+    cv <= 14 ~ "🟡 Aceptable",
+    cv <= 20 ~ "🟠 Regular",
+    TRUE     ~ "🔴 No confiable"
+  )
+}
+
+# Calcular tasas con CV por año y sexo
+tasas_cv <- df_base2 |>
+  group_by(anio, sexo_label) |>
+  group_modify(~ {
+    dis <- svydesign(ids = ~1, strata = ~dpto_cod, weights = ~fex, data = .x)
+
+    # TGP y TO (sobre PET)
+    tgp_stat <- svymean(~es_pea,     dis, na.rm = TRUE)
+    to_stat  <- svymean(~es_ocupado, dis, na.rm = TRUE)
+
+    # TD (solo sobre PEA)
+    dis_pea  <- svydesign(ids = ~1, strata = ~dpto_cod, weights = ~fex,
+                          data = filter(.x, es_pea))
+    td_stat  <- svymean(~es_desocup, dis_pea, na.rm = TRUE)
+
+    tibble(
+    TGP    = round(100 * coef(tgp_stat)["es_peaTRUE"], 1),
+cv_TGP = round(100 * SE(tgp_stat)["es_peaTRUE"] / coef(tgp_stat)["es_peaTRUE"], 1),
+TO     = round(100 * coef(to_stat)["es_ocupadoTRUE"],  1),
+cv_TO  = round(100 * SE(to_stat)["es_ocupadoTRUE"] / coef(to_stat)["es_ocupadoTRUE"], 1),
+TD     = round(100 * coef(td_stat)["es_desocupTRUE"],  1),
+cv_TD  = round(100 * SE(td_stat)["es_desocupTRUE"] / coef(td_stat)["es_desocupTRUE"], 1),
+      n_obs    = nrow(.x)
+    )
+  }) |>
+  ungroup() |>
+  mutate(
+    cal_TGP = semaforo_cv(cv_TGP),
+    cal_TO  = semaforo_cv(cv_TO),
+    cal_TD  = semaforo_cv(cv_TD)
+  )
+
+# Ver resultado
+tasas_cv |> select(anio, sexo_label, TGP, cv_TGP, cal_TGP, TO, cv_TO, cal_TO, TD, cv_TD, cal_TD)
+  
+
+```
+
+```{r}
+#| echo: false
+#| output: false
+# Calculamos los límites para un Intervalo de Confianza del 95%
+# La fórmula es: Valor +/- (1.96 * Error Estándar)
+
+tasas_final <- tasas_cv |> 
+  mutate(
+    # Calculamos el SE (Error Estándar) a partir del CV que ya tienes
+    se_tgp = (cv_TGP * TGP) / 100,
+    
+    # Creamos los límites del "colchón"
+    li = TGP - (1.96 * se_tgp),
+    ls = TGP + (1.96 * se_tgp)
+  ) |> 
+  select(
+    Año = anio, 
+    Sexo = sexo_label, 
+    `TGP (%)` = TGP, li, ls,
+    cv_TGP, cal_TGP 
+  )
+```
+
+
+
+::: {.panel-tabset}
+
+### Tasa Global de Participacion Por Sexo y Año 
+
+```{r viz-tgp}
+#| title: Tasa Global De Participación (TGP) Por Sexo y Año
+#| label: viz-tgp-ic-final
+#| echo: false
+#| message: false
+#| warning: false
+
+
+# 1. Crear el ggplot base (Asegúrate de tener li y ls calculados arriba)
+p_tgp_ic <- ggplot(tasas_final, aes(x = Año, y = `TGP (%)`, color = Sexo, fill = Sexo, group = Sexo)) +
+  
+  
+  # Línea y puntos - El aes(text=...) es clave para limpiar el tooltip
+  geom_line(linewidth = 1.1) +
+  geom_point(size = 2.5, aes(text = paste( "Año: ", Año,
+  "\nSexo: ", Sexo,
+  "\nTGP: ", `TGP (%)`, "%",
+  "\nIC 95%: [", round(li, 1), "% – ", round(ls, 1), "%]",
+  "\nCV: ", cv_TGP, "% ", cal_TGP
+))) +
+  
+  # Marcador quiebre marco 2021
+  geom_vline(xintercept = 2021, linetype = "dashed", color = "gray50", linewidth = 0.8) +
+  annotate("text", x = 2021.7, y = max(tasas_final$`TGP (%)`) * 0.88, 
+           label = "Cambio de Marco\nMuestral", hjust = 0, size = 3, color = "gray40", fontface = "italic") +
+  
+  # Colores y Estética (Temas manuales para asegurar que Plotly los lea bien)
+  scale_color_manual(values = c("Hombres" = "#2166AC", "Mujeres" = "#D6604D")) +
+  scale_fill_manual(values = c("Hombres" = "#2166AC", "Mujeres" = "#D6604D")) +
+  scale_x_continuous(breaks = 2019:2025) +
+  
+  labs(x = "Año", y = "Tasa (%)", color = "Género", fill = "Género") +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "none") # Desactivamos la leyenda de ggplot
+
+# 2. CONVERTIR A INTERACTIVA Y LIMPIAR (Aquí está la magia)
+p_plotly <- ggplotly(p_tgp_ic, tooltip = "text") |> 
+layout(
+  legend    = list(orientation = "h", x = 0.20, y = 1.1),
+  hovermode = "closest",
+  margin    = list(b = 80),          # ← aumentar margen inferior
+  annotations = list(list(
+    text      = "Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026.",
+    xref      = "paper", yref = "paper",
+    x = 0, y = -0.25,               # ← bajar más el texto
+    showarrow = FALSE,
+    font      = list(size = 10, color = "gray50"),
+    align     = "left"
+  ))
+)
+
+p_plotly
+```
+
+
+### Tasa de Ocupación y Desempleo por Sexo y Año
+
+```{r viz-to-td}
+#| echo: false
+#| message: false
+#| warning: false
+#| output: false
+
+# Modifica tu preparación de datos así:
+datos_para_filtro <- tasas_cv |>
+  select(anio, sexo_label, TO, TD, cv_TO, cv_TD, cal_TO, cal_TD) |>
+  # AQUÍ AGREGAMOS EL PREFIJO
+  mutate(sexo_legend = paste("Sexo:", sexo_label)) |> 
+  pivot_longer(
+    cols      = c(TO, TD),
+    names_to  = "Indicador",
+    values_to = "Tasa"
+  ) |>
+  mutate(
+    cv  = if_else(Indicador == "TO", cv_TO, cv_TD),
+    cal = if_else(Indicador == "TO", cal_TO, cal_TD),
+    Indicador_label = if_else(
+      Indicador == "TO", "Tasa de Ocupación\n(TO)", "Tasa de Desempleo\n(TD)"
+    )
+  )
+
+# Ahora el SharedData usa esta nueva columna
+sd_laboral <- SharedData$new(datos_para_filtro)
+
+
+
+```
+
+
+
+```{r}
+#| title: Tasa de Ocupación y Desempleo por Sexo
+#| echo: false
+#| message: false
+#| warning: false
+
+# 1. El filtro con un contenedor que nos permita esconder el "All"
+div(
+  style = "margin-bottom: 20px;", # Un poquito de espacio abajo
+  tags$style(HTML("
+    .selectize-dropdown-content [data-value=''] { display: none !important; }
+    .selectize-input [data-value=''] { display: none !important; }
+    .selectize-dropdown-content .option:first-child { display: none !important; }
+  ")),
+  filter_select(
+    id = "selector_anio", 
+    label = "Elija el Año de Análisis:", 
+    sharedData = sd_laboral, 
+    group = ~anio, 
+    multiple = FALSE
+  )
+)
+# 4. Gráfica de barras original
+p_barras_final <- ggplot(sd_laboral, 
+    aes(x = Indicador_label, y = Tasa, fill = sexo_label,
+        text = paste0(
+          "<b>Año:</b> ", anio,
+          "<br><b>Sexo:</b> ", sexo_label,
+          "<br><b>Tasa:</b> ", Tasa, "%",
+          "<br><b>CV:</b> ", cv, "% ", cal
+        ))) +
+  geom_col(position = position_dodge(width = 0.7), width = 0.6) +
+  scale_fill_manual(values = c("Hombres" = COLOR_HOMBRES, "Mujeres" = COLOR_MUJERES)) +
+  scale_y_continuous(limits = c(0, 100)) +
+  labs(x = NULL, y = "Tasa (%)", fill = "") +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "none")
+
+# 5. Convertir a Plotly con leyenda arriba
+ggplotly(p_barras_final, tooltip = "text") |>
+  layout(
+  legend    = list(orientation = "h", x = 0.20, y = 1.1),
+  hovermode = "closest",
+  margin    = list(b = 80),          # ← aumentar margen inferior
+  annotations = list(list(
+    text      = "Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026.",
+    xref      = "paper", yref = "paper",
+    x = 0, y = -0.25,               # ← bajar más el texto
+    showarrow = FALSE,
+    font      = list(size = 10, color = "gray50"),
+    align     = "left"
+  ))
+)
+
+  
+```
+
+
+
+### Tabla Departamental CV
+
+```{r}
+#| label: calculo-cv-departamental   #Calculos Tabla Departamental
+#| echo: false
+#| message: false
+#| output: false
+
+# 1. Crear el objeto con el cálculo por departamento y sexo
+tasas_dpto_cv <- df_base2 |>
+  filter(anio == 2025) |> # Lo cerramos a 2025 para que sea rápido
+   group_by(anio, dpto_cod, sexo_label) |>
+  group_modify(~ {
+    # Diseño muestral simplificado (sin estrato porque ya agrupamos por dpto)
+    dis <- svydesign(ids = ~1, weights = ~fex, data = .x)
+
+    # TGP y TO
+    tgp_stat <- svymean(~es_pea,     dis, na.rm = TRUE)
+    to_stat  <- svymean(~es_ocupado, dis, na.rm = TRUE)
+
+    # TD (solo sobre PEA)
+    dis_pea <- svydesign(ids = ~1, weights = ~fex, data = filter(.x, es_pea))
+    td_stat <- svymean(~es_desocup, dis_pea, na.rm = TRUE)
+
+    tibble(
+      TGP    = round(100 * coef(tgp_stat)["es_peaTRUE"], 1),
+      cv_TGP = round(100 * SE(tgp_stat)["es_peaTRUE"] / coef(tgp_stat)["es_peaTRUE"], 1),
+      TO     = round(100 * coef(to_stat)["es_ocupadoTRUE"], 1),
+      cv_TO  = round(100 * SE(to_stat)["es_ocupadoTRUE"] / coef(to_stat)["es_ocupadoTRUE"], 1),
+      TD     = round(100 * coef(td_stat)["es_desocupTRUE"], 1),
+      cv_TD  = round(100 * SE(td_stat)["es_desocupTRUE"] / coef(td_stat)["es_desocupTRUE"], 1)
+    )
+  }) |>
+  ungroup() |>
+  mutate(
+    cal_TGP = semaforo_cv(cv_TGP),
+    cal_TO  = semaforo_cv(cv_TO),
+    cal_TD  = semaforo_cv(cv_TD)
+  )
+```
+
+
+```{r}
+#| title: Análisis de Calidad y Brechas Departamentales (2025)
+#| echo: false
+# Definición de nombres 
+nombres_dpto <- c(
+  "05" = "Antioquia", "08" = "Atlántico", "11" = "Bogotá D.C.",
+  "13" = "Bolívar", "15" = "Boyacá", "17" = "Caldas",
+  "18" = "Caquetá", "19" = "Cauca", "20" = "Cesar",
+  "23" = "Córdoba", "25" = "Cundinamarca", "27" = "Chocó",
+  "41" = "Huila", "44" = "La Guajira", "47" = "Magdalena",
+  "50" = "Meta", "52" = "Nariño", "54" = "N. de Santander",
+  "63" = "Quindío", "66" = "Risaralda", "68" = "Santander",
+  "70" = "Sucre", "73" = "Tolima", "76" = "Valle del Cauca",
+  "81" = "Arauca", "85" = "Casanare", "86" = "Putumayo",
+  "88" = "San Andrés", "91" = "Amazonas", "94" = "Guainía",
+  "95" = "Guaviare", "97" = "Vaupés", "99" = "Vichada"
+)
+
+# Ahora sí, el proceso de la tabla
+tasas_dpto_cv |> 
+  mutate(Departamento = nombres_dpto[dpto_cod]) |> 
+  select(Departamento, sexo_label, TGP, cv_TGP, cal_TGP, TO, cv_TO, cal_TO, TD, cv_TD, cal_TD) |> 
+  gt(groupname_col = "Departamento") |>
+  tab_header(
+    title = "Resumen de Calidad Estadística por Departamento (2025)",
+    subtitle = "Indicadores laborales con semáforo de precisión (CV)"
+  ) |> 
+  tab_spanner(label = "Participación (TGP)", columns = c(TGP, cv_TGP, cal_TGP)) |> 
+  tab_spanner(label = "Ocupación (TO)", columns = c(TO, cv_TO, cal_TO)) |> 
+  tab_spanner(label = "Desempleo (TD)", columns = c(TD, cv_TD, cal_TD)) |> 
+  
+  # 3. El toque del semáforo con los colores que ya definimos
+  data_color(
+    columns = c(cal_TGP, cal_TO, cal_TD),
+    fn = function(x) {
+      case_when(
+        grepl("🟢", x) ~ "#d4edda",
+        grepl("🟡", x) ~ "#fff3cd",
+        grepl("🟠", x) ~ "#ffe5d0",
+        grepl("🔴", x) ~ "#f8d7da",
+        TRUE ~ "white"
+      )
+    }
+  ) |> 
+  # Ajustes de diseño
+  cols_label(TGP="Tasa", cv_TGP="CV%", cal_TGP="Calidad", 
+             TO="Tasa", cv_TO="CV%", cal_TO="Calidad", 
+             TD="Tasa", cv_TD="CV%", cal_TD="Calidad") |> 
+  tab_options(
+    container.height = px(500), # Para que no ocupe toda la pantalla
+    table.font.size = px(12)
+  ) |>
+tab_footnote("Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026.")
+```
+
+
+### Brecha de Participación Laboral
+
+```{r}
+#| title: Brecha de Participación Laboral — TGP Hombres − Mujeres (pp)
+#| echo: false
+#| message: false
+#| warning: false
+
+library(tidyr)
+
+# Calcular brecha TGP, TO y TD por año
+brecha_pp <- tasas_cv |>
+  select(anio, sexo_label, TGP, TO, TD) |>
+  pivot_wider(
+    names_from  = sexo_label,
+    values_from = c(TGP, TO, TD)
+  ) |>
+  mutate(
+    brecha_TGP = round(TGP_Hombres - TGP_Mujeres, 1),
+    brecha_TO  = round(TO_Hombres  - TO_Mujeres,  1),
+    brecha_TD  = round(TD_Hombres  - TD_Mujeres,  1)
+  ) |>
+  select(
+    Año          = anio,
+    `TGP H`      = TGP_Hombres,
+    `TGP M`      = TGP_Mujeres,
+    `Brecha TGP` = brecha_TGP,
+    `TO H`       = TO_Hombres,
+    `TO M`       = TO_Mujeres,
+    `Brecha TO`  = brecha_TO,
+    `TD H`       = TD_Hombres,
+    `TD M`       = TD_Mujeres,
+    `Brecha TD`  = brecha_TD
+  )
+
+brecha_pp |>
+  gt() |>
+  tab_header(
+    title    = "Brecha de género en indicadores laborales",
+    subtitle = "TGP, TO y TD — Hombres vs Mujeres (en puntos porcentuales)"
+  ) |>
+  tab_spanner(label = "Participación (TGP)", columns = c(`TGP H`, `TGP M`, `Brecha TGP`)) |>
+  tab_spanner(label = "Ocupación (TO)",      columns = c(`TO H`,  `TO M`,  `Brecha TO`))  |>
+  tab_spanner(label = "Desempleo (TD)",      columns = c(`TD H`,  `TD M`,  `Brecha TD`))  |>
+  data_color(
+    columns = c(`Brecha TGP`, `Brecha TO`),
+    fn = function(x) {
+      scales::col_numeric(
+        palette = c("#D6604D", "#F7F7F7", "#2166AC"),
+        domain  = c(0, 40)
+      )(x)
+    }
+  ) |>
+  data_color(
+    columns = `Brecha TD`,
+    fn = function(x) {
+      scales::col_numeric(
+        palette = c("#2166AC", "#F7F7F7", "#D6604D"),
+        domain  = c(-15, 15)
+      )(x)
+    }
+  ) |>
+  cols_label(
+    `TGP H` = "Hombres", `TGP M` = "Mujeres", `Brecha TGP` = "Brecha (pp)",
+    `TO H`  = "Hombres", `TO M`  = "Mujeres", `Brecha TO`  = "Brecha (pp)",
+    `TD H`  = "Hombres", `TD M`  = "Mujeres", `Brecha TD`  = "Brecha (pp)"
+  ) |>
+  tab_options(
+    table.font.size     = px(12),
+    container.height    = px(400)
+  ) |>
+  tab_footnote("Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026.")
+```

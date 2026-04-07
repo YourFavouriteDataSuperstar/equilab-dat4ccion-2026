@@ -1,0 +1,129 @@
+---
+title: "Radar de Brechas Laborales de Género"
+format: closeread-html
+css: styles/equilab.css
+---
+
+```{=html}
+<div class="eq-hero">
+  <span class="eq-hero-badge">Colombia · GEIH 2019–2025</span>
+  <h1>Radar de Brechas Laborales de Género</h1>
+  <p>
+    Un análisis de las desigualdades entre hombres y mujeres en el mercado laboral
+    colombiano, a partir de la Gran Encuesta Integrada de Hogares del DANE.
+  </p>
+</div>
+```
+
+## ¿Qué encontramos?
+
+Este sitio presenta tres dimensiones del mercado laboral con perspectiva de género:
+acceso al empleo, calidad de las condiciones laborales y brechas salariales.
+Los datos provienen de la GEIH 2019–2025 con estimaciones ponderadas por el
+factor de expansión (`fex`).
+
+```{=html}
+<div class="eq-nav-cards">
+
+  <a href="p1_acceso.qmd" class="eq-card">
+    <span class="eq-card-icon">💼</span>
+    <div class="eq-card-titulo">Acceso Laboral</div>
+    <div class="eq-card-desc">
+      Tasas de ocupación, desempleo e inactividad por sexo y año.
+    </div>
+  </a>
+
+  <a href="p2_calidad.qmd" class="eq-card">
+    <span class="eq-card-icon">📊</span>
+    <div class="eq-card-titulo">Calidad del Empleo</div>
+    <div class="eq-card-desc">
+      Formalidad, afiliación a seguridad social, horas trabajadas y tipo de contrato.
+    </div>
+  </a>
+
+  <a href="p3_salariales.qmd" class="eq-card">
+    <span class="eq-card-icon">💰</span>
+    <div class="eq-card-titulo">Brechas Salariales</div>
+    <div class="eq-card-desc">
+      Ingreso laboral promedio y brecha salarial de género ajustada y no ajustada.
+    </div>
+  </a>
+
+</div>
+```
+
+---
+
+:::{.cr-section}
+
+:::{focus-on="cr-contexto"}
+## El contexto
+
+Colombia ha avanzado en la incorporación de mujeres al mercado laboral, pero las
+brechas persisten. La tasa de desempleo femenina supera consistentemente a la
+masculina, y los ingresos laborales promedio de las mujeres son menores incluso
+controlando por sector y nivel educativo.
+
+<!-- TODO: actualizar cifra headline cuando los datos estén listos -->
+:::
+
+:::{focus-on="cr-metodologia"}
+## Sobre los datos
+
+Los análisis usan microdatos de la GEIH para el periodo 2019–2025. Todas las
+estimaciones aplican el factor de expansión `fex`. La muestra se restringe a
+población en edad de trabajar (15–99 años) con condición de actividad válida.
+
+**Nota metodológica:** en 2021 el DANE realizó un cambio de marco muestral.
+Las series muestran una línea punteada en ese año para indicar la discontinuidad.
+:::
+
+:::{focus-on="cr-equipo"}
+## El equipo
+
+Este trabajo fue desarrollado por EQUILAB en el marco del programa DAT4CCIÓN 2026,
+con el objetivo de producir evidencia accesible sobre desigualdades laborales de
+género para tomadores de decisión y organizaciones de la sociedad civil.
+:::
+
+:::{#cr-contexto .sticky}
+<div class="eq-sticky-card">
+  <span class="eq-sticky-stat"><!-- TODO: % brecha --></span>
+  <span class="eq-sticky-label">Brecha salarial promedio 2019–2025</span>
+  <hr>
+  <p class="eq-fuente">Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026.</p>
+</div>
+:::
+
+:::{#cr-metodologia .sticky}
+<div class="eq-sticky-card">
+  <span class="eq-sticky-stat">2019–2025</span>
+  <span class="eq-sticky-label">Período de análisis</span>
+  <hr>
+  <ul style="font-size:0.88rem; color:#6c757d; margin:0; padding-left:1.2rem;">
+    <li>Población 15–99 años</li>
+    <li>Factor de expansión <code>fex</code></li>
+    <li>Marco muestral renovado en 2021</li>
+  </ul>
+</div>
+:::
+
+:::{#cr-equipo .sticky}
+<div class="eq-sticky-card">
+  <span class="eq-sticky-stat">EQUILAB</span>
+  <span class="eq-sticky-label">DAT4CCIÓN 2026</span>
+  <hr>
+  <p style="font-size:0.85rem; color:#6c757d; margin:0;">
+    Universidad EAN · Bogotá, Colombia
+  </p>
+</div>
+:::
+
+:::
+
+---
+
+<p class="eq-fuente" style="text-align:center; margin-top:2rem;">
+  Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026.
+  Estimaciones ponderadas con factor de expansión (fex).
+</p>
