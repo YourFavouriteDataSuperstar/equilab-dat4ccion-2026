@@ -52,16 +52,18 @@ pct_inf_m          <- vb$pct_inf_m
 pct_inf_h          <- vb$pct_inf_h
 duncan             <- vb$duncan
 
-# ── Heatmap (estático — nivel nacional) ──────────────────────
+# ── Heatmap estático — nivel nacional ────────────────────────
 orden_heat <- posicion_hist |>
-  filter(sexo_label == "Mujeres") |>
+  filter(sexo_label == "Mujeres",
+         etnia_f == "Ninguno", zona_f == "Ninguno", edu_f == "Ninguno") |>
   group_by(posicion_label) |>
   summarise(p = mean(pct, na.rm = TRUE)) |>
   arrange(desc(p)) |>
   pull(posicion_label)
 
 heatmap_data <- posicion_hist |>
-  filter(sexo_label == "Mujeres") |>
+  filter(sexo_label == "Mujeres",
+         etnia_f == "Ninguno", zona_f == "Ninguno", edu_f == "Ninguno") |>
   mutate(posicion_label = factor(posicion_label, levels = rev(orden_heat)))
 
 # ── Orden categorías para gráfico de horas ───────────────────
@@ -80,7 +82,7 @@ sd_informalidad <- SharedData$new(informalidad_fil)
 
 # Posición Ocupacional {.tabset}
 
-## Row {height="15%"}
+## Row {height="150px"}
 
 ```{r}
 #| content: valuebox
@@ -100,7 +102,7 @@ list(value = paste0(pct_cuentapropia_m, "%"), color = COLOR_MUJERES, icon = "bri
 list(value = paste0(pct_sinremun_m, "%"), color = "#0f3460", icon = "person-x-fill")
 ```
 
-## Row {height="85%"}
+## Row
 
 ### Filtros {width="20%"}
 
@@ -122,11 +124,16 @@ tags$div(
   tags$div(style = "margin-top: 10px;",
     filter_select("f_edu_tab1", "Nivel educativo:",
                   sd_posicion, ~edu_f, multiple = FALSE)
+  ),
+  tags$hr(style = "margin-top: 16px;"),
+  tags$p(
+    tags$b("Nota:"), " El mapa de calor muestra el nivel nacional histórico.",
+    style = "font-size: 10px; color: #6c757d; margin-top: 8px;"
   )
 )
 ```
 
-### ¿Cómo se distribuye el empleo según tipo? — Colombia 2019–2025 {width="50%"}
+### ¿Cómo se distribuye el empleo según tipo? — Colombia 2019–2025 {width="80%"}
 
 ```{r}
 #| title: "Composición por sexo según posición ocupacional — Colombia 2019–2025"
@@ -164,16 +171,20 @@ p_heat <- ggplot(
 
 ggplotly(p_heat, tooltip = "text") |>
   layout(
-    margin = list(b = 70),
+    margin = list(b = 50),
     annotations = list(list(
       text = CAPTION, xref = "paper", yref = "paper",
-      x = 0, y = -0.2, showarrow = FALSE,
+      x = 0, y = -0.15, showarrow = FALSE,
       font = list(size = 9, color = "gray50"), align = "left"
     ))
   )
 ```
 
-### ¿Cuántos hombres y mujeres hay en cada tipo de empleo? — 2025 {width="30%"}
+## Row
+
+### . {width="20%"}
+
+### ¿Cuántos hombres y mujeres hay en cada tipo de empleo? — 2025 {width="80%"}
 
 ```{r}
 #| title: "Composición por sexo según tipo de empleo — 2025"
@@ -224,7 +235,7 @@ plot_ly(
 
 # Jornada Laboral {.tabset}
 
-## Row {height="15%"}
+## Row {height="150px"}
 
 ```{r}
 #| content: valuebox
@@ -244,7 +255,7 @@ list(value = paste0(horas_h, " h"), color = COLOR_HOMBRES, icon = "clock-fill")
 list(value = paste0(brecha_horas, " h"), color = "#0f3460", icon = "arrow-left-right")
 ```
 
-## Row {height="85%"}
+## Row
 
 ### Filtros {width="20%"}
 
@@ -324,7 +335,7 @@ plot_ly(
 
 # Informalidad y Segregación {.tabset}
 
-## Row {height="15%"}
+## Row {height="150px"}
 
 ```{r}
 #| content: valuebox
@@ -344,7 +355,7 @@ list(value = paste0(pct_inf_h, "%"), color = COLOR_HOMBRES, icon = "exclamation-
 list(value = paste0(duncan, "%"), color = "#0f3460", icon = "diagram-3-fill")
 ```
 
-## Row {height="85%"}
+## Row {height="420px"}
 
 ### Filtros {width="20%"}
 
@@ -369,13 +380,13 @@ tags$div(
   ),
   tags$hr(style = "margin-top: 20px;"),
   tags$p(
-    tags$b("Nota:"), " El mapa sectorial (derecha) muestra el nivel nacional.",
+    tags$b("Nota:"), " El mapa sectorial muestra el nivel nacional.",
     style = "font-size: 10px; color: #6c757d; margin-top: 8px;"
   )
 )
 ```
 
-### Tendencia de la informalidad laboral por sexo — Colombia 2019–2025 {width="50%"}
+### Tendencia de la informalidad laboral por sexo — Colombia 2019–2025 {width="80%"}
 
 ```{r}
 #| title: "Tendencia de la informalidad laboral por sexo — Colombia 2019–2025"
@@ -430,11 +441,16 @@ plot_ly(
     ),
     plot_bgcolor  = "white",
     paper_bgcolor = "white",
-    margin = list(t = 50, b = 60, l = 60, r = 20)
+    margin = list(t = 40, b = 50, l = 60, r = 20)
   )
 ```
 
-### ¿En qué sectores económicos trabajan mujeres y hombres? — Colombia 2025 {width="30%"}
+## Row
+
+### . {width="20%"}
+
+### ¿En qué sectores económicos trabajan mujeres y hombres? — Colombia 2025 {width="80%"}
+
 
 ```{r}
 #| title: "Segregación sectorial por sexo — Colombia 2025 (nivel nacional)"
@@ -500,6 +516,7 @@ plot_ly(
   /* Ocultar la opción "(All)" de los dropdowns crosstalk */
   .selectize-dropdown-content .option[data-value=""] { display: none !important; }
   .selectize-input .item[data-value=""]              { display: none !important; }
+
 </style>
 
 <script>
@@ -544,5 +561,6 @@ plot_ly(
   /* Cancelar tras 30 segundos */
   setTimeout(function () { clearInterval(iv); }, 30000);
 })();
+
 </script>
 ```

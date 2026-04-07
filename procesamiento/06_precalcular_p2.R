@@ -86,17 +86,46 @@ df_base <- df_ocup |>
 anio_ref <- max(df_base$anio)
 cat("      ", format(nrow(df_base), big.mark = "."), "filas | año ref:", anio_ref, "\n")
 
-# ── 3. Heatmap (histórico nacional, estático) ─────────────────
-cat("[3/6] Heatmap histórico — nivel nacional...\n")
-posicion_hist_nac <- df_base |>
-  group_by(anio, posicion_label, sexo_label) |>
-  summarise(n_pond = sum(fex, na.rm = TRUE), .groups = "drop") |>
-  group_by(anio, posicion_label) |>
+# ── 3. Heatmap histórico (todos los subgrupos para filtros) ───
+cat("[3/6] Heatmap histórico — todos los subgrupos...\n")
+
+# Calcular para las 8 combinaciones para que responda a filtros
+posicion_hist_list <- vector("list", 8)
+combos_heat <- list(
+  list(e = TRUE,  z = TRUE,  d = TRUE),
+  list(e = FALSE, z = TRUE,  d = TRUE),
+  list(e = TRUE,  z = FALSE, d = TRUE),
+  list(e = TRUE,  z = TRUE,  d = FALSE),
+  list(e = FALSE, z = FALSE, d = TRUE),
+  list(e = FALSE, z = TRUE,  d = FALSE),
+  list(e = TRUE,  z = FALSE, d = FALSE),
+  list(e = FALSE, z = FALSE, d = FALSE)
+)
+
+for (i in seq_along(combos_heat)) {
+  cc <- combos_heat[[i]]
+  d <- df_base
+  if (cc$e) d <- d |> mutate(etnia_label = "Todos")
+  if (cc$z) d <- d |> mutate(zona_label  = "Todos")
+  if (cc$d) d <- d |> mutate(edu_label   = "Todos")
+
+  posicion_hist_list[[i]] <- d |>
+    group_by(anio, posicion_label, sexo_label, etnia_label, zona_label, edu_label) |>
+    summarise(n_pond = sum(fex, na.rm = TRUE), .groups = "drop") |>
+    group_by(anio, posicion_label, etnia_label, zona_label, edu_label) |>
+    mutate(
+      pct    = round(n_pond / sum(n_pond) * 100, 1),
+      n_mill = round(sum(n_pond) / 1e6, 2)
+    ) |>
+    ungroup()
+}
+
+posicion_hist_nac <- bind_rows(posicion_hist_list) |>
   mutate(
-    pct    = round(n_pond / sum(n_pond) * 100, 1),
-    n_mill = round(sum(n_pond) / 1e6, 2)
-  ) |>
-  ungroup()
+    etnia_f = if_else(etnia_label == "Todos", "Ninguno", etnia_label),
+    zona_f  = if_else(zona_label  == "Todos", "Ninguno", zona_label),
+    edu_f   = if_else(edu_label   == "Todos", "Ninguno", edu_label)
+  )
 
 cat("      ", nrow(posicion_hist_nac), "filas\n")
 
@@ -135,15 +164,20 @@ segregacion_nac <- seg_base |>
 
 cat("      ", nrow(segregacion_nac), "sectores | Duncan:", duncan_val, "%\n")
 
-# ── 5. Datos filtrables (4 niveles de agregación) ─────────────
-cat("[5/6] Calculando desgloses para filtros...\n")
+# ── 5. Datos filtrables (8 niveles de agregación) ─────────────
+cat("[5/6] Calculando desgloses para filtros (8 combinaciones)...\n")
 
-# Combos: Nacional / Por etnia / Por zona / Por educación
+# Todas las combinaciones de etnia × zona × edu
+# Permite mezclar filtros: etnia="Grupo étnico" + zona="Cabecera" funciona
 combos <- list(
-  list(e = TRUE,  z = TRUE,  d = TRUE,  tag = "Nacional"),
+  list(e = TRUE,  z = TRUE,  d = TRUE,  tag = "Ninguno (nacional)"),
   list(e = FALSE, z = TRUE,  d = TRUE,  tag = "Por etnia"),
   list(e = TRUE,  z = FALSE, d = TRUE,  tag = "Por zona"),
-  list(e = TRUE,  z = TRUE,  d = FALSE, tag = "Por educación")
+  list(e = TRUE,  z = TRUE,  d = FALSE, tag = "Por educación"),
+  list(e = FALSE, z = FALSE, d = TRUE,  tag = "Etnia + zona"),
+  list(e = FALSE, z = TRUE,  d = FALSE, tag = "Etnia + edu"),
+  list(e = TRUE,  z = FALSE, d = FALSE, tag = "Zona + edu"),
+  list(e = FALSE, z = FALSE, d = FALSE, tag = "Etnia + zona + edu")
 )
 
 pos_list  <- vector("list", 4)

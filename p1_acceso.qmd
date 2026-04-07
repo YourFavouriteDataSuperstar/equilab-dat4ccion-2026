@@ -39,21 +39,15 @@ tabla_dpto_raw <- read_parquet("datos/tasas_p1_departamental.parquet")
 tasas_global   <- read_parquet("datos/tasas_p1_global.parquet")
 
 # ── Preparar datos para los 3 filtros ────────────────────────
-# Solo se incluyen desgloses de UNA dimensión a la vez
-# Así cada filtro trabaja de forma independiente y limpia:
-#   etnia="Grupo étnico" + zona="Nacional" + edu="Nacional" → 14 filas exactas
+# Se incluyen TODAS las combinaciones (8 niveles) para permitir
+# mezclar filtros: etnia="Grupo étnico" + zona="Cabecera" funciona
+# porque existe la fila precalculada para ese cruce exacto.
+# "Todos" → "Ninguno" en las columnas de filtro (valor por defecto)
 tasas_filtrable <- tasas_raw |>
-  filter(
-    (etnia_label == "Todos" & zona_label == "Todos" & niv_edu_label == "Todos") |
-    (etnia_label != "Todos" & zona_label == "Todos" & niv_edu_label == "Todos") |
-    (etnia_label == "Todos" & zona_label != "Todos" & niv_edu_label == "Todos") |
-    (etnia_label == "Todos" & zona_label == "Todos" & niv_edu_label != "Todos")
-  ) |>
-  # "Todos" → "Nacional" en las columnas de filtro
   mutate(
-    etnia_f = if_else(etnia_label   == "Todos", "Nacional", etnia_label),
-    zona_f  = if_else(zona_label    == "Todos", "Nacional", zona_label),
-    edu_f   = if_else(niv_edu_label == "Todos", "Nacional", niv_edu_label),
+    etnia_f = if_else(etnia_label   == "Todos", "Ninguno", etnia_label),
+    zona_f  = if_else(zona_label    == "Todos", "Ninguno", zona_label),
+    edu_f   = if_else(niv_edu_label == "Todos", "Ninguno", niv_edu_label),
     se_tgp  = (cv_TGP * TGP) / 100,
     li      = round(TGP - 1.96 * se_tgp, 1),
     ls      = round(TGP + 1.96 * se_tgp, 1)
@@ -62,8 +56,8 @@ tasas_filtrable <- tasas_raw |>
 
 # ── Value boxes — cifras globales 2025 ───────────────────────
 vb <- tasas_filtrable |>
-  filter(anio == 2025, etnia_f == "Nacional",
-         zona_f == "Nacional", edu_f == "Nacional")
+  filter(anio == 2025, etnia_f == "Ninguno",
+         zona_f == "Ninguno", edu_f == "Ninguno")
 
 tgp_m <- vb |> filter(sexo_label == "Mujeres") |> pull(TGP)
 tgp_h <- vb |> filter(sexo_label == "Hombres") |> pull(TGP)
@@ -426,7 +420,7 @@ datatable(
    Usa un intervalo que reintenta cada 100ms hasta que todos estén listos
    (o hasta 30 segundos). Esto garantiza que selectize ya esté montado. */
 (function () {
-  var TARGET = "Nacional";
+  var TARGET = "Ninguno";
   var IDS = [
     "f_etnia_tgp", "f_zona_tgp", "f_edu_tgp",
     "f_etnia_totd", "f_zona_totd", "f_edu_totd"
