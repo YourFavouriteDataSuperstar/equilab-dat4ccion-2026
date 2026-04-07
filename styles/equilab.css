@@ -45,6 +45,11 @@ h1, h2, h3, h4 {
   font-weight: 700;
 }
 
+/* ── Título YAML (title-block) ──────────────────────────────── */
+#title-block-header {
+  text-align: center;
+}
+
 /* ── Navbar ─────────────────────────────────────────────────── */
 .navbar {
   background-color: var(--color-fondo) !important;
