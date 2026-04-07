@@ -135,6 +135,8 @@ h1, h2, h3, h4 {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
+  text-align: center;
   padding: 4rem 2rem 3rem;
   border-radius: 0 0 var(--radio-card) var(--radio-card);
   margin-bottom: 2rem;
@@ -146,6 +148,7 @@ h1, h2, h3, h4 {
   color: var(--color-blanco);
   line-height: 1.2;
   max-width: 700px;
+  text-align: center;
 }
 
 .eq-hero p {
@@ -153,11 +156,12 @@ h1, h2, h3, h4 {
   opacity: 0.88;
   max-width: 620px;
   line-height: 1.6;
+  text-align: center;
 }
 
 .eq-hero-badge {
   display: inline-block;
-  align-self: flex-start;
+  align-self: center;
   background: rgba(255,255,255,0.15);
   border: 1px solid rgba(255,255,255,0.3);
   border-radius: 2rem;
