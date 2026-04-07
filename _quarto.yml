@@ -6,6 +6,7 @@ project:
     - p1_acceso.qmd
     - p2_calidad.qmd
     - p3_salariales.qmd
+    - p4_oaxaca.qmd
     - metodologia.qmd
 
 website:
@@ -22,27 +23,7 @@ website:
         href: p2_calidad.qmd
       - text: "Brechas Salariales"
         href: p3_salariales.qmd
+      - text: "Oaxaca-Blinder"
+        href: p4_oaxaca.qmd
       - text: "Metodología"
         href: metodologia.qmd
-    right:
-      - icon: github
-        href: https://github.com/equilab-ean/equilab-dat4ccion-2026
-
-  page-footer:
-    center: |
-      Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026.
-      Estimaciones ponderadas con factor de expansión (fex).
-    background: "#1a1a2e"
-
-format:
-  html:
-    css: styles/equilab.css
-    theme: cosmo
-
-execute:
-  echo: false
-  warning: false
-  message: false
-  cache: false
-
-lang: es
