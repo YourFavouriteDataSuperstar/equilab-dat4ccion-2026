@@ -1,327 +1,436 @@
 ---
-title: "EQUILAB - DAT4CCIÓN 2026"
+title: "EQUILAB — DAT4CCIÓN 2026"
 format:
-  html:
-    css: styles/equilab.css
-    theme: cosmo
-    toc: false
-    toc-title: "Componentes"
-    toc-location: right
-    include-in-header:       
-      text: |     
-        <style>      
-        .title {          
-          text-align: center;        
-        }      
-        </style>
+  closeread-html:
+    remove-header-space: true
+    debug-mode: false
+    cr-style:
+      narrative-background-color-sidebar: "#f4f4f4"
+      narrative-text-color-sidebar: "#212529"
+      narrative-font-family: "'Chiron GoRound TC', 'Segoe UI', system-ui, sans-serif"
+      narrative-font-size: "1.1rem"
+      narrative-sidebar-width: "minmax(380px, 1fr)"
+      narrative-border-radius: "5px"
+      section-background-color: "#f4f4f4"
+css: styles/equilab.css
 ---
+
+```{r}
+#| include: false
+library(ggplot2)
+library(gt)
+```
 
 ```{=html}
 <style>
-  /* Fondo degradado en los primeros 50vh — cubre hero Y sidebar */
-  body::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 68vh;
-    background: linear-gradient(135deg, var(--color-mujeres) 0%, var(--color-primario) 100%);
-    z-index: 0;
+  /* ── Cuadrícula en el área de stickies ────────────────────── */
+  .cr-section .sticky-col,
+  .cr-section .sticky-col-stack {
+    background-image:
+      linear-gradient(rgba(150,150,150,0.18) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(150,150,150,0.18) 1px, transparent 1px);
+    background-size: 32px 32px;
+    background-color: #f4f4f4;
   }
 
-  /* Hero transparente — el fondo lo pone body::before */
-  .eq-hero {
-    background: transparent !important;
-    position: relative;
-    z-index: 1;
+  /* ── Primer bloque de narrativa con espacio superior ─────── */
+  .cr-section .narrative-col > *:first-child {
+    padding-block-start: 8svh;
   }
 
-  /* Sidebar sobre el fondo, sin fondo propio */
-  nav#quarto-margin-sidebar {
-    position: relative;
-    z-index: 1;
-    background: transparent !important;
-    padding-top: 1.5rem;
+  /* ── Títulos de sección dentro de narrativa ──────────────── */
+  .cr-section h2 {
+    font-family: 'Outfit', 'Segoe UI', system-ui, sans-serif;
+    font-weight: 700;
+    color: #0086ab;
+    font-size: 1.5rem;
+    margin-bottom: 0.6rem;
+    margin-top: 0;
   }
 
-  /* TOC texto blanco */
-  #TOC .toc-title {
-    color: #ffffff !important;
+  /* ── Párrafos narrativos ─────────────────────────────────── */
+  .cr-section p {
+    line-height: 1.75;
+    color: #212529;
   }
 
-  #TOC ul li a {
-    color: rgba(255,255,255,0.75) !important;
-    font-size: 1.1rem !important;
-    border-right-color: rgba(255,255,255,0.3) !important;
-  }
-
-  #TOC ul li a:hover,
-  #TOC ul li a.active {
-    color: #ffffff !important;
-    border-right-color: #ffffff !important;
-  }
-
-  /* Eliminar fondo blanco del título de Quarto */
-  #title-block-header,
-  .quarto-title-block,
-  header.quarto-title-block {
-    background: transparent !important;
-    background-color: transparent !important;
-    position: relative;
-    z-index: 1;
-  }
-
-  /* Quitar el centrado del contenido principal */
-  main#quarto-document-content,
-  #quarto-document-content {
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-    max-width: none !important;
-    padding-left: 2rem !important;
-    padding-right: 1rem !important;
-  }
-
-  /* Hero alineado a la izquierda */
-  .eq-hero {
-    padding-left: 0 !important;
-    padding-right: 1rem !important;
-    align-items: self-centered !important;
+  /* ── Stickies: centrar contenido verticalmente ───────────── */
+  .cr-section .sticky {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 </style>
 ```
 
+<!-- ═══════════════════════════════════════════════════════════
+     PORTADA — fuera de cr-section (pantalla de entrada)
+     ═══════════════════════════════════════════════════════════ -->
+
 ```{=html}
 <div class="eq-hero">
   <span class="eq-hero-badge">Colombia · GEIH 2019–2025</span>
-  <h1>Radar de brechas laborales para las mujeres en Colombia</h1>
+  <h1>Radar de brechas laborales<br>para las mujeres en Colombia</h1>
   <p>
-    Un análisis que sigue la Encuesta Integrada de Hogares 2019-2025 del DANE
-    buscando comprender brechas de género; quién consigue empleo, en qué
+    Un análisis que sigue la Encuesta Integrada de Hogares 2019–2025 del DANE
+    buscando comprender brechas de género: quién consigue empleo, en qué
     condiciones, cuánto gana, y por qué existen esas diferencias.
   </p>
 </div>
-
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-
-  // ── Título principal: izquierda + blanco ──────────────────
-  const titleBlock = document.querySelector(
-    "#title-block-header, .quarto-title-block, header"
-  );
-  if (titleBlock) {
-    Object.assign(titleBlock.style, {
-      textAlign:       "center",
-      paddingLeft:     "2rem",
-      background:      "transparent",
-      backgroundColor: "transparent"
-    });
-  }
-
-  const h1 = document.querySelector(
-    "#title-block-header h1, .quarto-title h1, header h1"
-  );
-  if (h1) {
-    Object.assign(h1.style, {
-      color:     "#ffffff",
-      textAlign: "center"
-    });
-  }
-
-  // ── Contenido principal: quitar centrado de Quarto ────────
-  const main = document.querySelector("main#quarto-document-content");
-  if (main) {
-    Object.assign(main.style, {
-      marginLeft:  "0",
-      marginRight: "0",
-      maxWidth:    "none",
-      paddingLeft: "2rem"
-    });
-  }
-
-});
-</script>
 ```
 
----
+<!-- ═══════════════════════════════════════════════════════════
+     SECCIÓN 1: BIENVENIDA
+     — Para agregar más texto: añade párrafos antes del cierre :::
+     — Para cambiar el sticky: edita el bloque #cr-bienvenida
+     ═══════════════════════════════════════════════════════════ -->
 
-## Cards de navegación
+:::{.cr-section layout="sidebar-left"}
 
+:::{focus-on="cr-bienvenida"}
+## Bienvenida
+
+Este análisis recorre seis años de datos del mercado laboral colombiano con
+una pregunta central: ¿qué tan diferentes son las condiciones de trabajo para
+hombres y mujeres?
+:::
+
+Los datos provienen de la Gran Encuesta Integrada de Hogares (GEIH) del DANE,
+con cobertura de 2019 a 2025 y estimaciones ponderadas por el factor de
+expansión. @cr-bienvenida
+
+Navega por las secciones para explorar tres dimensiones clave: acceso al
+empleo, calidad de las condiciones laborales y brechas salariales. @cr-bienvenida
+
+:::{#cr-bienvenida}
 ```{=html}
-<div class="eq-nav-cards">
-  <a href="#" class="eq-card">
+<div class="eq-nav-cards" style="max-width: 460px; margin: 2rem auto;">
+  <div class="eq-card">
     <span class="eq-card-icon">💼</span>
     <div class="eq-card-titulo">Acceso Laboral</div>
     <div class="eq-card-desc">Tasas de ocupación, desempleo e inactividad por sexo y año.</div>
-  </a>
-  <a href="#" class="eq-card">
+  </div>
+  <div class="eq-card">
     <span class="eq-card-icon">📊</span>
     <div class="eq-card-titulo">Calidad del Empleo</div>
     <div class="eq-card-desc">Formalidad, afiliación a seguridad social y tipo de contrato.</div>
-  </a>
-  <a href="#" class="eq-card">
+  </div>
+  <div class="eq-card">
     <span class="eq-card-icon">💰</span>
     <div class="eq-card-titulo">Brechas Salariales</div>
     <div class="eq-card-desc">Ingreso laboral promedio y brecha salarial de género.</div>
-  </a>
-  <a href="#" class="eq-card">
+  </div>
+  <div class="eq-card">
     <span class="eq-card-icon">📋</span>
     <div class="eq-card-titulo">Metodología</div>
     <div class="eq-card-desc">Fuentes, filtros, decisiones éticas y limitaciones.</div>
-  </a>
+  </div>
 </div>
 ```
+:::
 
----
+:::
 
-## Value boxes
+<!-- ═══════════════════════════════════════════════════════════
+     SECCIÓN 2: ACCESO LABORAL
+     — Para agregar más texto: añade párrafos con @cr-acceso al final
+     — Para hacer zoom a un año: usa [@cr-acceso]{scale-by="1.3"}
+     ═══════════════════════════════════════════════════════════ -->
 
-```{=html}
-<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin: 1.5rem 0;">
+:::{.cr-section layout="sidebar-left"}
 
-  <div class="eq-valuebox mujeres">
-    <div class="eq-valuebox-valor">41.3%</div>
-    <div class="eq-valuebox-label">Tasa de ocupación — Mujeres</div>
-  </div>
+:::{focus-on="cr-acceso"}
+## Acceso al mercado laboral
 
-  <div class="eq-valuebox hombres">
-    <div class="eq-valuebox-valor">62.7%</div>
-    <div class="eq-valuebox-label">Tasa de ocupación — Hombres</div>
-  </div>
+La primera brecha que salta a la vista es la de la ocupación. En 2025,
+la tasa de ocupación de los hombres era 21 puntos porcentuales más alta
+que la de las mujeres.
+:::
 
-  <div class="eq-valuebox">
-    <div class="eq-valuebox-valor">21.4 pp</div>
-    <div class="eq-valuebox-label">Brecha de ocupación (H − M)</div>
-  </div>
+Esta diferencia no es nueva. La gráfica muestra cómo la brecha se ha
+mantenido relativamente estable desde 2019, a pesar de los cambios en el
+marco muestral de 2021. @cr-acceso
 
-  <div class="eq-valuebox" style="border-left-color:#6c757d;">
-    <div class="eq-valuebox-valor" style="color:#6c757d;">2025</div>
-    <div class="eq-valuebox-label">Año de referencia</div>
-  </div>
+Durante la pandemia (2020), ambos grupos vieron caídas abruptas, pero la
+recuperación fue más lenta y menos completa para las mujeres. [@cr-acceso]{scale-by="1.15"}
 
-</div>
-```
+El desempleo cuenta una historia similar: mientras los hombres registran
+tasas cercanas al 8%, las mujeres superan el 12% en años recientes. @cr-acceso
 
----
+*[Espacio para texto adicional — reemplazar con análisis real]* @cr-acceso
 
-## Sticky cards (componente closeread)
-
-```{=html}
-<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1.5rem 0;">
-
-  <div class="eq-sticky-card">
-    <span class="eq-sticky-stat">18.2%</span>
-    <span class="eq-sticky-label">Brecha salarial promedio 2019–2025</span>
-    <hr>
-    <p class="eq-fuente">Fuente: DANE, GEIH. Cálculos: EQUILAB.</p>
-  </div>
-
-  <div class="eq-sticky-card hombres">
-    <span class="eq-sticky-stat" style="color: #2166AC;">$2.1M</span>
-    <span class="eq-sticky-label">Ingreso promedio — Hombres (2025)</span>
-    <hr>
-    <p class="eq-fuente">Valores en pesos colombianos corrientes.</p>
-  </div>
-
-  <div class="eq-sticky-card mujeres">
-    <span class="eq-sticky-stat" style="color: #D6604D;">$1.7M</span>
-    <span class="eq-sticky-label">Ingreso promedio — Mujeres (2025)</span>
-    <hr>
-    <p class="eq-fuente">Valores en pesos colombianos corrientes.</p>
-  </div>
-
-</div>
-```
-
----
-
-## Badge de brecha + nota de fuente
-
-```{=html}
-<p>
-  La brecha salarial no ajustada para 2025 es
-  <span class="eq-brecha">−18.2%</span>
-  en desfavor de las mujeres.
-</p>
-<p class="eq-fuente">
-  Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026.
-  Estimaciones ponderadas con factor de expansión (fex).
-</p>
-```
-
----
-
-## Gráfico de ejemplo (datos ficticios)
-
-Esto simula cómo se vería un gráfico real con los colores del proyecto.
-
+:::{#cr-acceso}
 ```{r}
-#| fig-width: 8
-#| fig-height: 4
+#| fig-width: 7
+#| fig-height: 5
 
-library(ggplot2)
-
-# Datos ficticios — reemplazar con datos reales cuando estén listos
-df <- data.frame(
+df_acceso <- data.frame(
   anio = rep(2019:2025, 2),
   sexo = rep(c("Hombre", "Mujer"), each = 7),
   tasa = c(64.1, 63.5, 55.2, 58.9, 61.2, 62.0, 62.7,
            43.2, 42.8, 36.1, 38.5, 40.0, 40.8, 41.3)
 )
 
-ggplot(df, aes(x = anio, y = tasa, color = sexo, group = sexo)) +
-  geom_line(linewidth = 1.3) +
-  geom_point(size = 3) +
+ggplot(df_acceso, aes(x = anio, y = tasa, color = sexo, group = sexo)) +
+  geom_line(linewidth = 1.4) +
+  geom_point(size = 3.5) +
   geom_vline(xintercept = 2021, linetype = "dotted",
              color = "#adb5bd", linewidth = 1) +
-  annotate("text", x = 2021.1, y = 57, label = "Cambio marco\nmuestral",
+  annotate("text", x = 2021.1, y = 57,
+           label = "Cambio marco\nmuestral",
            hjust = 0, size = 3, color = "#adb5bd") +
-  scale_color_manual(values = c("Hombre" = "#2166AC", "Mujer" = "#D6604D")) +
+  scale_color_manual(values = c("Hombre" = "#5f7300", "Mujer" = "#6b2d50")) +
   scale_y_continuous(limits = c(30, 70),
                      labels = function(x) paste0(x, "%")) +
+  scale_x_continuous(breaks = 2019:2025) +
   labs(
     title    = "Tasa de ocupación por sexo — Colombia 2019–2025",
     subtitle = "Datos ficticios para demo de diseño",
     x        = NULL,
     y        = "Tasa de ocupación (%)",
     color    = NULL,
-    caption  = "Fuente: DANE, GEIH 2019–2025 (DATOS FICTICIOS). Cálculos: EQUILAB — DAT4CCIÓN 2026."
+    caption  = "Fuente: DANE, GEIH 2019–2025 (DATOS FICTICIOS). Cálculos: EQUILAB."
   ) +
-  theme_minimal(base_size = 12) +
+  theme_minimal(base_size = 13) +
   theme(
-    legend.position  = "top",
-    plot.title       = element_text(face = "bold"),
-    plot.caption     = element_text(color = "#6c757d", size = 8),
-    panel.grid.minor = element_blank()
+    legend.position   = "top",
+    plot.title        = element_text(face = "bold"),
+    plot.caption      = element_text(color = "#6c757d", size = 8),
+    panel.grid.minor  = element_blank(),
+    plot.background   = element_rect(fill = "transparent", color = NA),
+    panel.background  = element_rect(fill = "transparent", color = NA)
   )
 ```
+:::
 
----
+:::
 
-## Tabla de ejemplo
+<!-- ═══════════════════════════════════════════════════════════
+     SECCIÓN 3: CALIDAD DEL EMPLEO
+     — Para agregar más texto: añade párrafos con @cr-calidad al final
+     — Para cambiar el gráfico: edita el chunk dentro de #cr-calidad
+     ═══════════════════════════════════════════════════════════ -->
 
+:::{.cr-section layout="sidebar-left"}
+
+:::{focus-on="cr-calidad"}
+## Calidad del empleo
+
+Tener empleo no lo es todo. La calidad de ese empleo —si es formal, si
+tiene seguridad social, si tiene contrato— revela otra capa de desigualdad.
+:::
+
+En términos de formalidad laboral, los hombres superan a las mujeres en
+cerca de 5 puntos porcentuales. Esta diferencia se amplía cuando se analiza
+la afiliación a pensión. @cr-calidad
+
+Las mujeres están sobrerrepresentadas en el trabajo informal, el trabajo
+doméstico no remunerado y los contratos a término fijo o sin contrato. [@cr-calidad]{scale-by="1.15"}
+
+Estas condiciones limitan el acceso a protecciones laborales y perpetúan
+ciclos de vulnerabilidad económica a largo plazo. @cr-calidad
+
+*[Espacio para texto adicional — reemplazar con análisis real]* @cr-calidad
+
+:::{#cr-calidad}
 ```{r}
-library(gt)
+#| fig-width: 7
+#| fig-height: 5
 
-data.frame(
-  Indicador  = c("Tasa de ocupación", "Tasa de desempleo",
-                 "Ingreso promedio", "Tasa de formalidad"),
-  Hombres    = c("62.7%", "8.1%", "$2.1M", "54.3%"),
-  Mujeres    = c("41.3%", "12.4%", "$1.7M", "49.8%"),
-  Brecha     = c("−21.4 pp", "+4.3 pp", "−18.2%", "−4.5 pp")
-) |>
-  gt() |>
-  tab_header(
-    title    = "Resumen de indicadores — 2025",
-    subtitle = "Datos ficticios para demo de diseño"
-  ) |>
-  tab_style(
-    style = list(cell_fill(color = "#1a1a2e"),
-                 cell_text(color = "white", weight = "bold")),
-    locations = cells_column_labels()
-  ) |>
-  tab_style(
-    style = cell_text(color = "#D6604D", weight = "bold"),
-    locations = cells_body(columns = Brecha)
-  ) |>
-  tab_source_note("Fuente: DANE, GEIH 2019–2025 (DATOS FICTICIOS). EQUILAB.") |>
-  opt_table_font(font = "Segoe UI")
+df_calidad <- data.frame(
+  indicador = rep(c("Formalidad", "Afiliación\npensión",
+                    "Contrato\nescrito", "Afiliación\nsalud"), 2),
+  sexo      = rep(c("Hombre", "Mujer"), each = 4),
+  valor     = c(54.3, 61.2, 67.8, 95.1,
+                49.8, 55.4, 59.3, 93.2)
+)
+
+ggplot(df_calidad, aes(x = indicador, y = valor, fill = sexo)) +
+  geom_col(position = "dodge", width = 0.65) +
+  scale_fill_manual(values = c("Hombre" = "#5f7300", "Mujer" = "#6b2d50")) +
+  scale_y_continuous(limits = c(0, 110),
+                     labels = function(x) paste0(x, "%")) +
+  labs(
+    title    = "Indicadores de calidad del empleo — 2025",
+    subtitle = "Datos ficticios para demo de diseño",
+    x        = NULL,
+    y        = NULL,
+    fill     = NULL,
+    caption  = "Fuente: DANE, GEIH 2019–2025 (DATOS FICTICIOS). Cálculos: EQUILAB."
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    legend.position   = "top",
+    plot.title        = element_text(face = "bold"),
+    plot.caption      = element_text(color = "#6c757d", size = 8),
+    panel.grid.minor  = element_blank(),
+    plot.background   = element_rect(fill = "transparent", color = NA),
+    panel.background  = element_rect(fill = "transparent", color = NA)
+  )
+```
+:::
+
+:::
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECCIÓN 4: BRECHAS SALARIALES
+     — Para agregar más texto: añade párrafos con @cr-salario al final
+     — Para resaltar un año específico: usa [@cr-salario]{scale-by="1.2"}
+     ═══════════════════════════════════════════════════════════ -->
+
+:::{.cr-section layout="sidebar-left"}
+
+:::{focus-on="cr-salario"}
+## Brechas salariales
+
+La brecha más discutida —y la más polémica— es la salarial. ¿Cuánto menos
+gana una mujer que un hombre haciendo un trabajo equivalente?
+:::
+
+La brecha no ajustada muestra que en promedio las mujeres ganan un 18%
+menos que los hombres. Esta diferencia ha persistido durante los seis años
+de análisis. @cr-salario
+
+La zona sombreada entre las dos líneas representa la magnitud de la brecha
+en cada año. Nótese que la distancia no disminuye con el tiempo. [@cr-salario]{scale-by="1.15"}
+
+Cuando se controlan variables como educación, experiencia y sector
+económico, la brecha se reduce pero no desaparece — evidencia de
+discriminación salarial estructural. @cr-salario
+
+*[Espacio para texto adicional — reemplazar con análisis real]* @cr-salario
+
+:::{#cr-salario}
+```{r}
+#| fig-width: 7
+#| fig-height: 5
+
+df_salario <- data.frame(
+  anio    = rep(2019:2025, 2),
+  sexo    = rep(c("Hombre", "Mujer"), each = 7),
+  ingreso = c(1850, 1900, 1780, 1920, 2000, 2050, 2100,
+              1510, 1540, 1430, 1560, 1640, 1680, 1720)
+)
+
+df_ribbon <- data.frame(
+  anio = 2019:2025,
+  ymin = c(1510, 1540, 1430, 1560, 1640, 1680, 1720),
+  ymax = c(1850, 1900, 1780, 1920, 2000, 2050, 2100)
+)
+
+ggplot() +
+  geom_ribbon(data = df_ribbon,
+              aes(x = anio, ymin = ymin, ymax = ymax),
+              fill = "grey70", alpha = 0.3) +
+  geom_line(data = df_salario,
+            aes(x = anio, y = ingreso, color = sexo, group = sexo),
+            linewidth = 1.4) +
+  geom_point(data = df_salario,
+             aes(x = anio, y = ingreso, color = sexo, group = sexo),
+             size = 3.5) +
+  scale_color_manual(values = c("Hombre" = "#5f7300", "Mujer" = "#6b2d50")) +
+  scale_y_continuous(
+    labels = function(x) paste0("$", format(x, big.mark = ".", decimal.mark = ","))
+  ) +
+  scale_x_continuous(breaks = 2019:2025) +
+  labs(
+    title    = "Ingreso laboral promedio por sexo — Colombia 2019–2025",
+    subtitle = "En miles de pesos colombianos. Datos ficticios para demo.",
+    x        = NULL,
+    y        = "Ingreso promedio (miles COP)",
+    color    = NULL,
+    caption  = "Fuente: DANE, GEIH 2019–2025 (DATOS FICTICIOS). Cálculos: EQUILAB."
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    legend.position   = "top",
+    plot.title        = element_text(face = "bold"),
+    plot.caption      = element_text(color = "#6c757d", size = 8),
+    panel.grid.minor  = element_blank(),
+    plot.background   = element_rect(fill = "transparent", color = NA),
+    panel.background  = element_rect(fill = "transparent", color = NA)
+  )
+```
+:::
+
+:::
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECCIÓN 5: VALUE BOXES (cifras resumen)
+     — Para agregar más cifras: copia un bloque .eq-valuebox dentro del grid
+     — Para cambiar el texto narrativo: edita los párrafos de esta sección
+     ═══════════════════════════════════════════════════════════ -->
+
+:::{.cr-section layout="sidebar-left"}
+
+:::{focus-on="cr-valueboxes"}
+## Cifras clave
+
+Estos son los indicadores más importantes del análisis. Cada número resume
+años de datos y refleja una realidad persistente en el mercado laboral
+colombiano.
+:::
+
+La brecha de ocupación de **21.4 puntos porcentuales** entre hombres y
+mujeres es la más amplia registrada desde 2019. @cr-valueboxes
+
+La brecha salarial no ajustada de **18.2%** significa que por cada
+$1.000 que gana un hombre, una mujer gana $818. [@cr-valueboxes]{scale-by="1.1"}
+
+La tasa de desempleo femenino es 4 puntos porcentuales más alta y la
+informalidad afecta en mayor medida a las mujeres en todos los años
+analizados. @cr-valueboxes
+
+:::{#cr-valueboxes}
+```{=html}
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+            padding: 1.5rem; max-width: 460px; margin: auto;">
+  <div class="eq-valuebox mujeres">
+    <div class="eq-valuebox-valor">41.3%</div>
+    <div class="eq-valuebox-label">Ocupación — Mujeres</div>
+  </div>
+  <div class="eq-valuebox hombres">
+    <div class="eq-valuebox-valor">62.7%</div>
+    <div class="eq-valuebox-label">Ocupación — Hombres</div>
+  </div>
+  <div class="eq-valuebox">
+    <div class="eq-valuebox-valor">21.4 pp</div>
+    <div class="eq-valuebox-label">Brecha de ocupación (H − M)</div>
+  </div>
+  <div class="eq-valuebox mujeres">
+    <div class="eq-valuebox-valor">−18.2%</div>
+    <div class="eq-valuebox-label">Brecha salarial no ajustada</div>
+  </div>
+  <div class="eq-valuebox hombres">
+    <div class="eq-valuebox-valor">$2.1M</div>
+    <div class="eq-valuebox-label">Ingreso promedio — Hombres</div>
+  </div>
+  <div class="eq-valuebox mujeres">
+    <div class="eq-valuebox-valor">$1.7M</div>
+    <div class="eq-valuebox-label">Ingreso promedio — Mujeres</div>
+  </div>
+</div>
+```
+:::
+
+:::
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECCIÓN 6: CONCLUSIONES — fuera de cr-section
+     ═══════════════════════════════════════════════════════════ -->
+
+## Conclusiones
+
+*[Texto de conclusiones — pendiente de redacción final]*
+
+Las brechas laborales de género en Colombia son persistentes,
+multidimensionales y estructurales. Este análisis buscó hacer visibles
+esas diferencias a través de los datos de la GEIH 2019–2025.
+
+```{=html}
+<p class="eq-fuente">
+  Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026.
+  Estimaciones ponderadas con factor de expansión (fex).
+  Los datos presentados en este demo son ficticios.
+</p>
 ```
