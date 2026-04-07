@@ -4,7 +4,7 @@ format:
   dashboard:
     orientation: rows
     scrolling: true
-    theme: [cosmo, styles/equilab.css]
+    theme: cosmo
     nav-buttons:
       - icon: house
         href: index.qmd
@@ -77,8 +77,22 @@ dat <- dat_raw |>
   ) |>
   ungroup()
 
+# ── Fórmulas O-B ────────────────────────────────────────────
+# Nacional: incluye zona como control
+f_nacional <- log_sal ~ esc_anios + exp_pot + exp_pot2 +
+  factor(pos_ocup_cat) + factor(rama1d) +
+  factor(clase_zona) | sexo_bin
+
+# Para cortes por zona: excluir clase_zona (es constante dentro del grupo)
+f_sin_zona <- log_sal ~ esc_anios + exp_pot + exp_pot2 +
+  factor(pos_ocup_cat) + factor(rama1d) | sexo_bin
+
+# Para cortes con muestras pequeñas (etnia): modelo más parsimonioso
+f_simple <- log_sal ~ esc_anios + exp_pot + exp_pot2 +
+  factor(pos_ocup_cat) | sexo_bin
+
 # ── Función: correr O-B para un subconjunto ──────────────────
-run_ob <- function(df, label = "General") {
+run_ob <- function(df, label = "General", formula = f_nacional) {
   n_h <- sum(df$sexo_bin == 0)
   n_m <- sum(df$sexo_bin == 1)
   if (n_h < 50 | n_m < 50) {
@@ -92,14 +106,14 @@ run_ob <- function(df, label = "General") {
     ))
   }
 
+  # Muestrear si el dataset es muy grande (>20k filas) para velocidad
+  if (nrow(df) > 20000) {
+    set.seed(2026)
+    df <- df |> slice_sample(n = 20000, weight_by = fex)
+  }
+
   ob <- tryCatch(
-    oaxaca(
-      log_sal ~ esc_anios + exp_pot + exp_pot2 +
-        factor(pos_ocup_cat) + factor(rama1d) +
-        factor(clase_zona) | sexo_bin,
-      data = df,
-      R = 100
-    ),
+    oaxaca(formula, data = df, R = 30),
     error = function(e) NULL
   )
 
@@ -114,16 +128,22 @@ run_ob <- function(df, label = "General") {
     ))
   }
 
-  # Twofold con peso 0 = coeficientes del Grupo A (Hombres) como referencia
-  tw <- ob$twofold$overall[ob$twofold$overall[, "weight"] == 0, ]
+  # Twofold: overall es una matriz con columnas:
+  #   group.weight, coef(explained), se(explained),
+  #   coef(unexplained), se(unexplained), ...
+  # Filtrar fila donde group.weight == 0 (coef. hombres como referencia)
+  tw_all <- ob$twofold$overall
+  tw_row <- tw_all[tw_all[, "group.weight"] == 0, , drop = FALSE]
 
   tibble(
     grupo = label,
     componente = c("Brecha total", "Explicado", "No explicado"),
-    valor = c(ob$y$y.diff, tw["explained", "coef(explained)"],
-              tw["unexplained", "coef(unexplained)"]),
-    se = c(NA_real_, tw["explained", "se(explained)"],
-           tw["unexplained", "se(unexplained)"]),
+    valor = c(ob$y$y.diff,
+              tw_row[1, "coef(explained)"],
+              tw_row[1, "coef(unexplained)"]),
+    se = c(NA_real_,
+           tw_row[1, "se(explained)"],
+           tw_row[1, "se(unexplained)"]),
     n_hombres = n_h,
     n_mujeres = n_m
   )
@@ -140,23 +160,25 @@ ob_por_anio <- dat |>
   bind_rows()
 
 # ── Correr O-B por año × zona ───────────────────────────────
+# Usar f_sin_zona: clase_zona es constante dentro de cada grupo
 ob_por_zona <- dat |>
   filter(!is.na(clase_zona)) |>
   group_by(anio, zona_label) |>
   group_split() |>
   lapply(function(df) {
-    run_ob(df, label = unique(df$zona_label)) |>
+    run_ob(df, label = unique(df$zona_label), formula = f_sin_zona) |>
       mutate(anio = unique(df$anio), corte = "Zona")
   }) |>
   bind_rows()
 
 # ── Correr O-B por año × etnia ──────────────────────────────
+# Usar f_simple: muestras étnicas son pequeñas, modelo parsimonioso
 ob_por_etnia <- dat |>
   filter(!is.na(etnia_label)) |>
   group_by(anio, etnia_label) |>
   group_split() |>
   lapply(function(df) {
-    run_ob(df, label = unique(df$etnia_label)) |>
+    run_ob(df, label = unique(df$etnia_label), formula = f_simple) |>
       mutate(anio = unique(df$anio), corte = "Etnia")
   }) |>
   bind_rows()
@@ -169,23 +191,30 @@ anio_reciente <- max(dat$anio)
 dat_reciente <- dat |> filter(anio == anio_reciente)
 
 ob_detalle <- tryCatch({
+  set.seed(2026)
+  dat_det <- if (nrow(dat_reciente) > 20000) {
+    dat_reciente |> slice_sample(n = 20000, weight_by = fex)
+  } else {
+    dat_reciente
+  }
   ob_tmp <- oaxaca(
     log_sal ~ esc_anios + exp_pot + exp_pot2 +
       factor(pos_ocup_cat) + factor(rama1d) +
       factor(clase_zona) | sexo_bin,
-    data = dat_reciente,
-    R = 100
+    data = dat_det,
+    R = 30
   )
 
-  # Extraer descomposición por variable (twofold, weight=0)
-  vars_tw <- ob_tmp$twofold$variables[[1]]  # weight = 0
+  # twofold$variables es una lista; [[1]] corresponde a group.weight = 0
+  # Cada elemento es una matriz con columnas:
+  #   group.weight, coef(explained), se(explained),
+  #   coef(unexplained), se(unexplained), ...
+  vars_tw <- ob_tmp$twofold$variables[[1]]
 
   tibble(
     variable = rownames(vars_tw),
     explicado = vars_tw[, "coef(explained)"],
-    no_explicado = vars_tw[, "coef(unexplained)"],
-    se_explicado = vars_tw[, "se(explained)"],
-    se_no_explicado = vars_tw[, "se(unexplained)"]
+    no_explicado = vars_tw[, "coef(unexplained)"]
   ) |>
     filter(variable != "(Intercept)")
 }, error = function(e) NULL)
@@ -198,10 +227,11 @@ brecha_total  <- resumen_reciente |> filter(componente == "Brecha total") |> pul
 comp_explicado <- resumen_reciente |> filter(componente == "Explicado") |> pull(valor)
 comp_no_explicado <- resumen_reciente |> filter(componente == "No explicado") |> pull(valor)
 
-# Convertir de log-puntos a porcentaje aproximado
-pct_brecha <- round((exp(brecha_total) - 1) * 100, 1)
-pct_explicado <- round(comp_explicado / brecha_total * 100, 1)
-pct_no_explicado <- round(comp_no_explicado / brecha_total * 100, 1)
+# Convertir de log-puntos a porcentaje aproximado (exp(b)-1)
+pct_brecha <- round((exp(abs(brecha_total)) - 1) * 100, 1)
+# Mostrar componentes en log-puntos ×100 (más interpretable que % de brecha)
+lp_explicado <- round(comp_explicado * 100, 1)
+lp_no_explicado <- round(comp_no_explicado * 100, 1)
 ```
 
 # Descomposición Nacional {.tabset}
@@ -210,9 +240,9 @@ pct_no_explicado <- round(comp_no_explicado / brecha_total * 100, 1)
 
 ```{r}
 #| content: valuebox
-#| title: "Brecha salarial total"
+#| title: "Brecha salarial total (hombres ganan más)"
 list(
-  value = paste0(abs(pct_brecha), "%"),
+  value = paste0(pct_brecha, "%"),
   color = COLOR_BRECHA,
   icon  = "arrow-left-right"
 )
@@ -220,9 +250,9 @@ list(
 
 ```{r}
 #| content: valuebox
-#| title: "Componente explicado"
+#| title: "Componente explicado (dotaciones)"
 list(
-  value = paste0(abs(pct_explicado), "% de la brecha"),
+  value = paste0(lp_explicado, " log-pts ×100"),
   color = COLOR_EXPLICADO,
   icon  = "clipboard-data"
 )
@@ -230,9 +260,9 @@ list(
 
 ```{r}
 #| content: valuebox
-#| title: "Componente no explicado"
+#| title: "Componente no explicado (discriminación)"
 list(
-  value = paste0(abs(pct_no_explicado), "% de la brecha"),
+  value = paste0(lp_no_explicado, " log-pts ×100"),
   color = COLOR_NO_EXPLICADO,
   icon  = "exclamation-triangle"
 )
@@ -334,9 +364,10 @@ if (!is.null(ob_detalle)) {
 val_urb <- ob_por_zona |>
   filter(anio == anio_reciente, grupo == "Urbano", componente == "No explicado") |>
   pull(valor)
+vb_urb <- if (length(val_urb) > 0 && !is.na(val_urb[1])) paste0(round(val_urb[1] * 100, 1), " log-pts") else "N/D"
 list(
-  value = paste0(round(val_urb * 100, 1), " log-pts"),
-  color = COLOR_NO_EXPLICADO,
+  value = vb_urb,
+  color = if (vb_urb != "N/D") COLOR_NO_EXPLICADO else COLOR_NEUTRO,
   icon = "building"
 )
 ```
@@ -347,9 +378,10 @@ list(
 val_rur <- ob_por_zona |>
   filter(anio == anio_reciente, grupo == "Rural", componente == "No explicado") |>
   pull(valor)
+vb_rur <- if (length(val_rur) > 0 && !is.na(val_rur[1])) paste0(round(val_rur[1] * 100, 1), " log-pts") else "N/D"
 list(
-  value = paste0(round(val_rur * 100, 1), " log-pts"),
-  color = COLOR_NO_EXPLICADO,
+  value = vb_rur,
+  color = if (vb_rur != "N/D") COLOR_NO_EXPLICADO else COLOR_NEUTRO,
   icon = "tree"
 )
 ```
@@ -360,9 +392,10 @@ list(
 val_etn <- ob_por_etnia |>
   filter(anio == anio_reciente, grupo == "Étnico", componente == "No explicado") |>
   pull(valor)
+vb_etn <- if (length(val_etn) > 0 && !is.na(val_etn[1])) paste0(round(val_etn[1] * 100, 1), " log-pts") else "N/D (muestra insuf.)"
 list(
-  value = if (length(val_etn) > 0 && !is.na(val_etn)) paste0(round(val_etn * 100, 1), " log-pts") else "N/D (muestra insuf.)",
-  color = if (length(val_etn) > 0 && !is.na(val_etn)) COLOR_NO_EXPLICADO else COLOR_NEUTRO,
+  value = vb_etn,
+  color = if (!grepl("N/D", vb_etn)) COLOR_NO_EXPLICADO else COLOR_NEUTRO,
   icon = "people"
 )
 ```
@@ -375,7 +408,7 @@ list(
 #| title: "Componente no explicado por zona — Evolución temporal"
 
 plot_zona <- ob_por_zona |>
-  filter(componente == "No explicado") |>
+  filter(componente == "No explicado", !is.na(valor)) |>
   mutate(pct = valor * 100)
 
 p3 <- ggplot(plot_zona, aes(x = anio, y = pct, color = grupo)) +
