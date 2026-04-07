@@ -4,7 +4,8 @@ format:
   dashboard:
     orientation: rows
     scrolling: true
-    theme: [cosmo, styles/equilab.css]
+    theme: cosmo
+    css: styles/equilab.css
     nav-buttons:
       - icon: house
         href: index.qmd
@@ -16,121 +17,532 @@ format:
 #| include: false
 
 # ── Librerías ────────────────────────────────────────────────
-# Agregar aquí todas las librerías que el análisis necesite
+library(arrow)
+library(dplyr)
+library(tidyr)
 library(ggplot2)
 library(plotly)
+library(crosstalk)
+library(htmltools)
 
-# ── Constantes globales (NO modificar) ──────────────────────
+# ── Constantes globales ──────────────────────────────────────
 COLOR_HOMBRES <- "#2166AC"
 COLOR_MUJERES <- "#D6604D"
 CAPTION       <- "Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026."
 
-# ── Carga de datos ───────────────────────────────────────────
-# Pegar aquí el bloque de lectura y preparación de datos
-# Ejemplo:
-#   library(arrow)
-#   library(dplyr)
-#   dat <- read_parquet("datos/mi_archivo.parquet") |>
-#     filter(...)
+# ── Carga de datos PRE-CALCULADOS ────────────────────────────
+# Generados por: source("procesamiento/06_precalcular_p2.R")
+vb               <- read_parquet("datos/calidad_p2_vboxes.parquet")
+posicion_hist    <- read_parquet("datos/calidad_p2_posicion_hist.parquet")
+segregacion_nac  <- read_parquet("datos/calidad_p2_segregacion.parquet")
+posicion_fil     <- read_parquet("datos/calidad_p2_posicion_fil.parquet")
+horas_fil        <- read_parquet("datos/calidad_p2_horas_fil.parquet")
+informalidad_fil <- read_parquet("datos/calidad_p2_informalidad_fil.parquet")
+
+anio_ref <- vb$anio_ref
+
+# ── Value boxes ───────────────────────────────────────────────
+pct_domestico_m    <- vb$pct_domestico_m
+pct_cuentapropia_m <- vb$pct_cuentapropia_m
+pct_sinremun_m     <- vb$pct_sinremun_m
+horas_m            <- vb$horas_m
+horas_h            <- vb$horas_h
+brecha_horas       <- vb$brecha_horas
+pct_inf_m          <- vb$pct_inf_m
+pct_inf_h          <- vb$pct_inf_h
+duncan             <- vb$duncan
+
+# ── Heatmap (estático — nivel nacional) ──────────────────────
+orden_heat <- posicion_hist |>
+  filter(sexo_label == "Mujeres") |>
+  group_by(posicion_label) |>
+  summarise(p = mean(pct, na.rm = TRUE)) |>
+  arrange(desc(p)) |>
+  pull(posicion_label)
+
+heatmap_data <- posicion_hist |>
+  filter(sexo_label == "Mujeres") |>
+  mutate(posicion_label = factor(posicion_label, levels = rev(orden_heat)))
+
+# ── Orden categorías para gráfico de horas ───────────────────
+orden_cats <- horas_fil |>
+  filter(etnia_f == "Ninguno", zona_f == "Ninguno", edu_f == "Ninguno",
+         sexo_label == "Hombres") |>
+  arrange(horas_prom) |>
+  pull(posicion_label)
+
+# ── SharedData — uno por pestaña ─────────────────────────────
+sd_posicion     <- SharedData$new(posicion_fil)
+sd_horas        <- SharedData$new(horas_fil)
+sd_informalidad <- SharedData$new(informalidad_fil)
 ```
 
-# Pestaña 1 {.tabset}
+
+# Posición Ocupacional {.tabset}
 
 ## Row {height="15%"}
 
 ```{r}
 #| content: valuebox
-#| title: "Indicador A — Mujeres"
-list(value = "–", color = "#D6604D", icon = "shield-check")
+#| title: "Mujeres en empleo doméstico — 2025"
+list(value = paste0(pct_domestico_m, "%"), color = COLOR_MUJERES, icon = "house-heart-fill")
 ```
 
 ```{r}
 #| content: valuebox
-#| title: "Indicador A — Hombres"
-list(value = "–", color = "#2166AC", icon = "shield-check")
+#| title: "Mujeres en cuenta propia — 2025"
+list(value = paste0(pct_cuentapropia_m, "%"), color = COLOR_MUJERES, icon = "briefcase-fill")
 ```
 
 ```{r}
 #| content: valuebox
-#| title: "Brecha"
-list(value = "–", color = "#0f3460", icon = "arrow-left-right")
+#| title: "Mujeres sin remuneración familiar — 2025"
+list(value = paste0(pct_sinremun_m, "%"), color = "#0f3460", icon = "person-x-fill")
 ```
 
 ## Row {height="85%"}
 
-### Visualización principal {width="60%"}
+### Filtros {width="20%"}
 
 ```{r}
-#| title: "Título del gráfico principal"
-# ── PEGAR AQUÍ el gráfico principal de esta pestaña ─────────
+#| echo: false
+tags$div(
+  style = "padding: 10px;",
+  tags$p(tags$b("Interseccionalidad"),
+         style = "font-size: 14px; color: #0f3460; margin-bottom: 4px;"),
+  tags$p("Selecciona un subgrupo para comparar. ",
+         tags$b("Ninguno"), " muestra el nivel nacional.",
+         style = "font-size: 11px; color: #6c757d; margin-bottom: 14px;"),
+  filter_select("f_etnia_tab1", "Pertenencia étnica:",
+                sd_posicion, ~etnia_f, multiple = FALSE),
+  tags$div(style = "margin-top: 10px;",
+    filter_select("f_zona_tab1", "Zona:",
+                  sd_posicion, ~zona_f, multiple = FALSE)
+  ),
+  tags$div(style = "margin-top: 10px;",
+    filter_select("f_edu_tab1", "Nivel educativo:",
+                  sd_posicion, ~edu_f, multiple = FALSE)
+  )
+)
 ```
 
-### Visualización secundaria {width="40%"}
+### ¿Cómo se distribuye el empleo según tipo? — Colombia 2019–2025 {width="50%"}
 
 ```{r}
-#| title: "Título del gráfico secundario"
-# ── PEGAR AQUÍ el gráfico de apoyo ──────────────────────────
+#| title: "Composición por sexo según posición ocupacional — Colombia 2019–2025"
+#| echo: false
+#| message: false
+#| warning: false
+
+p_heat <- ggplot(
+  heatmap_data,
+  aes(x      = factor(anio),
+      y      = posicion_label,
+      fill   = pct,
+      text   = paste0(
+        "<b>", posicion_label, "</b><br>",
+        "Año: ", anio, "<br>",
+        "% mujeres: ", round(pct, 1), "%<br>",
+        "Personas aprox.: ", format(n_mill, nsmall = 2), " millones"
+      ))
+) +
+  geom_tile(color = "white", linewidth = 0.8) +
+  geom_text(aes(label = paste0(round(pct, 0), "%")),
+            size = 2.8, color = "white", fontface = "bold") +
+  scale_fill_gradient2(
+    low      = COLOR_HOMBRES,
+    mid      = "#f7f7f7",
+    high     = COLOR_MUJERES,
+    midpoint = 50, limits = c(0, 100),
+    name     = "% Mujeres"
+  ) +
+  labs(x = NULL, y = NULL) +
+  theme_minimal(base_size = 10) +
+  theme(legend.position = "right",
+        axis.text.y = element_text(size = 8),
+        panel.grid  = element_blank())
+
+ggplotly(p_heat, tooltip = "text") |>
+  layout(
+    margin = list(b = 70),
+    annotations = list(list(
+      text = CAPTION, xref = "paper", yref = "paper",
+      x = 0, y = -0.2, showarrow = FALSE,
+      font = list(size = 9, color = "gray50"), align = "left"
+    ))
+  )
 ```
 
-# Pestaña 2 {.tabset}
+### ¿Cuántos hombres y mujeres hay en cada tipo de empleo? — 2025 {width="30%"}
+
+```{r}
+#| title: "Composición por sexo según tipo de empleo — 2025"
+#| echo: false
+#| message: false
+#| warning: false
+
+plot_ly(
+  sd_posicion,
+  y             = ~posicion_label,
+  x             = ~pct,
+  color         = ~sexo_label,
+  colors        = c("Hombres" = COLOR_HOMBRES, "Mujeres" = COLOR_MUJERES),
+  type          = "bar",
+  orientation   = "h",
+  text          = ~paste0(round(pct, 0), "%"),
+  textposition  = "inside",
+  insidetextanchor = "middle",
+  textfont      = list(size = 10, color = "white", family = "Arial Bold"),
+  hovertemplate = ~paste0(
+    "<b>", posicion_label, "</b><br>",
+    sexo_label, ": ", round(pct, 1), "%<br>",
+    round(n_mill, 2), " millones de personas",
+    "<extra></extra>"
+  )
+) |>
+  layout(
+    barmode       = "stack",
+    bargap        = 0.25,
+    xaxis = list(
+      title      = "% de trabajadores",
+      ticksuffix = "%",
+      range      = c(0, 115)
+    ),
+    yaxis = list(title = "", tickfont = list(size = 9)),
+    legend        = list(orientation = "h", x = 0.5, xanchor = "center", y = 1.05),
+    plot_bgcolor  = "white",
+    paper_bgcolor = "white",
+    annotations   = list(list(
+      x = 1, y = -0.08, xref = "paper", yref = "paper",
+      text = CAPTION, showarrow = FALSE, xanchor = "right",
+      font = list(size = 8, color = "gray50")
+    )),
+    margin = list(l = 150, r = 20, t = 40, b = 50)
+  )
+```
+
+
+# Jornada Laboral {.tabset}
 
 ## Row {height="15%"}
 
 ```{r}
 #| content: valuebox
-#| title: "Indicador B — Mujeres"
-list(value = "–", color = "#D6604D", icon = "clock")
+#| title: "Horas promedio Mujeres — 2025"
+list(value = paste0(horas_m, " h"), color = COLOR_MUJERES, icon = "clock-fill")
 ```
 
 ```{r}
 #| content: valuebox
-#| title: "Indicador B — Hombres"
-list(value = "–", color = "#2166AC", icon = "clock")
+#| title: "Horas promedio Hombres — 2025"
+list(value = paste0(horas_h, " h"), color = COLOR_HOMBRES, icon = "clock-fill")
 ```
 
 ```{r}
 #| content: valuebox
-#| title: "Brecha"
-list(value = "–", color = "#0f3460", icon = "arrow-left-right")
+#| title: "Brecha de jornada (H − M)"
+list(value = paste0(brecha_horas, " h"), color = "#0f3460", icon = "arrow-left-right")
 ```
 
 ## Row {height="85%"}
 
-### Visualización principal {width="60%"}
+### Filtros {width="20%"}
 
 ```{r}
-#| title: "Título del gráfico principal"
-# ── PEGAR AQUÍ el gráfico principal de esta pestaña ─────────
+#| echo: false
+tags$div(
+  style = "padding: 10px;",
+  tags$p(tags$b("Interseccionalidad"),
+         style = "font-size: 14px; color: #0f3460; margin-bottom: 4px;"),
+  tags$p("Selecciona un subgrupo para comparar. ",
+         tags$b("Ninguno"), " muestra el nivel nacional.",
+         style = "font-size: 11px; color: #6c757d; margin-bottom: 14px;"),
+  filter_select("f_etnia_tab2", "Pertenencia étnica:",
+                sd_horas, ~etnia_f, multiple = FALSE),
+  tags$div(style = "margin-top: 10px;",
+    filter_select("f_zona_tab2", "Zona:",
+                  sd_horas, ~zona_f, multiple = FALSE)
+  ),
+  tags$div(style = "margin-top: 10px;",
+    filter_select("f_edu_tab2", "Nivel educativo:",
+                  sd_horas, ~edu_f, multiple = FALSE)
+  )
+)
 ```
 
-### Visualización secundaria {width="40%"}
+### Jornada laboral semanal promedio por tipo de empleo y sexo — Colombia 2025 {width="80%"}
 
 ```{r}
-#| title: "Título del gráfico secundario"
-# ── PEGAR AQUÍ el gráfico de apoyo ──────────────────────────
+#| title: "Jornada laboral semanal promedio por tipo de empleo y sexo — Colombia 2025"
+#| echo: false
+#| message: false
+#| warning: false
+
+x_max <- ceiling(max(horas_fil$horas_prom, na.rm = TRUE)) + 8
+
+plot_ly(
+  sd_horas,
+  x             = ~horas_prom,
+  y             = ~factor(posicion_label, levels = orden_cats),
+  color         = ~sexo_label,
+  colors        = c("Hombres" = COLOR_HOMBRES, "Mujeres" = COLOR_MUJERES),
+  type          = "bar",
+  orientation   = "h",
+  text          = ~paste0(round(horas_prom, 1), " h"),
+  textposition  = "outside",
+  textfont      = list(size = 10, color = "gray30"),
+  hovertemplate = ~paste0(
+    "<b>", posicion_label, "</b><br>",
+    sexo_label, ": ", round(horas_prom, 1), " h/semana<br>",
+    round(n_mill, 2), " millones de personas",
+    "<extra></extra>"
+  )
+) |>
+  layout(
+    barmode = "group",
+    bargap  = 0.25,
+    xaxis = list(
+      title     = "Horas trabajadas por semana (promedio ponderado)",
+      range     = c(0, x_max),
+      zeroline  = FALSE,
+      showgrid  = TRUE,
+      gridcolor = "#f0f0f0"
+    ),
+    yaxis  = list(title = ""),
+    legend = list(orientation = "h", x = 0.5, xanchor = "center", y = 1.08),
+    plot_bgcolor  = "white",
+    paper_bgcolor = "white",
+    annotations   = list(list(
+      x = 1, y = -0.1, xref = "paper", yref = "paper",
+      text = CAPTION, showarrow = FALSE, xanchor = "right",
+      font = list(size = 9, color = "gray50")
+    )),
+    margin = list(l = 170, r = 80, t = 50, b = 60)
+  )
 ```
 
-# Pestaña 3 {.tabset}
+
+# Informalidad y Segregación {.tabset}
 
 ## Row {height="15%"}
 
 ```{r}
 #| content: valuebox
-#| title: "Indicador C — Mujeres"
-list(value = "–", color = "#D6604D", icon = "bar-chart")
+#| title: "Informalidad Mujeres — 2025"
+list(value = paste0(pct_inf_m, "%"), color = COLOR_MUJERES, icon = "exclamation-triangle-fill")
 ```
 
 ```{r}
 #| content: valuebox
-#| title: "Indicador C — Hombres"
-list(value = "–", color = "#2166AC", icon = "bar-chart")
+#| title: "Informalidad Hombres — 2025"
+list(value = paste0(pct_inf_h, "%"), color = COLOR_HOMBRES, icon = "exclamation-triangle-fill")
+```
+
+```{r}
+#| content: valuebox
+#| title: "Índice de Duncan — 2025"
+list(value = paste0(duncan, "%"), color = "#0f3460", icon = "diagram-3-fill")
 ```
 
 ## Row {height="85%"}
 
-### Visualización principal {width="100%"}
+### Filtros {width="20%"}
 
 ```{r}
-#| title: "Título del gráfico o tabla"
-# ── PEGAR AQUÍ el gráfico o tabla de esta pestaña ───────────
+#| echo: false
+tags$div(
+  style = "padding: 10px;",
+  tags$p(tags$b("Interseccionalidad"),
+         style = "font-size: 14px; color: #0f3460; margin-bottom: 4px;"),
+  tags$p("Selecciona un subgrupo para comparar. ",
+         tags$b("Ninguno"), " muestra el nivel nacional.",
+         style = "font-size: 11px; color: #6c757d; margin-bottom: 14px;"),
+  filter_select("f_etnia_tab3", "Pertenencia étnica:",
+                sd_informalidad, ~etnia_f, multiple = FALSE),
+  tags$div(style = "margin-top: 10px;",
+    filter_select("f_zona_tab3", "Zona:",
+                  sd_informalidad, ~zona_f, multiple = FALSE)
+  ),
+  tags$div(style = "margin-top: 10px;",
+    filter_select("f_edu_tab3", "Nivel educativo:",
+                  sd_informalidad, ~edu_f, multiple = FALSE)
+  ),
+  tags$hr(style = "margin-top: 20px;"),
+  tags$p(
+    tags$b("Nota:"), " El mapa sectorial (derecha) muestra el nivel nacional.",
+    style = "font-size: 10px; color: #6c757d; margin-top: 8px;"
+  )
+)
+```
+
+### Tendencia de la informalidad laboral por sexo — Colombia 2019–2025 {width="50%"}
+
+```{r}
+#| title: "Tendencia de la informalidad laboral por sexo — Colombia 2019–2025"
+#| echo: false
+#| message: false
+#| warning: false
+
+y_max_inf <- ceiling(max(informalidad_fil$pct_inf, na.rm = TRUE)) + 5
+
+# No se puede usar filter() sobre SharedData — se separan trazas con color = ~sexo_label
+plot_ly(
+    data          = sd_informalidad,
+    x             = ~anio,
+    y             = ~pct_inf,
+    color         = ~sexo_label,
+    colors        = c("Hombres" = COLOR_HOMBRES, "Mujeres" = COLOR_MUJERES),
+    type          = "scatter",
+    mode          = "lines+markers",
+    line          = list(width = 2.5),
+    marker        = list(size = 8, line = list(color = "white", width = 1.5)),
+    text          = ~paste0(
+      "<b>", sexo_label, "</b><br>Año: ", anio, "<br>",
+      round(pct_inf, 1), "% informales<br>",
+      round(n_mill, 2), " millones"
+    ),
+    hovertemplate = "%{text}<extra></extra>"
+  ) |>
+  layout(
+    xaxis  = list(title = "", tickvals = 2019:2025,
+                  ticktext = as.character(2019:2025), zeroline = FALSE),
+    yaxis  = list(title = "% del total de ocupados", ticksuffix = "%",
+                  range = c(0, y_max_inf)),
+    legend = list(orientation = "h", x = 0.5, xanchor = "center", y = 1.08),
+    shapes = list(list(
+      type = "line", x0 = 2021, x1 = 2021, y0 = 0, y1 = 1, yref = "paper",
+      line = list(color = "gray60", dash = "dot", width = 1.2)
+    )),
+    annotations = list(
+      list(x = 2021, y = y_max_inf - 3, xref = "x", yref = "y",
+           text = "Cambio<br>Marco 2021", showarrow = FALSE,
+           xanchor = "left", xshift = 5,
+           font = list(size = 8, color = "gray50")),
+      list(x = 0.99, y = 0.97, xref = "paper", yref = "paper",
+           text = "<b>Proxy informal:</b><br>· Cuenta propia<br>· Familiar sin remun.<br>· Jornalero / peón",
+           showarrow = FALSE, xanchor = "right", yanchor = "top",
+           align = "left", bgcolor = "#f8f9fa",
+           bordercolor = "gray80", borderwidth = 1,
+           font = list(size = 9, color = "gray40")),
+      list(x = 1, y = -0.12, xref = "paper", yref = "paper",
+           text = CAPTION, showarrow = FALSE, xanchor = "right",
+           font = list(size = 9, color = "gray50"))
+    ),
+    plot_bgcolor  = "white",
+    paper_bgcolor = "white",
+    margin = list(t = 50, b = 60, l = 60, r = 20)
+  )
+```
+
+### ¿En qué sectores económicos trabajan mujeres y hombres? — Colombia 2025 {width="30%"}
+
+```{r}
+#| title: "Segregación sectorial por sexo — Colombia 2025 (nivel nacional)"
+#| echo: false
+#| message: false
+#| warning: false
+
+duncan_txt <- paste0(
+  "<b>Índice de Duncan ", anio_ref, ": ", duncan, "%</b>  —  ",
+  "El ", duncan, "% de las mujeres ocupadas tendría que cambiar de sector ",
+  "para igualar la distribución masculina."
+)
+
+plot_ly(
+  data          = segregacion_nac,
+  type          = "treemap",
+  labels        = ~seccion,
+  parents       = ~parents,
+  values        = ~pob,
+  text          = ~paste0(round(pct_m, 1), "% mujeres"),
+  textinfo      = "label+text",
+  hovertemplate = ~paste0(
+    "<b>", seccion, "</b><br>",
+    round(pct_m, 1), "% mujeres<br>",
+    total_mill, " millones de ocupados",
+    "<extra></extra>"
+  ),
+  marker = list(
+    colors     = ~pct_m,
+    colorscale = list(
+      list(0,   COLOR_HOMBRES),
+      list(0.5, "#f7f7f7"),
+      list(1,   COLOR_MUJERES)
+    ),
+    cmin       = 0,
+    cmax       = 100,
+    showscale  = TRUE,
+    colorbar   = list(
+      title      = list(text = "% mujeres"),
+      ticksuffix = "%",
+      len        = 0.5,
+      x          = 1.01
+    )
+  )
+) |>
+  layout(
+    annotations = list(
+      list(x = 0.01, y = -0.06, xref = "paper", yref = "paper",
+           text = duncan_txt, showarrow = FALSE, xanchor = "left",
+           font = list(size = 8, color = "gray40")),
+      list(x = 1, y = -0.1, xref = "paper", yref = "paper",
+           text = CAPTION, showarrow = FALSE, xanchor = "right",
+           font = list(size = 9, color = "gray50"))
+    ),
+    paper_bgcolor = "white",
+    margin = list(l = 10, r = 10, t = 30, b = 80)
+  )
+```
+
+
+```{=html}
+<style>
+  /* Ocultar la opción "(All)" de los dropdowns crosstalk */
+  .selectize-dropdown-content .option[data-value=""] { display: none !important; }
+  .selectize-input .item[data-value=""]              { display: none !important; }
+</style>
+
+<script>
+/*
+ * Establece "Ninguno" en los 9 filtros crosstalk de p2.
+ * CORRECCIÓN vs p1: busca el <select> DENTRO del div contenedor,
+ * que es donde selectize adjunta su instancia (no en el div mismo).
+ * Reintenta cada 100 ms hasta 30 segundos.
+ */
+(function () {
+  var TARGET = "Ninguno";
+  var IDS = [
+    "f_etnia_tab1", "f_zona_tab1", "f_edu_tab1",
+    "f_etnia_tab2", "f_zona_tab2", "f_edu_tab2",
+    "f_etnia_tab3", "f_zona_tab3", "f_edu_tab3"
+  ];
+  var done = {};
+
+  var iv = setInterval(function () {
+    var allDone = true;
+    IDS.forEach(function (id) {
+      if (done[id]) return;
+
+      /* El div contenedor tiene el id; el <select> está adentro */
+      var container = document.getElementById(id);
+      var selectEl  = container && container.querySelector("select");
+      var sz = selectEl
+        ? (selectEl.selectize ||
+           (window.$ && $(selectEl).data("selectize")))
+        : null;
+
+      if (sz) {
+        sz.setValue([TARGET], false);
+        done[id] = true;
+      } else {
+        allDone = false;
+      }
+    });
+    if (allDone) clearInterval(iv);
+  }, 100);
+
+  /* Cancelar tras 30 segundos */
+  setTimeout(function () { clearInterval(iv); }, 30000);
+})();
+</script>
 ```

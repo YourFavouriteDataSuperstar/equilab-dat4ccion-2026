@@ -269,29 +269,31 @@ tags$div(
 #| message: false
 #| warning: false
 
-p_to <- ggplot(
+plot_ly(
   sd_totd,
-  aes(x = factor(anio), y = TO, fill = sexo_label,
-      text = paste0(
-        "<b>Año:</b> ",  anio,
-        "<br><b>Sexo:</b> ",  sexo_label,
-        "<br><b>TO:</b> ",    TO, "%",
-        "<br><b>CV:</b> ",    cv_TO, "% (", cal_TO, ")",
-        "<br><b>n obs:</b> ", format(n_obs, big.mark = ".")
-      ))
-) +
-  geom_col(position = position_dodge(width = 0.85), width = 0.75) +
-  scale_fill_manual(values = c("Hombres" = COLOR_HOMBRES, "Mujeres" = COLOR_MUJERES)) +
-  scale_y_continuous(limits = c(0, 80)) +
-  labs(x = "Año", y = "Tasa (%)") +
-  theme_minimal(base_size = 11) +
-  theme(legend.position = "none")
-
-ggplotly(p_to, tooltip = "text") |>
+  x             = ~factor(anio),
+  y             = ~TO,
+  color         = ~sexo_label,
+  colors        = c("Hombres" = COLOR_HOMBRES, "Mujeres" = COLOR_MUJERES),
+  type          = "bar",
+  text          = ~paste0(
+    "<b>Año:</b> ", anio,
+    "<br><b>Sexo:</b> ", sexo_label,
+    "<br><b>TO:</b> ", TO, "%",
+    "<br><b>CV:</b> ", cv_TO, "% (", cal_TO, ")",
+    "<br><b>n obs:</b> ", format(n_obs, big.mark = ".")
+  ),
+  hovertemplate = "%{text}<extra></extra>"
+) |>
   layout(
-    legend    = list(orientation = "h", x = 0.15, y = 1.08),
-    hovermode = "closest",
-    margin    = list(b = 60),
+    barmode = "group",
+    bargap  = 0.3,
+    xaxis   = list(title = "Año"),
+    yaxis   = list(title = "Tasa (%)", range = c(0, 80)),
+    legend  = list(orientation = "h", x = 0.25, y = 1.08),
+    plot_bgcolor  = "white",
+    paper_bgcolor = "white",
+    margin  = list(b = 60),
     annotations = list(list(
       text = CAPTION, xref = "paper", yref = "paper",
       x = 0, y = -0.3, showarrow = FALSE,
@@ -308,29 +310,31 @@ ggplotly(p_to, tooltip = "text") |>
 #| message: false
 #| warning: false
 
-p_td <- ggplot(
+plot_ly(
   sd_totd,
-  aes(x = factor(anio), y = TD, fill = sexo_label,
-      text = paste0(
-        "<b>Año:</b> ",  anio,
-        "<br><b>Sexo:</b> ",  sexo_label,
-        "<br><b>TD:</b> ",    TD, "%",
-        "<br><b>CV:</b> ",    cv_TD, "% (", cal_TD, ")",
-        "<br><b>n obs:</b> ", format(n_obs, big.mark = ".")
-      ))
-) +
-  geom_col(position = position_dodge(width = 0.85), width = 0.75) +
-  scale_fill_manual(values = c("Hombres" = COLOR_HOMBRES, "Mujeres" = COLOR_MUJERES)) +
-  scale_y_continuous(limits = c(0, 30)) +
-  labs(x = "Año", y = "Tasa (%)") +
-  theme_minimal(base_size = 11) +
-  theme(legend.position = "none")
-
-ggplotly(p_td, tooltip = "text") |>
+  x             = ~factor(anio),
+  y             = ~TD,
+  color         = ~sexo_label,
+  colors        = c("Hombres" = COLOR_HOMBRES, "Mujeres" = COLOR_MUJERES),
+  type          = "bar",
+  text          = ~paste0(
+    "<b>Año:</b> ", anio,
+    "<br><b>Sexo:</b> ", sexo_label,
+    "<br><b>TD:</b> ", TD, "%",
+    "<br><b>CV:</b> ", cv_TD, "% (", cal_TD, ")",
+    "<br><b>n obs:</b> ", format(n_obs, big.mark = ".")
+  ),
+  hovertemplate = "%{text}<extra></extra>"
+) |>
   layout(
-    legend    = list(orientation = "h", x = 0.15, y = 1.08),
-    hovermode = "closest",
-    margin    = list(b = 60),
+    barmode = "group",
+    bargap  = 0.3,
+    xaxis   = list(title = "Año"),
+    yaxis   = list(title = "Tasa (%)", range = c(0, 30)),
+    legend  = list(orientation = "h", x = 0.25, y = 1.08),
+    plot_bgcolor  = "white",
+    paper_bgcolor = "white",
+    margin  = list(b = 60),
     annotations = list(list(
       text = CAPTION, xref = "paper", yref = "paper",
       x = 0, y = -0.3, showarrow = FALSE,
@@ -433,10 +437,14 @@ datatable(
     var allDone = true;
     IDS.forEach(function (id) {
       if (done[id]) return;
-      var el = document.getElementById(id);
-      var sz = el ? (el.selectize || (window.$ && $(el).data("selectize"))) : null;
+      /* El div contenedor tiene el id; el <select> está adentro */
+      var container = document.getElementById(id);
+      var selectEl  = container && container.querySelector("select");
+      var sz = selectEl
+        ? (selectEl.selectize || (window.$ && $(selectEl).data("selectize")))
+        : null;
       if (sz) {
-        sz.setValue([TARGET], /* silent = */ false);
+        sz.setValue([TARGET], false);
         done[id] = true;
       } else {
         allDone = false;
