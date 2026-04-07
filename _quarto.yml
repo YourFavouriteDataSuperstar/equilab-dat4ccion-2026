@@ -1,19 +1,43 @@
 project:
-  type: default
+  type: website
   output-dir: _site
+  render:
+    - index.qmd
+    - p1_acceso.qmd
+    - p2_calidad.qmd
+    - p3_salariales.qmd
+    - metodologia.qmd
 
-format:
-  dashboard:
-    theme: cosmo
-    scrolling: false
-    self-contained: true
-    nav-buttons:
+website:
+  title: "Radar de Brechas Laborales de Género"
+  navbar:
+    background: "#1a1a2e"
+    foreground: "#ffffff"
+    left:
+      - text: "Inicio"
+        href: index.qmd
+      - text: "Acceso Laboral"
+        href: p1_acceso.qmd
+      - text: "Calidad del Empleo"
+        href: p2_calidad.qmd
+      - text: "Brechas Salariales"
+        href: p3_salariales.qmd
+      - text: "Metodología"
+        href: metodologia.qmd
+    right:
       - icon: github
         href: https://github.com/equilab-ean/equilab-dat4ccion-2026
-    logo: ""
-    footer: |
+
+  page-footer:
+    center: |
       Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026.
       Estimaciones ponderadas con factor de expansión (fex).
+    background: "#1a1a2e"
+
+format:
+  html:
+    css: styles/equilab.css
+    theme: cosmo
 
 execute:
   echo: false

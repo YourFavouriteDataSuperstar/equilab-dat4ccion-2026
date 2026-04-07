@@ -1,0 +1,186 @@
+---
+title: "Ficha Metodológica"
+format: closeread-html
+css: styles/equilab.css
+---
+
+```{=html}
+<div class="eq-hero">
+  <span class="eq-hero-badge">Ficha Metodológica</span>
+  <h1>¿Cómo se construyó este análisis?</h1>
+  <p>
+    Decisiones de diseño, fuentes de datos, filtros aplicados y limitaciones
+    del estudio.
+  </p>
+</div>
+```
+
+---
+
+:::{.cr-section}
+
+:::{focus-on="cr-fuente"}
+## Fuente de datos
+
+Los análisis usan microdatos de la **Gran Encuesta Integrada de Hogares (GEIH)**
+del DANE para el período 2019–2025. La GEIH es la principal encuesta de mercado
+laboral de Colombia, con cobertura nacional y representatividad a nivel de
+cabecera municipal y resto rural.
+
+Se utilizan los módulos de **características generales**, **ocupados** y
+**desocupados e inactivos** para cada período trimestral / anual según la
+dimensión analizada.
+:::
+
+:::{focus-on="cr-filtros"}
+## Filtros aplicados
+
+La muestra analítica aplica los siguientes criterios en todos los cálculos:
+
+- **Edad:** población en edad de trabajar, 15 a 99 años
+- **Condición de actividad:** `condicion_activ == 1` (activos)
+- **Sexo:** variable dicotómica: 1 = Hombre, 2 = Mujer
+- **Factor de expansión:** todas las estimaciones usan `fex` para ser
+  representativas de la población colombiana
+
+Para los indicadores de ingresos se excluyen observaciones con ingreso cero
+o negativo en las estimaciones de promedio.
+:::
+
+:::{focus-on="cr-marco"}
+## Cambio de marco muestral 2021
+
+En 2021, el DANE realizó una **renovación del marco muestral** de la GEIH. Esto
+genera una discontinuidad estadística en las series de tiempo: los cambios
+observados entre 2020 y 2021 no son completamente atribuibles a variaciones del
+mercado laboral.
+
+Por esta razón, todas las gráficas de series temporales incluyen una **línea
+punteada en 2021** que señala este punto de quiebre. Las comparaciones entre
+períodos antes y después de 2021 deben interpretarse con cautela.
+:::
+
+:::{focus-on="cr-indicadores"}
+## Indicadores calculados
+
+Los indicadores principales del estudio son:
+
+**Módulo 1 — Acceso laboral**
+- Tasa global de participación (TGP)
+- Tasa de ocupación (TO)
+- Tasa de desempleo (TD)
+- Tasa de inactividad
+
+**Módulo 2 — Calidad del empleo**
+- Tasa de formalidad (cotizante a pensión)
+- Afiliación a salud y pensiones
+- Promedio de horas semanales trabajadas
+- Subempleo por horas insuficientes
+
+**Módulo 3 — Brechas salariales**
+- Ingreso laboral promedio y mediano
+- Brecha salarial no ajustada (%)
+- Ratio de ingresos M/H
+- Brecha por sector, educación y posición ocupacional
+:::
+
+:::{focus-on="cr-etica"}
+## Consideraciones éticas y limitaciones
+
+**Limitaciones del enfoque:**
+
+- La GEIH usa una variable de sexo binaria (hombre/mujer). El análisis no puede
+  capturar experiencias de personas no binarias o trans.
+- Las brechas reportadas son **descriptivas**, no causales. No controlamos por
+  todas las variables que podrían explicarlas.
+- Los datos de ingresos en encuestas de hogares tienden a subreportar ingresos
+  altos, lo que puede afectar las estimaciones en los extremos de la distribución.
+
+**Uso ético:**
+Los resultados deben usarse para informar políticas de reducción de brechas, no
+para justificarlas o naturalizarlas.
+:::
+
+:::{#cr-fuente .sticky}
+<div class="eq-sticky-card">
+  <span class="eq-sticky-stat">GEIH</span>
+  <span class="eq-sticky-label">Gran Encuesta Integrada de Hogares</span>
+  <hr>
+  <ul style="font-size:0.85rem; color:#6c757d; margin:0; padding-left:1.2rem;">
+    <li>DANE — Colombia</li>
+    <li>Período: 2019–2025</li>
+    <li>Cobertura nacional</li>
+  </ul>
+</div>
+:::
+
+:::{#cr-filtros .sticky}
+<div class="eq-sticky-card">
+  <span class="eq-sticky-label" style="font-size:0.8rem; text-transform:uppercase; letter-spacing:0.05em;">Filtros aplicados</span>
+  <hr>
+  <ul style="font-size:0.85rem; color:#6c757d; margin:0; padding-left:1.2rem;">
+    <li>Edad: 15–99 años</li>
+    <li><code>condicion_activ == 1</code></li>
+    <li>Sexo: 1 (H) o 2 (M)</li>
+    <li>Ponderado por <code>fex</code></li>
+  </ul>
+</div>
+:::
+
+:::{#cr-marco .sticky}
+<div class="eq-sticky-card mujeres" style="border-top-color:#ffc107;">
+  <span class="eq-sticky-stat" style="color:#856404;">2021</span>
+  <span class="eq-sticky-label">Cambio de marco muestral</span>
+  <hr>
+  <p style="font-size:0.82rem; color:#6c757d; margin:0;">
+    Discontinuidad estadística en todas las series. Ver línea punteada en gráficos.
+  </p>
+</div>
+:::
+
+:::{#cr-indicadores .sticky}
+<div class="eq-sticky-card">
+  <span class="eq-sticky-label" style="font-size:0.8rem; text-transform:uppercase; letter-spacing:0.05em;">3 módulos de análisis</span>
+  <hr>
+  <ul style="font-size:0.85rem; color:#6c757d; margin:0; padding-left:1.2rem;">
+    <li>Acceso laboral</li>
+    <li>Calidad del empleo</li>
+    <li>Brechas salariales</li>
+  </ul>
+</div>
+:::
+
+:::{#cr-etica .sticky}
+<div class="eq-sticky-card" style="border-top-color:#6c757d;">
+  <span class="eq-sticky-label" style="font-size:0.8rem; text-transform:uppercase; letter-spacing:0.05em;">Nota ética</span>
+  <hr>
+  <p style="font-size:0.82rem; color:#6c757d; margin:0;">
+    Los resultados describen brechas existentes. Su uso debe orientarse a
+    reducirlas, no a justificarlas.
+  </p>
+</div>
+:::
+
+:::
+
+---
+
+## Paquetes y herramientas
+
+| Herramienta | Versión mínima | Uso |
+|-------------|---------------|-----|
+| Quarto      | 1.4           | Renderizado del sitio |
+| R           | 4.2           | Análisis estadístico |
+| `arrow`     | —             | Lectura de Parquets GEIH |
+| `dplyr`     | —             | Manipulación de datos |
+| `ggplot2`   | —             | Visualizaciones estáticas |
+| `plotly`    | —             | Interactividad en gráficos |
+| `crosstalk` | —             | Filtros del lado del cliente |
+| `survey`    | —             | Estimaciones con diseño muestral |
+| `Hmisc`     | —             | Estadísticas ponderadas |
+| `gt`        | —             | Tablas de resultados |
+
+<p class="eq-fuente" style="margin-top:2rem;">
+  Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026.
+  Estimaciones ponderadas con factor de expansión (fex).
+</p>
