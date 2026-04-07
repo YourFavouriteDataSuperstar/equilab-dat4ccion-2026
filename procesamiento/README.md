@@ -18,9 +18,11 @@ El pipeline tiene 4 pasos secuenciales. Los pasos 1–4 son **opcionales** para 
 │          ↓               extraidos/{anio}/*.csv                 │
 │  03_crear_parquet_ocupados.py   Armoniza → parquet ocupados     │
 │  04_crear_parquet_pet.py        Armoniza → parquet PET          │
+│  05_crear_parquet_genero.py     Extrae identidad de género      │
 │          ↓                                                      │
 │  datos/geih_ocupados_2019_2025.parquet  (Páginas 2, 3 y O-B)   │
 │  datos/geih_pet_2019_2025.parquet       (Página 1: TGP/TO/TD)  │
+│  datos/geih_genero_2022_2025.parquet    (Análisis género diverso)│
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -86,6 +88,20 @@ python 04_crear_parquet_pet.py
 Lee Fuerza de trabajo + Características generales, une, armoniza y filtra a PET (≥15 años). Genera el parquet para calcular TGP, TO y TD.
 
 Salida: `datos/geih_pet_2019_2025.parquet` (~46 MB, 4.9M filas).
+
+---
+
+## Paso 5 — Crear parquet de identidad de género
+
+```bash
+python 05_crear_parquet_genero.py
+```
+
+Extrae las variables de identidad de género (P3039) y orientación sexual (P3038) del módulo Características generales para 2022-2025 (Marco 2018). Estas variables no existen en Marco 2005 (2019-2020), por lo que se guardan en un parquet complementario en vez de integrarse al principal.
+
+Genera una variable derivada `genero_diverso` (0=cisgénero, 1=diverso) y conserva las llaves de cruce para hacer join con los parquets de ocupados y PET.
+
+Salida: `datos/geih_genero_2022_2025.parquet` (~3.3M filas, 2022-2025).
 
 ---
 
