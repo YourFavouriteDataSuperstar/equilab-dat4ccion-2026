@@ -1,27 +1,90 @@
 ---
-title: "Demo de Diseño — EQUILAB DAT4CCIÓN 2026"
-subtitle: "Vista previa de todos los componentes CSS"
+title: "EQUILAB - DAT4CCIÓN 2026"
 format:
   html:
     css: styles/equilab.css
     theme: cosmo
     toc: true
     toc-title: "Componentes"
+    toc-location: right
 ---
 
-> Este archivo es solo para probar el diseño. No hace parte del sitio final.
+```{=html}
+<style>
+  /* Fondo degradado en los primeros 50vh — cubre hero Y sidebar */
+  body::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 50vh;
+    background: linear-gradient(135deg, var(--color-mujeres) 0%, var(--color-primario) 100%);
+    z-index: 0;
+  }
 
----
+  /* Hero transparente — el fondo lo pone body::before */
+  .eq-hero {
+    background: transparent !important;
+    position: relative;
+    z-index: 1;
+  }
 
-## Hero de portada
+  /* Sidebar sobre el fondo, sin fondo propio */
+  nav#quarto-margin-sidebar {
+    position: relative;
+    z-index: 1;
+    background: transparent !important;
+    padding-top: 1.5rem;
+  }
+
+  /* TOC texto blanco */
+  #TOC .toc-title {
+    color: #ffffff !important;
+  }
+
+  #TOC ul li a {
+    color: rgba(255,255,255,0.75) !important;
+    font-size: 1.1rem !important;
+    border-right-color: rgba(255,255,255,0.3) !important;
+  }
+
+  #TOC ul li a:hover,
+  #TOC ul li a.active {
+    color: #ffffff !important;
+    border-right-color: #ffffff !important;
+  }
+
+  /* Título de página: izquierda, blanco, sobre el fondo */
+  #title-block-header,
+  .quarto-title-block {
+    position: relative;
+    z-index: 1;
+    text-align: left !important;
+    padding-left: 2rem !important;
+    margin-left: 0 !important;
+  }
+
+  #title-block-header h1.title,
+  .quarto-title h1 {
+    color: #ffffff !important;
+    text-align: left !important;
+  }
+
+  /* Hero: contenido alineado a la izquierda con padding */
+  .eq-hero {
+    padding-left: 2rem !important;
+    padding-right: 1rem !important;
+  }
+</style>
+```
 
 ```{=html}
 <div class="eq-hero">
   <span class="eq-hero-badge">Colombia · GEIH 2019–2025</span>
-  <h1>Radar de Brechas Laborales de Género</h1>
+  <h1>Radar de brechas laborales para las mujeres en Colombia</h1>
   <p>
-    Un análisis de las desigualdades entre hombres y mujeres en el mercado
-    laboral colombiano, a partir de la Gran Encuesta Integrada de Hogares del DANE.
+    Un análisis que sigue la Encuesta Integrada de Hogares 2019-2025 del DANE
+    buscando comprender brechas de género; quién consigue empleo, en qué
+    condiciones, cuánto gana, y por qué existen esas diferencias.
   </p>
 </div>
 ```

@@ -4,22 +4,24 @@
    del sitio via _quarto.yml
    ============================================================ */
 
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Chiron+GoRound+TC:wght@300;400;500;700&display=swap');
+
 /* ── Variables de marca ────────────────────────────────────── */
 :root {
   --color-fondo:       #1a1a2e;
-  --color-acento:      #16213e;
-  --color-primario:    #0f3460;
-  --color-hombres:     #2166AC;
-  --color-mujeres:     #D6604D;
+  --color-acento:      #004457;
+  --color-primario:    #0086ab;
+  --color-hombres:     #5f7300;
+  --color-mujeres:     #6b2d50;
   --color-neutro:      #6c757d;
-  --color-blanco:      #ffffff;
+  --color-blanco:      #f4f4f4;
   --color-texto:       #212529;
   --color-texto-claro: #f8f9fa;
   --color-borde:       #dee2e6;
   --color-superficie:  #f8f9fa;
 
-  --fuente-titulo:  'Segoe UI', system-ui, sans-serif;
-  --fuente-cuerpo:  'Segoe UI', system-ui, sans-serif;
+  --fuente-titulo:  'Outfit', 'Segoe UI', system-ui, sans-serif;
+  --fuente-cuerpo:  'Chiron GoRound TC', 'Segoe UI', system-ui, sans-serif;
 
   --radio-card:    0.5rem;
   --sombra-card:   0 2px 8px rgba(0,0,0,0.10);
@@ -127,35 +129,88 @@ h1, h2, h3, h4 {
 
 /* ── Hero de portada ────────────────────────────────────────── */
 .eq-hero {
-  background: linear-gradient(135deg, var(--color-fondo) 0%, var(--color-primario) 100%);
+  background: linear-gradient(135deg, var(--color-mujeres) 0%, var(--color-primario) 100%);
   color: var(--color-blanco);
+  min-height: 50vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   padding: 4rem 2rem 3rem;
   border-radius: 0 0 var(--radio-card) var(--radio-card);
   margin-bottom: 2rem;
 }
 
 .eq-hero h1 {
-  font-size: 2.2rem;
-  margin-bottom: 0.5rem;
+  font-size: 2.8rem;
+  margin-bottom: 0.8rem;
   color: var(--color-blanco);
+  line-height: 1.2;
+  max-width: 700px;
 }
 
 .eq-hero p {
-  font-size: 1.05rem;
-  opacity: 0.85;
-  max-width: 640px;
+  font-size: 1.1rem;
+  opacity: 0.88;
+  max-width: 620px;
+  line-height: 1.6;
 }
 
 .eq-hero-badge {
   display: inline-block;
+  align-self: flex-start;
   background: rgba(255,255,255,0.15);
   border: 1px solid rgba(255,255,255,0.3);
   border-radius: 2rem;
   padding: 0.25rem 0.9rem;
   font-size: 0.8rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.2rem;
   letter-spacing: 0.05em;
   text-transform: uppercase;
+}
+
+/* ── TOC lateral derecho ────────────────────────────────────── */
+#TOC {
+  text-align: left;
+}
+
+#TOC .toc-title {
+  text-align: left;
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-primario);
+  margin-bottom: 0.8rem;
+}
+
+#TOC ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#TOC ul li a {
+  display: block;
+  text-align: right;
+  font-size: 0.82rem;
+  color: var(--color-neutro);
+  padding: 0.2rem 0;
+  text-decoration: none;
+  border-right: 2px solid var(--color-borde);
+  padding-right: 0.7rem;
+  transition: color var(--transicion), border-color var(--transicion);
+}
+
+#TOC ul li a:hover {
+  color: var(--color-primario);
+  border-right-color: var(--color-primario);
+}
+
+#TOC ul li a.active {
+  color: var(--color-primario);
+  font-weight: 600;
+  border-right-color: var(--color-primario);
 }
 
 /* ── Value boxes (dashboards) ───────────────────────────────── */
