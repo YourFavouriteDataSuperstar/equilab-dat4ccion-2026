@@ -1,66 +1,106 @@
-# Cómo reproducir el pipeline de datos
+# Pipeline de datos — Reproducibilidad completa
 
-Este directorio contiene los scripts necesarios para descargar y armonizar los microdatos GEIH del DANE, y reproducir los parquets que usa el dashboard.
+Este directorio contiene los scripts para reproducir los parquets que usa el dashboard, partiendo desde cero con los microdatos del DANE.
+
+**Si solo quieres correr el dashboard**, no necesitas nada de esta carpeta. Descarga los parquets desde Zenodo (ver `datos/README.md`) y ponlos en `datos/`.
+
+---
+
+## Visión general
+
+El pipeline tiene 4 pasos secuenciales. Los pasos 1–4 son **opcionales** para quien clone el repositorio: los parquets ya procesados están disponibles en Zenodo.
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  01_descarga_geih.py     Descarga ZIPs del portal DANE          │
+│          ↓               datos_crudos/{anio}/*.zip              │
+│  02_extraer_geih.py      Extrae CSVs de los ZIPs               │
+│          ↓               extraidos/{anio}/*.csv                 │
+│  03_crear_parquet_ocupados.py   Armoniza → parquet ocupados     │
+│  04_crear_parquet_pet.py        Armoniza → parquet PET          │
+│          ↓                                                      │
+│  datos/geih_ocupados_2019_2025.parquet  (Páginas 2, 3 y O-B)   │
+│  datos/geih_pet_2019_2025.parquet       (Página 1: TGP/TO/TD)  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+Las carpetas intermedias (`datos_crudos/`, `extraidos/`, `armonizados/`) están en el `.gitignore` porque son temporales y pesadas (~50 GB en total).
 
 ---
 
 ## Requisitos
 
-- Python 3.8+ con `requests` y `beautifulsoup4`:
-  ```bash
-  pip install requests beautifulsoup4
-  ```
-- Espacio en disco: ~50 GB para los microdatos crudos (ZIP + CSV descomprimidos).
-
----
-
-## Paso 1 — Descargar los microdatos del DANE
+Python 3.8+ con las siguientes dependencias:
 
 ```bash
-# Descargar todos los años (2019–2025)
-python descarga_geih.py
-
-# Solo años específicos
-python descarga_geih.py --anios 2023 2024 2025
+pip install requests beautifulsoup4 pandas pyarrow
 ```
-
-Los archivos se descargan desde el portal público del DANE:
-[microdatos.dane.gov.co](https://microdatos.dane.gov.co)
-
-Destino por defecto: `../datos_crudos/{anio}/`
 
 ---
 
-## Paso 2 — Armonizar y generar los parquets
+## Paso 1 — Descargar microdatos del DANE
 
-> Los scripts de armonización (`armonizar.py` y `armonizar_pet.py`) se agregarán al repo cuando estén listos.
-
-La armonización:
-1. Lee los módulos CSV de cada año (Ocupados, Características generales, Fuerza de trabajo)
-2. Unifica nombres de variables entre Marco 2005 (2019–2020) y Marco 2018 (2021–2025)
-3. Genera dos parquets consolidados
-
-Salida esperada:
+```bash
+python 01_descarga_geih.py                        # todos los años (2019–2025)
+python 01_descarga_geih.py --anios 2024 2025       # solo algunos años
+python 01_descarga_geih.py --destino "./datos_crudos"  # destino por defecto
 ```
-datos/
-├── geih_ocupados_2019_2025.parquet   # 48 MB — Panel de ocupados (Páginas 2, 3 y O-B)
-└── geih_pet_2019_2025.parquet        # 46 MB — Panel PET completo (Página 1)
+
+Descarga los ZIPs mensuales desde [microdatos.dane.gov.co](https://microdatos.dane.gov.co). Destino: `datos_crudos/{anio}/`. Requiere ~50 GB de espacio libre.
+
+---
+
+## Paso 2 — Extraer CSVs de los ZIPs
+
+```bash
+python 02_extraer_geih.py --todos                  # todos los años
+python 02_extraer_geih.py 2024 2025                 # solo algunos años
 ```
+
+Extrae los módulos CSV de cada ZIP mensual. Maneja automáticamente las diferencias entre marcos muestrales (2005 vs 2018), ZIPs anidados, typos del DANE y el formato semestral de 2021.
+
+Salida: `extraidos/{anio}/Ocupados.csv`, `Caracteristicas_generales.csv`, `Fuerza_de_trabajo.csv`, etc.
+
+---
+
+## Paso 3 — Crear parquet de ocupados
+
+```bash
+python 03_crear_parquet_ocupados.py
+```
+
+Lee los CSVs extraídos, une los módulos Ocupados + Características generales + Fuerza de trabajo, crea variables armonizadas entre marcos, y genera el parquet panel.
+
+Incluye la corrección del swap de códigos 7↔8 en `posicion_ocup` para los años 2019–2020 (Marco 2005), integrada directamente en el proceso de armonización.
+
+Salida: `datos/geih_ocupados_2019_2025.parquet` (~48 MB, 2.6M filas).
+
+---
+
+## Paso 4 — Crear parquet PET
+
+```bash
+python 04_crear_parquet_pet.py
+```
+
+Lee Fuerza de trabajo + Características generales, une, armoniza y filtra a PET (≥15 años). Genera el parquet para calcular TGP, TO y TD.
+
+Salida: `datos/geih_pet_2019_2025.parquet` (~46 MB, 4.9M filas).
 
 ---
 
 ## Alternativa rápida — Zenodo
 
-Si no quieres reproducir el pipeline completo, descarga los parquets directamente desde Zenodo:
+Si no quieres reproducir el pipeline, descarga los parquets directamente:
 
 **DOI: pendiente de publicación**
 
-Coloca los archivos en `datos/` y ejecuta directamente `quarto render dashboard.qmd`.
+Coloca los archivos en `datos/` y listo.
 
 ---
 
-## Notas metodológicas
+## Notas
 
-- Los microdatos crudos del DANE no se incluyen en este repositorio (tamaño y política de redistribución).
-- Los parquets en Zenodo son datos *procesados y armonizados* derivados de fuentes públicas del DANE.
-- Para más detalles sobre la armonización de variables ver `docs/guia_metodologica_dashboard.qmd`.
+- Los microdatos crudos del DANE no se redistribuyen. Los parquets en Zenodo son datos procesados derivados de fuentes públicas.
+- Para detalles sobre la armonización de variables, ver `docs/guia_metodologica_dashboard.qmd`.
+- La corrección del swap `posicion_ocup` 7↔8 (Problema 1 en `reporte_problemas_datos.txt`) está integrada en el paso 3. No requiere parches adicionales.

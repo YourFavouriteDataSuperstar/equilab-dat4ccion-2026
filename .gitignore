@@ -10,6 +10,11 @@ datos/*.RDS
 datos/*.rds
 datos/*.feather
 
+# Pipeline de procesamiento — archivos temporales y pesados
+procesamiento/datos_crudos/
+procesamiento/extraidos/
+procesamiento/armonizados/
+
 # Salida de Quarto (se regenera con quarto render)
 /.quarto/
 _site/
