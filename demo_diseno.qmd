@@ -4,7 +4,7 @@ format:
   html:
     css: styles/equilab.css
     theme: cosmo
-    toc: true
+    toc: false
     toc-title: "Componentes"
     toc-location: right
 ---
@@ -16,7 +16,7 @@ format:
     content: '';
     position: absolute;
     top: 0; left: 0;
-    width: 100%; height: 50vh;
+    width: 100%; height: 68vh;
     background: linear-gradient(135deg, var(--color-mujeres) 0%, var(--color-primario) 100%);
     z-index: 0;
   }
@@ -53,26 +53,31 @@ format:
     border-right-color: #ffffff !important;
   }
 
-  /* Título de página: izquierda, blanco, sobre el fondo */
+  /* Eliminar fondo blanco del título de Quarto */
   #title-block-header,
-  .quarto-title-block {
+  .quarto-title-block,
+  header.quarto-title-block {
+    background: transparent !important;
+    background-color: transparent !important;
     position: relative;
     z-index: 1;
-    text-align: left !important;
-    padding-left: 2rem !important;
+  }
+
+  /* Quitar el centrado del contenido principal */
+  main#quarto-document-content,
+  #quarto-document-content {
     margin-left: 0 !important;
-  }
-
-  #title-block-header h1.title,
-  .quarto-title h1 {
-    color: #ffffff !important;
-    text-align: left !important;
-  }
-
-  /* Hero: contenido alineado a la izquierda con padding */
-  .eq-hero {
+    margin-right: 0 !important;
+    max-width: none !important;
     padding-left: 2rem !important;
     padding-right: 1rem !important;
+  }
+
+  /* Hero alineado a la izquierda */
+  .eq-hero {
+    padding-left: 0 !important;
+    padding-right: 1rem !important;
+    align-items: flex-start !important;
   }
 </style>
 ```
@@ -87,6 +92,46 @@ format:
     condiciones, cuánto gana, y por qué existen esas diferencias.
   </p>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  // ── Título principal: izquierda + blanco ──────────────────
+  const titleBlock = document.querySelector(
+    "#title-block-header, .quarto-title-block, header"
+  );
+  if (titleBlock) {
+    Object.assign(titleBlock.style, {
+      textAlign:       "left",
+      paddingLeft:     "2rem",
+      background:      "transparent",
+      backgroundColor: "transparent"
+    });
+  }
+
+  const h1 = document.querySelector(
+    "#title-block-header h1, .quarto-title h1, header h1"
+  );
+  if (h1) {
+    Object.assign(h1.style, {
+      color:     "#ffffff",
+      textAlign: "left"
+    });
+  }
+
+  // ── Contenido principal: quitar centrado de Quarto ────────
+  const main = document.querySelector("main#quarto-document-content");
+  if (main) {
+    Object.assign(main.style, {
+      marginLeft:  "0",
+      marginRight: "0",
+      maxWidth:    "none",
+      paddingLeft: "2rem"
+    });
+  }
+
+});
+</script>
 ```
 
 ---
