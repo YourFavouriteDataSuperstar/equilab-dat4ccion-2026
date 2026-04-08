@@ -273,9 +273,12 @@ h1, h2, h3, h4 {
 }
 
 .cr-section h2 {
-  font-size: 1.4rem;
-  color: var(--color-primario);
-  margin-bottom: 0.8rem;
+  font-family: 'Outfit', 'Segoe UI', system-ui, sans-serif;
+  font-weight: 700;
+  color: #0086ab;
+  font-size: 1.5rem;
+  margin-bottom: 0.6rem;
+  margin-top: 0;
 }
 
 .eq-sticky-card {
@@ -349,4 +352,214 @@ h1, h2, h3, h4 {
   .eq-hero h1   { font-size: 1.5rem; }
   .eq-nav-cards { grid-template-columns: 1fr; }
   .eq-sticky-stat { font-size: 2.2rem; }
+}
+
+/* ============================================================
+   PORTADA — Estilos de la pagina de inicio (closeread)
+   ============================================================ */
+
+/* ── Cuadricula en el area de stickies ─────────────────────── */
+.cr-section .sticky-col,
+.cr-section .sticky-col-stack {
+  background-image:
+    linear-gradient(rgba(150,150,150,0.18) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(150,150,150,0.18) 1px, transparent 1px);
+  background-size: 32px 32px;
+  background-color: #f4f4f4;
+}
+
+/* ── Primer bloque de narrativa con espacio superior ────────── */
+.cr-section .narrative-col > *:first-child {
+  padding-block-start: 8svh;
+}
+
+/* ── Parrafos narrativos ───────────────────────────────────── */
+.cr-section p {
+  line-height: 1.75;
+  color: #212529;
+}
+
+/* ── Stickies: centrar contenido verticalmente ─────────────── */
+.cr-section .sticky {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── PORTADA: sidebar lila ─────────────────────────────────── */
+.portada-section .narrative-col {
+  background-color: #efe5f6 !important;
+}
+
+.portada-section .narrative-col > *:first-child {
+  padding-block-start: 65svh !important;
+}
+
+/* ── PORTADA: sticky layout ────────────────────────────────── */
+.eq-portada-sticky {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  width: 100%;
+  padding: 3.5rem 4rem;
+  box-sizing: border-box;
+}
+
+.eq-portada-titulo {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 900;
+  font-size: clamp(5rem, 11vw, 9rem);
+  color: #000000;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+}
+
+.eq-portada-subtitulo {
+  font-family: 'Public Sans', sans-serif;
+  font-weight: 700;
+  font-size: clamp(1.6rem, 3.2vw, 2.8rem);
+  color: #004457;
+  line-height: 1.2;
+  max-width: 85%;
+}
+
+.eq-portada-fecha {
+  font-family: 'Public Sans', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #212529;
+  text-align: right;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.portada-bienvenida {
+  font-family: 'Public Sans', sans-serif;
+  font-style: italic;
+  font-size: 1.15rem;
+  color: #212529;
+  line-height: 1.4;
+}
+
+/* ── Sidebar lila compartido (secciones 2-8) ───────────────── */
+.lila-section .narrative-col {
+  background-color: #efe5f6 !important;
+}
+
+.lila-section .narrative-col > *:first-child {
+  padding-block-start: 45svh !important;
+}
+
+.momentos-section .narrative-col > *:first-child {
+  padding-block-start: 28svh !important;
+}
+
+/* ── Titulos del sidebar ───────────────────────────────────── */
+.eq-sidebar-titulo {
+  font-family: 'Public Sans', sans-serif;
+  font-style: italic;
+  font-size: clamp(1.8rem, 2.5vw, 2.4rem);
+  color: #212529;
+  line-height: 1.3;
+}
+
+.eq-sidebar-sub {
+  font-family: 'Public Sans', sans-serif;
+  font-size: 0.82rem;
+  color: #212529;
+  margin-top: 0.8rem;
+  line-height: 1.4;
+}
+
+/* ── Sticky: texto "Asi lo hicimos" ────────────────────────── */
+.eq-hicimos-texto {
+  max-width: 500px;
+  text-align: center;
+  font-family: 'Public Sans', sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.75;
+  color: #212529;
+  padding: 2rem;
+}
+
+.eq-hicimos-texto p + p {
+  margin-top: 1rem;
+}
+
+/* ── Boton guia metodologica ───────────────────────────────── */
+.eq-metodologia-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.eq-metodologia-label {
+  font-family: 'Public Sans', sans-serif;
+  font-size: 0.78rem;
+  color: #6c757d;
+}
+
+.eq-metodologia-btn {
+  background-color: #dde4bb;
+  border: 1.5px solid #b5bf8a;
+  border-radius: 10px;
+  padding: 0.75rem 2.5rem;
+  font-family: 'Public Sans', sans-serif;
+  font-size: 0.95rem;
+  color: #212529;
+  text-decoration: none;
+  display: inline-block;
+  transition: background-color 0.2s;
+}
+
+.eq-metodologia-btn:hover {
+  background-color: #c9d4a0;
+}
+
+/* ── Grid de momentos de analisis ──────────────────────────── */
+.eq-momentos-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2rem;
+  max-width: 420px;
+  margin: auto;
+}
+
+.eq-momento-card {
+  border-radius: 10px;
+  padding: 1.2rem 1rem;
+  text-align: center;
+  font-family: 'Public Sans', sans-serif;
+  font-size: 0.88rem;
+  color: #212529;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80px;
+  line-height: 1.3;
+}
+
+.eq-momento-card.acceso       { background-color: #dde4bb; border: 1.5px solid #b5bf8a; }
+.eq-momento-card.calidad      { background-color: #e2c5d6; border: 1.5px solid #c0a0b8; }
+.eq-momento-card.salariales   { background-color: #e6d1c6; border: 1.5px solid #c4ab9e; }
+.eq-momento-card.diversidades { background-color: #d1e4e9; border: 1.5px solid #a8c5cc; }
+.eq-momento-card.placeholder  { visibility: hidden; }
+
+/* ── Grid de creadoras ─────────────────────────────────────── */
+.eq-creadoras-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5rem 3rem;
+  max-width: 380px;
+  margin: auto;
+  text-align: center;
+}
+
+.eq-creadora-nombre {
+  font-family: 'Public Sans', sans-serif;
+  font-size: 1rem;
+  color: #212529;
 }
