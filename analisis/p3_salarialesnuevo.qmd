@@ -5,8 +5,6 @@ date: today
 lang: es
 format:
   dashboard:
-    toc: true
-    toc-depth: 2
     theme: cosmo
     self-contained: true
     code-fold: true
@@ -33,7 +31,6 @@ COLOR_MUJERES <- "#D6604D"
 #| include: false
 #| context: setup
 df_ocup <- read_parquet("../datos/geih_ocupados_2019_2025.parquet")
-glimpse(df_ocup)
 ```
 
 ```{r filtros}
@@ -62,30 +59,25 @@ df_base <- df_ocup |>
   )
 ```
 
-Visualizacion 1 - Distribución ingresos mensuales
-
-## Column {height="100%"}
-
-### {width="50%"}
-
-```{r espacio-izq}
-#| echo: false
-plot_ly() |>
-  layout(
-    xaxis = list(visible = FALSE),
-    yaxis = list(visible = FALSE),
-    paper_bgcolor = "rgba(0,0,0,0)",
-    plot_bgcolor  = "rgba(0,0,0,0)",
-    margin = list(t = 0, b = 0, l = 0, r = 0)
+```{r calculo-mediana}
+#| include: false
+#| context: setup
+mediana_anual <- df_base |>
+  group_by(anio, sexo_label) |>
+  summarise(
+    mediana_ing = Hmisc::wtd.quantile(ing_total, weights = fex, probs = 0.5, na.rm = TRUE),
+    .groups = "drop"
   )
+
+anio_reciente <- max(df_base$anio)
 ```
 
-### {width="50%"}
+## Row {height="50%"}
+
+### Distribución del ingreso mensual por sexo {width="50%"}
 
 ```{r viz-boxplot}
 #| echo: false
-# Boxplot vertical: ingresos en eje Y, sexo en eje X — cuartiles ponderados por fex
-
 boxstat_pond <- function(x, w) {
   q   <- wtd.quantile(x, weights = w, probs = c(0.25, 0.5, 0.75), na.rm = TRUE)
   iqr <- unname(q[3] - q[1])
@@ -100,8 +92,8 @@ boxstat_pond <- function(x, w) {
 
 anios <- 2019:2025
 pasos <- list()
-
 stats_list <- list()
+
 for (i in seq_along(anios)) {
   yr  <- anios[i]
   dat <- df_base |> filter(anio == yr)
@@ -115,11 +107,9 @@ fig_box <- plot_ly()
 
 for (i in seq_along(anios)) {
   yr <- anios[i]
-
   for (sx in c("Hombres", "Mujeres")) {
     bs  <- stats_list[[paste(yr, sx)]]
     col <- if (sx == "Hombres") COLOR_HOMBRES else COLOR_MUJERES
-
     fig_box <- fig_box |> add_trace(
       type        = "box",
       name        = sx,
@@ -138,10 +128,8 @@ for (i in seq_along(anios)) {
       legendgroup = sx
     )
   }
-
   vis <- rep(FALSE, length(anios) * 2)
   vis[c(2 * i - 1, 2 * i)] <- TRUE
-
   pasos[[i]] <- list(
     method = "update",
     label  = as.character(yr),
@@ -153,7 +141,7 @@ fig_box <- fig_box |>
   layout(
     title = list(
       text = "Distribución del ingreso laboral mensual por sexo<br><sup>Cuartiles ponderados por factor de expansión (fex) — GEIH Colombia</sup>",
-      font = list(size = 14),
+      font = list(size = 13),
       x    = 0.03
     ),
     xaxis = list(
@@ -184,25 +172,10 @@ fig_box <- fig_box |>
 fig_box
 ```
 
-```{r calculo-mediana}
-#| include: false
-#| context: setup
-mediana_anual <- df_base |>
-  group_by(anio, sexo_label) |>
-  summarise(
-    mediana_ing = Hmisc::wtd.quantile(ing_total, weights = fex, probs = 0.5, na.rm = TRUE),
-    .groups = "drop"
-  )
-```
-
-## Column {height="100%"}
-
-### {width="50%"}
-
-Visualización 2 — Brecha salarial porcentual por año
+### Brecha salarial porcentual por año {width="50%"}
 
 ```{r viz-brecha-pct}
-# Brecha salarial — usa mediana_anual calculado en el chunk anterior
+#| echo: false
 brecha_anual <- mediana_anual |>
   pivot_wider(names_from = sexo_label, values_from = mediana_ing) |>
   mutate(
@@ -229,12 +202,12 @@ p_brecha <- ggplot(brecha_anual, aes(x = anio_f, y = brecha_pct)) +
 ggplotly(p_brecha)
 ```
 
-Visualización 3 - Brecha salarial por nivel educativo
+## Row {height="50%"}
+
+### Brecha salarial por nivel educativo {width="50%"}
 
 ```{r viz-brecha-educacion}
-# Solo el año más reciente para claridad
-anio_reciente <- max(df_base$anio)
-
+#| echo: false
 brecha_edu <- df_base |>
   filter(
     anio == anio_reciente,
@@ -250,7 +223,7 @@ brecha_edu <- df_base |>
     brecha_pct = (Hombres - Mujeres) / Hombres * 100,
     niv_edu_label = factor(niv_edu_label,
                            levels = c("Primaria", "Secundaria", "Media",
-           "Técnico / Tecnológico"))
+                                      "Técnico / Tecnológico", "Universitario", "Posgrado"))
   )
 
 p_edu <- ggplot(brecha_edu, aes(x = niv_edu_label, y = brecha_pct)) +
@@ -269,10 +242,10 @@ p_edu <- ggplot(brecha_edu, aes(x = niv_edu_label, y = brecha_pct)) +
 ggplotly(p_edu)
 ```
 
-Visualización 4 - Brecha salarial por sector económico
+### Brecha salarial por sector económico {width="50%"}
 
 ```{r viz-brecha-sector}
-# Sectores simplificados (misma clasificación que Página 2)
+#| echo: false
 df_sector <- df_base |>
   filter(anio == anio_reciente, !is.na(rama2d_orig)) |>
   mutate(
@@ -317,6 +290,5 @@ p_sector <- ggplot(df_sector, aes(x = reorder(sector, brecha_pct), y = brecha_pc
   ) +
   theme_minimal(base_size = 12)
 
-# Nota: si el objeto no tiene la columna sector, reemplazar brecha_edu por df_sector arriba
 ggplotly(p_sector)
 ```
