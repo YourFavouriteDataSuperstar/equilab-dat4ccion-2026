@@ -4,7 +4,7 @@
    del sitio via _quarto.yml
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Chiron+GoRound+TC:wght@300;400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;900&family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap');
 
 /* ── Variables de marca ────────────────────────────────────── */
 :root {
@@ -21,7 +21,7 @@
   --color-superficie:  #f8f9fa;
 
   --fuente-titulo:  'Outfit', 'Segoe UI', system-ui, sans-serif;
-  --fuente-cuerpo:  'Chiron GoRound TC', 'Segoe UI', system-ui, sans-serif;
+  --fuente-cuerpo:  'Public Sans', 'Segoe UI', system-ui, sans-serif;
 
   --radio-card:    0.5rem;
   --sombra-card:   0 2px 8px rgba(0,0,0,0.10);

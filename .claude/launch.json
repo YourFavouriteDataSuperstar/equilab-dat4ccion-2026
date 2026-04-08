@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Quarto Website (sitio completo)",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": ["/c", "C:\\Program Files\\RStudio\\resources\\app\\bin\\quarto\\bin\\quarto.cmd", "preview", "--port", "4848", "--no-browser"],
+      "port": 4848
+    },
+    {
+      "name": "Quarto Preview (demo_diseno.qmd)",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": ["/c", "C:\\Program Files\\RStudio\\resources\\app\\bin\\quarto\\bin\\quarto.cmd", "preview", "demo_diseno.qmd", "--port", "4849", "--no-browser"],
+      "port": 4849
+    }
+  ]
+}

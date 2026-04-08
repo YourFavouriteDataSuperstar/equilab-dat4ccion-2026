@@ -7,7 +7,7 @@ format:
     cr-style:
       narrative-background-color-sidebar: "#f4f4f4"
       narrative-text-color-sidebar: "#212529"
-      narrative-font-family: "'Chiron GoRound TC', 'Segoe UI', system-ui, sans-serif"
+      narrative-font-family: "'Public Sans', 'Segoe UI', system-ui, sans-serif"
       narrative-font-size: "1.1rem"
       narrative-sidebar-width: "minmax(380px, 1fr)"
       narrative-border-radius: "5px"
@@ -60,24 +60,93 @@ library(gt)
     align-items: center;
     justify-content: center;
   }
+
+  /* ── PORTADA: sidebar lila ───────────────────────────────── */
+  .portada-section .narrative-col {
+    background-color: #efe5f6 !important;
+  }
+
+  /* Empuja el texto al fondo del sidebar */
+  .portada-section .narrative-col > *:first-child {
+    padding-block-start: 65svh !important;
+  }
+
+  /* ── PORTADA: sticky layout ──────────────────────────────── */
+  .eq-portada-sticky {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    width: 100%;
+    padding: 3.5rem 4rem;
+    box-sizing: border-box;
+  }
+
+  .eq-portada-titulo {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 900;
+    font-size: clamp(5rem, 11vw, 9rem);
+    color: #000000;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+  }
+
+  .eq-portada-subtitulo {
+    font-family: 'Public Sans', sans-serif;
+    font-weight: 700;
+    font-size: clamp(1.6rem, 3.2vw, 2.8rem);
+    color: #004457;
+    line-height: 1.2;
+    max-width: 85%;
+  }
+
+  .eq-portada-fecha {
+    font-family: 'Public Sans', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #212529;
+    text-align: right;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  /* Texto "Te damos la bienvenida..." */
+  .portada-bienvenida {
+    font-family: 'Public Sans', sans-serif;
+    font-style: italic;
+    font-size: 1.15rem;
+    color: #212529;
+    line-height: 1.4;
+  }
 </style>
 ```
 
 <!-- ═══════════════════════════════════════════════════════════
-     PORTADA — fuera de cr-section (pantalla de entrada)
+     PORTADA — pantalla de entrada (cr-section, sidebar lila)
+     — Para cambiar el texto del sidebar: edita .portada-bienvenida
+     — Para cambiar el diseño del sticky: edita .eq-portada-sticky
      ═══════════════════════════════════════════════════════════ -->
 
+:::{.cr-section .portada-section layout="sidebar-left"}
+
+:::{focus-on="cr-portada"}
+[*Te damos\
+la bienvenida...*]{.portada-bienvenida}
+:::
+
+:::{#cr-portada .scale-to-fill}
 ```{=html}
-<div class="eq-hero">
-  <span class="eq-hero-badge">Colombia · GEIH 2019–2025</span>
-  <h1>Radar de brechas laborales<br>para las mujeres en Colombia</h1>
-  <p>
-    Un análisis que sigue la Encuesta Integrada de Hogares 2019–2025 del DANE
-    buscando comprender brechas de género: quién consigue empleo, en qué
-    condiciones, cuánto gana, y por qué existen esas diferencias.
-  </p>
+<div class="eq-portada-sticky">
+  <div class="eq-portada-titulo">EQUILAB</div>
+  <div class="eq-portada-subtitulo">
+    Radar de brechas laborales para las mujeres en Colombia
+  </div>
+  <div class="eq-portada-fecha">DAT4CCIÓN &nbsp;·&nbsp; 2026</div>
 </div>
 ```
+:::
+
+:::
 
 <!-- ═══════════════════════════════════════════════════════════
      SECCIÓN 1: BIENVENIDA
