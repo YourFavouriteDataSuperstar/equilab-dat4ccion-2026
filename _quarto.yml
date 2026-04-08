@@ -6,6 +6,7 @@ project:
     - p1_acceso.qmd
     - p2_calidad.qmd
     - p3_salariales.qmd
+    - p4_mujeres_diversas.qmd
     - metodologia.qmd
 
 website:
@@ -22,5 +23,7 @@ website:
         href: p2_calidad.qmd
       - text: "Brechas Salariales"
         href: p3_salariales.qmd
+      - text: "Mujeres Diversas"
+        href: p4_mujeres_diversas.qmd
       - text: "Metodología"
         href: metodologia.qmd

@@ -26,6 +26,7 @@ _book/
 # R
 .Rhistory
 .RData
+.RDataTmp*
 .Rproj.user/
 *.Rproj
 

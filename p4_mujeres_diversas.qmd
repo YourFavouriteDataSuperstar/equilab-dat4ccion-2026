@@ -1,0 +1,506 @@
+---
+title: "Mujeres diversas en el mercado laboral"
+format:
+  closeread-html:
+    remove-header-space: true
+    debug-mode: false
+    cr-style:
+      narrative-background-color-sidebar: "#f4f4f4"
+      narrative-text-color-sidebar: "#212529"
+      narrative-font-family: "'Public Sans', 'Segoe UI', system-ui, sans-serif"
+      narrative-font-size: "1.1rem"
+      narrative-sidebar-width: "minmax(380px, 1fr)"
+      narrative-border-radius: "5px"
+      section-background-color: "#f4f4f4"
+css: styles/equilab.css
+---
+
+```{r}
+#| include: false
+
+# ── Librerias ────────────────────────────────────────────────
+library(arrow)
+library(dplyr)
+library(ggplot2)
+library(plotly)
+library(scales)
+library(gt)
+
+# ── Constantes ───────────────────────────────────────────────
+COLOR_CIS   <- "#6b2d50"
+COLOR_TRANS  <- "#0086ab"
+COLOR_NEUTRO <- "#6c757d"
+
+CAPTION <- "Fuente: DANE, GEIH 2022–2025 (Marco Muestral 2018). Cálculos: EQUILAB — DAT4CCIÓN 2026."
+
+# ── Carga de datos precalculados ─────────────────────────────
+tasas     <- read_parquet("datos/p4d_tasas_acceso.parquet")
+calidad   <- read_parquet("datos/p4d_calidad.parquet")
+salarios  <- read_parquet("datos/p4d_salarios.parquet")
+panorama  <- read_parquet("datos/p4d_panorama_poblacion.parquet")
+posicion  <- read_parquet("datos/p4d_posicion_ocupacional.parquet")
+orientacion <- read_parquet("datos/p4d_orientacion_mujer.parquet")
+
+# ── Subconjuntos frecuentes ──────────────────────────────────
+tasas_agg    <- tasas |> filter(anio == "2022-2025", tipo == "tipo_mujer")
+calidad_agg  <- calidad |> filter(anio == "2022-2025", tipo == "tipo_mujer")
+salarios_agg <- salarios |> filter(anio == "2022-2025", tipo == "tipo_mujer")
+
+# Panorama de todas las identidades (agregado)
+tasas_id     <- tasas |> filter(anio == "2022-2025", tipo == "identidad")
+calidad_id   <- calidad |> filter(anio == "2022-2025", tipo == "identidad")
+salarios_id  <- salarios |> filter(anio == "2022-2025", tipo == "identidad")
+```
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECCION 1: INTRODUCCION
+     ═══════════════════════════════════════════════════════════ -->
+
+:::{.cr-section .lila-section layout="sidebar-left"}
+
+:::{focus-on="cr-intro"}
+[*¿Cómo participan las\
+mujeres diversas en\
+el mercado laboral\
+colombiano?*]{.eq-sidebar-titulo}
+:::
+
+:::{#cr-intro}
+```{=html}
+<div class="eq-hicimos-texto">
+  <p>Desde 2022, la Gran Encuesta Integrada de Hogares (GEIH)
+  del DANE incluye preguntas sobre <strong>identidad de género</strong>
+  y <strong>orientación sexual</strong> para personas mayores de 18 años.</p>
+  <p>Esto permite, por primera vez, caracterizar las condiciones laborales
+  de las <strong>mujeres trans</strong> en Colombia y compararlas con las
+  de las mujeres cisgénero.</p>
+  <p>Este análisis cubre el período <strong>2022–2025</strong> y utiliza
+  estimaciones ponderadas con coeficiente de variación (CV) para evaluar
+  la confiabilidad estadística de cada indicador.</p>
+</div>
+```
+:::
+
+:::
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECCION 2: PANORAMA — distribucion de identidad de genero
+     ═══════════════════════════════════════════════════════════ -->
+
+:::{.cr-section .lila-section layout="sidebar-left"}
+
+:::{focus-on="cr-panorama"}
+[*¿Cómo se distribuye\
+la identidad de\
+género en Colombia?*]{.eq-sidebar-titulo}
+
+[La GEIH identifica seis categorías a partir del cruce entre sexo asignado
+al nacer e identidad de género autopercibida. Las mujeres (cis y trans)
+representan el **52.3%** de la muestra expandida.]{.eq-sidebar-sub}
+:::
+
+:::{#cr-panorama}
+```{r}
+#| fig-width: 5
+#| fig-height: 4
+
+panorama_plot <- panorama |>
+  mutate(
+    identidad_label = factor(identidad_label,
+      levels = c("Mujer cis", "Hombre cis", "Mujer trans",
+                 "Hombre trans", "No binario", "Otra identidad")),
+    color = case_when(
+      identidad_label == "Mujer cis" ~ COLOR_CIS,
+      identidad_label == "Mujer trans" ~ COLOR_TRANS,
+      TRUE ~ COLOR_NEUTRO
+    )
+  )
+
+p <- ggplot(panorama_plot,
+       aes(x = reorder(identidad_label, -poblacion),
+           y = poblacion / 1e6,
+           fill = color,
+           text = paste0(identidad_label,
+                         "\nPoblación: ", format(round(poblacion), big.mark = "."),
+                         "\nObservaciones: ", format(n_obs, big.mark = "."),
+                         "\n% del total: ", pct_pob, "%"))) +
+  geom_col(width = 0.7) +
+  scale_fill_identity() +
+  scale_y_continuous(labels = label_number(suffix = "M", scale = 1)) +
+  labs(x = NULL, y = "Población expandida (millones)",
+       caption = CAPTION) +
+  theme_minimal(base_family = "Public Sans") +
+  theme(
+    axis.text.x = element_text(angle = 30, hjust = 1, size = 9),
+    plot.caption = element_text(size = 7, color = "#6c757d")
+  )
+
+ggplotly(p, tooltip = "text") |>
+  layout(showlegend = FALSE)
+```
+:::
+
+:::
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECCION 3: ACCESO AL MERCADO LABORAL
+     ═══════════════════════════════════════════════════════════ -->
+
+:::{.cr-section .lila-section layout="sidebar-left"}
+
+:::{focus-on="cr-acceso"}
+
+## Acceso al mercado laboral
+
+```{r}
+#| output: asis
+tgp_cis   <- tasas_agg |> filter(grupo == "Mujer cis")   |> pull(TGP)
+tgp_trans <- tasas_agg |> filter(grupo == "Mujer trans")  |> pull(TGP)
+to_cis    <- tasas_agg |> filter(grupo == "Mujer cis")    |> pull(TO)
+to_trans  <- tasas_agg |> filter(grupo == "Mujer trans")  |> pull(TO)
+td_trans  <- tasas_agg |> filter(grupo == "Mujer trans")  |> pull(TD)
+cv_td     <- tasas_agg |> filter(grupo == "Mujer trans")  |> pull(cv_TD)
+
+cat(paste0(
+  "Las mujeres trans presentan una **tasa global de participación del ",
+  tgp_trans, "%**, significativamente mayor que la de las mujeres cisgénero (",
+  tgp_cis, "%). Esto sugiere una mayor presión por insertarse en el mercado laboral.\n\n",
+  "La **tasa de ocupación** de las mujeres trans es del ", to_trans,
+  "% frente al ", to_cis, "% de las mujeres cis.\n\n",
+  "La **tasa de desempleo** de las mujeres trans es del ", td_trans,
+  "%, aunque esta estimación tiene un CV de ", cv_td,
+  "%, lo que indica baja confiabilidad estadística."
+))
+```
+
+:::
+
+:::{#cr-acceso}
+```{r}
+#| fig-width: 5.5
+#| fig-height: 4
+
+tasas_plot <- tasas_agg |>
+  select(grupo, TGP, TO, TD, cv_TGP, cv_TO, cv_TD) |>
+  tidyr::pivot_longer(
+    cols = c(TGP, TO, TD),
+    names_to = "indicador",
+    values_to = "valor"
+  ) |>
+  mutate(
+    cv = case_when(
+      indicador == "TGP" ~ cv_TGP,
+      indicador == "TO"  ~ cv_TO,
+      indicador == "TD"  ~ cv_TD
+    ),
+    cal = case_when(
+      cv <= 7  ~ "Preciso",
+      cv <= 14 ~ "Aceptable",
+      cv <= 20 ~ "Regular",
+      TRUE     ~ "No confiable"
+    ),
+    label = paste0(valor, "%", ifelse(cv > 20, "*", "")),
+    indicador = factor(indicador, levels = c("TGP", "TO", "TD"),
+                       labels = c("Participación\n(TGP)",
+                                  "Ocupación\n(TO)",
+                                  "Desempleo\n(TD)"))
+  )
+
+p <- ggplot(tasas_plot,
+       aes(x = indicador, y = valor, fill = grupo,
+           text = paste0(grupo, "\n", indicador, ": ", valor, "%",
+                         "\nCV: ", cv, "% (", cal, ")"))) +
+  geom_col(position = position_dodge(width = 0.7), width = 0.6) +
+  geom_text(aes(label = label),
+            position = position_dodge(width = 0.7),
+            vjust = -0.5, size = 3) +
+  scale_fill_manual(values = c("Mujer cis" = COLOR_CIS,
+                                "Mujer trans" = COLOR_TRANS),
+                     name = NULL) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +
+  labs(x = NULL, y = "Porcentaje (%)",
+       caption = paste0(CAPTION, "\n* CV > 20%: estimación no confiable.")) +
+  theme_minimal(base_family = "Public Sans") +
+  theme(
+    legend.position = "top",
+    plot.caption = element_text(size = 7, color = "#6c757d")
+  )
+
+ggplotly(p, tooltip = "text") |>
+  layout(legend = list(orientation = "h", x = 0.2, y = 1.1))
+```
+:::
+
+:::
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECCION 4: CALIDAD DEL EMPLEO
+     ═══════════════════════════════════════════════════════════ -->
+
+:::{.cr-section .lila-section layout="sidebar-left"}
+
+:::{focus-on="cr-calidad"}
+
+## Calidad del empleo
+
+```{r}
+#| output: asis
+inf_cis   <- calidad_agg |> filter(grupo == "Mujer cis")  |> pull(tasa_informalidad)
+inf_trans <- calidad_agg |> filter(grupo == "Mujer trans") |> pull(tasa_informalidad)
+cv_inf    <- calidad_agg |> filter(grupo == "Mujer trans") |> pull(cv_informalidad)
+hrs_cis   <- calidad_agg |> filter(grupo == "Mujer cis")  |> pull(mediana_horas)
+hrs_trans <- calidad_agg |> filter(grupo == "Mujer trans") |> pull(mediana_horas)
+
+cat(paste0(
+  "La **informalidad** entre las mujeres trans alcanza el **", inf_trans,
+  "%** (CV: ", cv_inf, "%), frente al ", inf_cis,
+  "% de las mujeres cisgénero. Esta brecha de ",
+  round(inf_trans - inf_cis, 1),
+  " puntos porcentuales refleja la precariedad de su inserción laboral.\n\n",
+  "La **mediana de horas semanales** trabajadas es similar: ",
+  hrs_trans, " horas para mujeres trans vs ", hrs_cis,
+  " para mujeres cis, lo que indica cargas laborales comparables ",
+  "pero en condiciones de mayor informalidad."
+))
+```
+
+:::
+
+:::{#cr-calidad}
+```{r}
+#| fig-width: 5.5
+#| fig-height: 5
+
+# Posicion ocupacional
+pos_plot <- posicion |>
+  mutate(
+    posicion_label = factor(posicion_label,
+      levels = c("Empleado particular", "Cuenta propia",
+                 "Empleado gobierno", "Empleado domestico",
+                 "Patron o empleador", "Trab. familiar sin pago",
+                 "Jornalero / Sin remun."))
+  ) |>
+  filter(!is.na(posicion_label))
+
+p <- ggplot(pos_plot,
+       aes(x = posicion_label, y = pct, fill = tipo_mujer,
+           text = paste0(tipo_mujer, "\n", posicion_label,
+                         "\n", pct, "% (n=", n_obs, ")"))) +
+  geom_col(position = position_dodge(width = 0.7), width = 0.6) +
+  scale_fill_manual(values = c("Mujer cis" = COLOR_CIS,
+                                "Mujer trans" = COLOR_TRANS),
+                     name = NULL) +
+  coord_flip() +
+  labs(x = NULL, y = "Porcentaje (%)",
+       title = "Distribución por posición ocupacional",
+       caption = CAPTION) +
+  theme_minimal(base_family = "Public Sans") +
+  theme(
+    legend.position = "top",
+    plot.caption = element_text(size = 7, color = "#6c757d")
+  )
+
+ggplotly(p, tooltip = "text") |>
+  layout(legend = list(orientation = "h", x = 0.2, y = 1.08))
+```
+:::
+
+:::
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECCION 5: INGRESOS
+     ═══════════════════════════════════════════════════════════ -->
+
+:::{.cr-section .lila-section layout="sidebar-left"}
+
+:::{focus-on="cr-ingresos"}
+
+## Ingresos laborales
+
+```{r}
+#| output: asis
+med_cis   <- salarios_agg |> filter(grupo == "Mujer cis")  |> pull(mediana_mensual)
+med_trans <- salarios_agg |> filter(grupo == "Mujer trans") |> pull(mediana_mensual)
+cv_trans  <- salarios_agg |> filter(grupo == "Mujer trans") |> pull(cv_ingreso)
+brecha    <- round((med_cis - med_trans) / med_cis * 100, 1)
+
+cat(paste0(
+  "La **mediana del ingreso mensual** de las mujeres trans es de **$",
+  format(med_trans, big.mark = "."), "**, frente a $",
+  format(med_cis, big.mark = "."), " de las mujeres cis. ",
+  "Esto representa una **brecha descriptiva del ", brecha, "%**.\n\n",
+  "El CV de la estimación para mujeres trans es del ", cv_trans,
+  "%, lo que la ubica como una estimación aceptable.\n\n",
+  "**Nota metodológica:** no se aplica un modelo de descomposición ",
+  "Oaxaca-Blinder para esta subpoblación porque el tamaño muestral ",
+  "de mujeres trans (n=173 con ingreso válido) es insuficiente para ",
+  "estimar de forma confiable los coeficientes de una regresión con ",
+  "múltiples controles."
+))
+```
+
+:::
+
+:::{#cr-ingresos}
+```{r}
+#| fig-width: 5
+#| fig-height: 4
+
+sal_plot <- salarios_id |>
+  mutate(
+    color = case_when(
+      grupo == "Mujer cis" ~ COLOR_CIS,
+      grupo == "Mujer trans" ~ COLOR_TRANS,
+      TRUE ~ COLOR_NEUTRO
+    ),
+    grupo = factor(grupo,
+      levels = c("Mujer cis", "Hombre cis", "Mujer trans",
+                 "Hombre trans", "No binario", "Otra identidad"))
+  )
+
+p <- ggplot(sal_plot,
+       aes(x = grupo, y = mediana_mensual / 1e6, fill = color,
+           text = paste0(grupo,
+                         "\nMediana: $", format(mediana_mensual, big.mark = "."),
+                         "\nMedia: $", format(media_mensual, big.mark = "."),
+                         "\nCV: ", cv_ingreso, "% (", cal_ingreso, ")",
+                         "\nn = ", n_obs))) +
+  geom_col(width = 0.7) +
+  scale_fill_identity() +
+  scale_y_continuous(labels = label_number(prefix = "$", suffix = "M", scale = 1)) +
+  labs(x = NULL, y = "Mediana ingreso mensual (millones)",
+       title = "Ingreso mensual por identidad de género",
+       caption = CAPTION) +
+  theme_minimal(base_family = "Public Sans") +
+  theme(
+    axis.text.x = element_text(angle = 30, hjust = 1, size = 9),
+    plot.caption = element_text(size = 7, color = "#6c757d")
+  )
+
+ggplotly(p, tooltip = "text") |>
+  layout(showlegend = FALSE)
+```
+:::
+
+:::
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECCION 6: PANORAMA POR IDENTIDAD (tabla resumen)
+     ═══════════════════════════════════════════════════════════ -->
+
+:::{.cr-section .lila-section layout="sidebar-left"}
+
+:::{focus-on="cr-resumen"}
+[*Resumen de\
+indicadores\
+por identidad\
+de género*]{.eq-sidebar-titulo}
+
+[Tabla comparativa con los principales indicadores laborales para cada
+categoría de identidad de género. El semáforo de confiabilidad se basa
+en el coeficiente de variación (CV):
+**Preciso** (CV ≤ 7%), **Aceptable** (≤ 14%), **Regular** (≤ 20%),
+**No confiable** (> 20%).]{.eq-sidebar-sub}
+:::
+
+:::{#cr-resumen}
+```{r}
+resumen <- tasas_id |>
+  select(grupo, TGP, cal_TGP, TO, cal_TO, n_obs_tasa = n_obs) |>
+  left_join(
+    calidad_id |> select(grupo, tasa_informalidad, cal_informalidad),
+    by = "grupo"
+  ) |>
+  left_join(
+    salarios_id |> select(grupo, mediana_mensual, cal_ingreso, n_obs_sal = n_obs),
+    by = "grupo"
+  ) |>
+  mutate(
+    grupo = factor(grupo,
+      levels = c("Mujer cis", "Mujer trans", "Hombre cis",
+                 "Hombre trans", "No binario", "Otra identidad"))
+  ) |>
+  arrange(grupo)
+
+resumen |>
+  gt() |>
+  cols_label(
+    grupo = "Identidad",
+    TGP = "TGP (%)",
+    cal_TGP = "",
+    TO = "TO (%)",
+    cal_TO = "",
+    tasa_informalidad = "Informal. (%)",
+    cal_informalidad = "",
+    mediana_mensual = "Mediana ing.",
+    cal_ingreso = "",
+    n_obs_tasa = "n (PET)",
+    n_obs_sal = "n (salario)"
+  ) |>
+  fmt_number(columns = mediana_mensual, sep_mark = ".", dec_mark = ",", decimals = 0) |>
+  fmt_number(columns = c(n_obs_tasa, n_obs_sal), sep_mark = ".", decimals = 0) |>
+  tab_style(
+    style = cell_text(size = "x-small", color = "#6c757d"),
+    locations = cells_body(columns = c(cal_TGP, cal_TO, cal_informalidad, cal_ingreso))
+  ) |>
+  tab_header(
+    title = "Indicadores laborales por identidad de género",
+    subtitle = "Colombia 2022–2025 (agregado)"
+  ) |>
+  tab_source_note(CAPTION) |>
+  tab_options(
+    table.font.size = "small",
+    heading.title.font.size = "medium"
+  )
+```
+:::
+
+:::
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECCION 7: NOTA METODOLOGICA
+     ═══════════════════════════════════════════════════════════ -->
+
+:::{.cr-section .lila-section layout="sidebar-left"}
+
+:::{focus-on="cr-metodo"}
+[*Nota\
+metodológica*]{.eq-sidebar-titulo}
+:::
+
+:::{#cr-metodo}
+```{=html}
+<div class="eq-hicimos-texto">
+  <p><strong>Fuente:</strong> DANE, Gran Encuesta Integrada de Hogares (GEIH),
+  módulo de identidad de género y orientación sexual. Marco muestral 2018.
+  Período: enero 2022 – marzo 2025.</p>
+
+  <p><strong>Identidad de género:</strong> se construye a partir del cruce
+  entre la pregunta P3271 (sexo al nacer: masculino/femenino) y P3039
+  (¿usted se reconoce como?: hombre, mujer, persona no binaria,
+  otra identidad). Solo se aplica a mayores de 18 años.</p>
+
+  <p><strong>Mujer trans:</strong> persona que se reconoce como mujer
+  (P3039 = 2) y cuyo sexo asignado al nacer fue masculino (P3271 = 1).
+  Total en la muestra: 640 observaciones.</p>
+
+  <p><strong>Confiabilidad:</strong> todas las estimaciones incluyen el
+  coeficiente de variación (CV) calculado con <code>survey::svydesign</code>.
+  Estimaciones con CV > 20% se marcan como no confiables y deben
+  interpretarse con cautela.</p>
+
+  <p><strong>Limitación principal:</strong> el tamaño muestral de mujeres
+  trans es reducido (640 obs. en PET, 393 ocupadas, 173 con ingreso válido),
+  lo que impide desagregaciones adicionales por departamento, educación
+  o año individual, y descarta la aplicación de modelos de descomposición
+  como Oaxaca-Blinder.</p>
+
+  <p><strong>Proxy de informalidad:</strong> posición ocupacional en
+  categorías 4 (cuenta propia), 6 (trabajador familiar sin pago),
+  7 y 8 (jornalero / sin remuneración en otra empresa), agrupados
+  para evitar el problema de swap de códigos entre marcos muestrales.</p>
+</div>
+```
+:::
+
+:::
