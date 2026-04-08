@@ -98,9 +98,10 @@ list(
 )
 ```
 
-## Row
 
-### {width="60%"}
+## Row {height=8%}
+### Row {.tabset}
+
 
 ```{r}
 #| title: "¿Cómo ha cambiado la brecha salarial?"
@@ -127,14 +128,14 @@ p <- ggplot(plot_data, aes(x = anio, y = pct, fill = componente)) +
   theme_minimal(base_size = 13) +
   theme(legend.position = "top")
 
-ggplotly(p, tooltip = c("x", "fill", "y")) |>
+ggplotly(p, tooltip = c("x", "fill", "y"), height = 450) |>
   layout(legend = list(orientation = "h", y = 1.1))
 ```
 
-### {width="40%"}
 
 ```{r}
 #| title: "¿Qué factores explican la brecha?"
+
 if (nrow(ob_detalle) > 0) {
   det <- ob_detalle |>
     mutate(
@@ -178,16 +179,15 @@ if (nrow(ob_detalle) > 0) {
     theme_minimal(base_size = 12) +
     theme(legend.position = "top")
 
-  ggplotly(p2, tooltip = c("x", "fill", "y")) |>
+  ggplotly(p2, tooltip = c("x", "fill", "y"), height = 450) |>
     layout(legend = list(orientation = "h", y = 1.1))
 } else {
   plotly_empty() |> layout(title = "No se pudo calcular el detalle por variable")
 }
 ```
 
-## Row
-
-### {width="50%"}
+## Row {height=8%}
+### Row {.tabset}
 
 ```{r}
 #| title: "¿Dónde es peor? Por zona"
@@ -209,7 +209,7 @@ p3 <- ggplot(plot_zona, aes(x = anio, y = pct, color = grupo)) +
 ggplotly(p3) |> layout(legend = list(orientation = "h", y = 1.1))
 ```
 
-### {width="50%"}
+
 
 ```{r}
 #| title: "¿Dónde es peor? Por etnia"
@@ -253,12 +253,13 @@ Errores estándar por bootstrap (R = 30). Muestra trimada al P1–P99 del salari
 La línea punteada en 2021 indica el cambio de marco muestral censal.
 :::
 
-## Row
+## Row {height=10%}
 
 ### {width="100%"}
 
 ```{r}
 #| title: "Tabla detallada de resultados"
+#| fig-height: 5
 tabla_ob <- ob_all |>
   filter(componente != "Brecha total") |>
   mutate(
@@ -315,7 +316,7 @@ sin asumir relaciones matemáticas entre las variables. Si la brecha persiste en
 idénticas en papel, es evidencia robusta de desigualdad.
 :::
 
-## Row
+## Row {height=8%}
 
 ```{r}
 #| content: valuebox
@@ -347,12 +348,12 @@ list(
 )
 ```
 
-## Row
+## Row {.tabset}
 
-### {width="60%"}
 
 ```{r}
 #| title: "¿Cómo se descompone la brecha? (4 componentes)"
+#| fig-height: 5
 plot_nopo <- nopo_por_anio |>
   filter(componente != "Brecha total") |>
   mutate(
@@ -390,10 +391,11 @@ ggplotly(p_nopo, tooltip = c("x", "fill", "y")) |>
   layout(legend = list(orientation = "h", y = 1.15))
 ```
 
-### {width="40%"}
+
 
 ```{r}
 #| title: "Brecha entre iguales por año"
+#| fig-height: 5
 plot_d0 <- nopo_por_anio |>
   filter(componente == "D_0", !is.na(valor)) |>
   mutate(pct = valor * 100)
@@ -449,6 +451,7 @@ validación del método Oaxaca-Blinder.
 
 ```{r}
 #| title: "Tabla detallada de resultados Ñopo"
+#| fig-height: 5
 tabla_nopo <- nopo_por_anio |>
   mutate(
     pct = round(valor * 100, 2),
@@ -546,12 +549,11 @@ list(
 )
 ```
 
-## Row
-
-### {width="60%"}
+## Row {.tabset}
 
 ```{r}
 #| title: "¿Cómo ha cambiado la brecha de participación?"
+#| fig-height: 5
 plot_boy <- boy_por_anio |>
   filter(componente %in% c("Dotaciones", "Coeficientes")) |>
   mutate(
@@ -579,10 +581,11 @@ ggplotly(p_boy, tooltip = c("x", "fill", "y")) |>
   layout(legend = list(orientation = "h", y = 1.1))
 ```
 
-### {width="40%"}
+
 
 ```{r}
 #| title: "¿Qué factores pesan más?"
+#| fig-height: 5
 if (nrow(boy_yun) > 0) {
   det_boy <- boy_yun |>
     mutate(
@@ -627,9 +630,9 @@ if (nrow(boy_yun) > 0) {
 }
 ```
 
-## Row
+## Row {.tabset}
 
-### {width="50%"}
+
 
 ```{r}
 #| title: "¿Dónde es peor? Por zona"
@@ -651,7 +654,7 @@ p_bz <- ggplot(plot_boy_zona, aes(x = anio, y = pp, color = grupo)) +
 ggplotly(p_bz) |> layout(legend = list(orientation = "h", y = 1.1))
 ```
 
-### {width="50%"}
+
 
 ```{r}
 #| title: "¿Dónde es peor? Por etnia"
