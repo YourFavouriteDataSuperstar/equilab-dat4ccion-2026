@@ -67,7 +67,7 @@ para entender qué parte se explica por diferencias en perfiles y qué parte no 
 explicación observable.
 :::
 
-## Tarjetas 
+## Tarjetas {height=8%} 
 
 ```{r}
 #| content: valuebox
@@ -314,7 +314,7 @@ sin asumir relaciones matemáticas entre las variables. Si la brecha persiste en
 idénticas en papel, es evidencia robusta de desigualdad.
 :::
 
-## Row {height=8%}
+## Tarjetas {height=8%}
 
 ```{r}
 #| content: valuebox
@@ -346,24 +346,23 @@ list(
 )
 ```
 
-## Row {.tabset}
-
+## Row {height=20%}
+### Row {.tabset}
 
 ```{r}
 #| title: "¿Cómo se descompone la brecha? (4 componentes)"
-#| fig-height: 5
 plot_nopo <- nopo_por_anio |>
   filter(componente != "Brecha total") |>
   mutate(
     pct = valor * 100,
     componente = recode(componente,
-      "D_0" = "Brecha entre iguales",
-      "D_X" = "Diferencia en perfiles",
+      "D_0" = "No explicada (entre iguales)",
+      "D_X" = "Por características (perfiles)",
       "D_M" = "Hombres sin par",
       "D_F" = "Mujeres sin par"
     ),
     componente = factor(componente, levels = c(
-      "Diferencia en perfiles", "Brecha entre iguales",
+      "Por características (perfiles)", "No explicada (entre iguales)",
       "Hombres sin par", "Mujeres sin par"
     ))
   )
@@ -373,8 +372,8 @@ p_nopo <- ggplot(plot_nopo, aes(x = anio, y = pct, fill = componente)) +
   geom_hline(yintercept = 0, linewidth = 0.5, color = "#333333") +
   scale_fill_manual(
     values = c(
-      "Diferencia en perfiles" = COLOR_EXPLICADO,
-      "Brecha entre iguales"   = COLOR_NO_EXPLICADO,
+      "Por características (perfiles)" = COLOR_EXPLICADO,
+      "No explicada (entre iguales)"   = COLOR_NO_EXPLICADO,
       "Hombres sin par"        = COLOR_DM,
       "Mujeres sin par"        = COLOR_DF
     ),
@@ -393,7 +392,6 @@ ggplotly(p_nopo, tooltip = c("x", "fill", "y")) |>
 
 ```{r}
 #| title: "Brecha entre iguales por año"
-#| fig-height: 5
 plot_d0 <- nopo_por_anio |>
   filter(componente == "D_0", !is.na(valor)) |>
   mutate(pct = valor * 100)
@@ -443,7 +441,7 @@ No asume relaciones matemáticas entre variables, lo que lo hace robusto como
 validación del método Oaxaca-Blinder.
 :::
 
-## Row
+## Tabla detalle {height=20%}
 
 ```{r}
 #| title: "Tabla detallada de resultados Ñopo"
@@ -454,8 +452,8 @@ tabla_nopo <- nopo_por_anio |>
     pct_matching = round(pct_matching, 1),
     componente_label = recode(componente,
       "Brecha total" = "Brecha total",
-      "D_0" = "Brecha entre iguales (D0)",
-      "D_X" = "Diferencia en perfiles (D_X)",
+      "D_0" = "No explicada — entre iguales (D0)",
+      "D_X" = "Por características — perfiles (D_X)",
       "D_M" = "Hombres sin par (D_M)",
       "D_F" = "Mujeres sin par (D_F)"
     )
@@ -514,7 +512,7 @@ de género está antes: en quién logra participar del mercado laboral. Esta sec
 la población completa en edad de trabajar para entender las barreras de entrada.
 :::
 
-## Row
+## Tarjetas {height=6%}
 
 ```{r}
 #| content: valuebox
@@ -546,11 +544,11 @@ list(
 )
 ```
 
-## Row {.tabset}
+## Row {height=20%}
+### Row {.tabset}
 
 ```{r}
 #| title: "¿Cómo ha cambiado la brecha de participación?"
-#| fig-height: 5
 plot_boy <- boy_por_anio |>
   filter(componente %in% c("Dotaciones", "Coeficientes")) |>
   mutate(
@@ -582,7 +580,6 @@ ggplotly(p_boy, tooltip = c("x", "fill", "y")) |>
 
 ```{r}
 #| title: "¿Qué factores pesan más?"
-#| fig-height: 5
 if (nrow(boy_yun) > 0) {
   det_boy <- boy_yun |>
     mutate(
@@ -627,9 +624,8 @@ if (nrow(boy_yun) > 0) {
 }
 ```
 
-## Row {.tabset}
-
-
+## Row {height=20%}
+### Row {.tabset}
 
 ```{r}
 #| title: "¿Dónde es peor? Por zona"
@@ -707,7 +703,7 @@ permiten identificar la contribución de cada variable.
 La línea punteada en 2021 indica el cambio de marco muestral censal.
 :::
 
-## Row
+## Tabla detalle {height=20%}
 
 ```{r}
 #| title: "Tabla detallada de resultados BOY"
