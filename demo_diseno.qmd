@@ -152,6 +152,7 @@ la bienvenida...*]{.portada-bienvenida}
      SECCIÓN 1: BIENVENIDA
      — Para agregar más texto: añade párrafos antes del cierre :::
      — Para cambiar el sticky: edita el bloque #cr-bienvenida
+     Este es un comentario para que me haga el commit 
      ═══════════════════════════════════════════════════════════ -->
 
 :::{.cr-section layout="sidebar-left"}
