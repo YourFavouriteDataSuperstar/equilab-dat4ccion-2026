@@ -1,0 +1,186 @@
+CONTEXTO PROBLEMA — VISUALIZACIÓN 2 (Brecha salarial porcentual)
+Archivo: analisis/p3_salarialesnuevo.qmd
+Fecha: 04/04/2026
+Preparado por: Sofía (con apoyo de Claude)
+
+=======================================================================
+RESUMEN DEL PROBLEMA
+=======================================================================
+
+La Visualización 2 del dashboard busca mostrar la brecha salarial de género
+por año (2019–2025) como un gráfico de columnas con el porcentaje de brecha.
+La fórmula de brecha es: (Ingreso_H - Ingreso_M) / Ingreso_H × 100
+
+Después de varias iteraciones, el gráfico no muestra valores correctos para
+la mayoría de los años. A continuación se describe exactamente qué se intentó
+y qué se descubrió.
+
+=======================================================================
+LO QUE SE INTENTÓ Y POR QUÉ FALLÓ
+=======================================================================
+
+INTENTO 1 — wtd.quantile (mediana ponderada con Hmisc)
+-------------------------------------------------------
+Código usado:
+  mediana_ing = wtd.quantile(ing_total, weights = fex, probs = 0.5, na.rm = TRUE)
+
+Resultado al hacer pivot_wider y calcular brecha:
+  anio  Hombres   Mujeres   brecha_pct
+  2019  900000    828126    7.99
+  2020  877802    877803    -0.000114
+  2021  908000    908526    -0.0579
+  2022  1000000   1000000   0
+  2023  1160000   1160000   0
+  2024  1300000   1300000   0
+  2025  1423500   1423500   0
+
+Problema: wtd.quantile de Hmisc con pesos muy grandes (factores de expansión
+de la GEIH) redondea los cuantiles a múltiplos de miles. Esto hace que la
+mediana de hombres y mujeres colapse al mismo valor en 2022–2025, dando
+brecha = 0.
+
+INTENTO 2 — Función de mediana ponderada interpolada (med_pond)
+---------------------------------------------------------------
+Se escribió una función propia que hace interpolación lineal para mayor
+precisión:
+
+  med_pond <- function(x, w) {
+    ord  <- order(x)
+    x    <- x[ord]; w <- w[ord]
+    cumw <- cumsum(w) / sum(w)
+    idx  <- which(cumw >= 0.5)[1]
+    if (idx == 1 || cumw[idx] == 0.5) return(x[idx])
+    x[idx-1] + (0.5 - cumw[idx-1]) / (cumw[idx] - cumw[idx-1]) * (x[idx] - x[idx-1])
+  }
+
+Resultado: exactamente el mismo que el intento 1. El problema NO es el
+redondeo de wtd.quantile — es que la mediana real de ambos sexos cae en
+el mismo valor (el salario mínimo) para esos años.
+
+Diagnóstico confirmado:
+  mediana_exacta (sin ponderar) para 2022: Hombres = 1,000,000 | Mujeres = 1,000,000
+  La mediana de ambos sexos coincide con el salario mínimo de cada año.
+
+INTENTO 3 — Media ponderada (weighted.mean)
+-------------------------------------------
+Código:
+  media_pond = weighted.mean(ing_total, w = fex, na.rm = TRUE)
+
+Resultado:
+  anio  brecha_pct
+  2019   2.7%
+  2020  -10.2%
+  2021  -6.0%
+  2022  -0.1%
+  2023  -1.0%
+  2024  -1.9%
+  2025  -3.1%
+
+Problema: Los valores negativos indican que la media de mujeres supera la
+de hombres en varios años. Esto tiene una explicación de composición
+muestral (ver abajo), pero no es útil para comunicar brecha salarial de
+género de manera clara.
+
+INTENTO 4 — Percentil 75 (P75)
+-------------------------------
+  p75 = wtd.quantile(ing_total, weights = fex, probs = 0.75, na.rm = TRUE)
+
+Resultado:
+  anio  Hombres   Mujeres   brecha_pct
+  2019  1200000   1260000   -5.0%
+  2020  1150000   1300000   -13.0%
+  2021  1200000   1450000   -20.8%
+  2022  1500000   1500000    0%
+  2023  1600000   1800000   -12.5%
+  2024  1800000   2000000   -11.1%
+  2025  2000000   2100000   -5.0%
+
+Mismo problema: las mujeres tienen P75 más alto que los hombres.
+
+=======================================================================
+DIAGNÓSTICO DEL PROBLEMA DE FONDO
+=======================================================================
+
+El fenómeno observado (mujeres con medianas y percentiles similares o
+mayores que hombres) se explica por COMPOSICIÓN OCUPACIONAL de la muestra:
+
+1. Los hombres ocupados en la GEIH incluyen una proporción muy alta de
+   trabajadores informales de bajos ingresos (construcción, agro, transporte,
+   jornaleros) que jalan la media y los percentiles hacia abajo.
+
+2. Las mujeres que están registradas como ocupadas con ingreso reportado
+   tienden a estar más concentradas en sectores formales (educación, salud,
+   administración pública) con ingresos más estables.
+
+3. Esto NO significa que no exista brecha salarial — existe, pero se
+   manifiesta principalmente DENTRO de cada sector/ocupación, no en la
+   distribución marginal del ingreso total.
+
+4. La brecha salarial ajustada (como la del ESPE 111 usando Oaxaca-Blinder)
+   sí captura esto al controlar por dotaciones (educación, sector, horas
+   trabajadas, etc.).
+
+=======================================================================
+ESTADO ACTUAL DEL ARCHIVO p3_salarialesnuevo.qmd
+=======================================================================
+
+El chunk viz-brecha-pct actualmente usa la media ponderada (intento 3),
+que sí produce valores distintos de cero pero con signos negativos en
+varios años. El gráfico renderiza bien técnicamente pero los valores
+no son los esperados conceptualmente.
+
+=======================================================================
+OPCIONES SUGERIDAS PARA ALEJANDRA
+=======================================================================
+
+OPCIÓN A — Brecha dentro de asalariados formales
+  Filtrar df_base por trabajadores asalariados con contrato o afiliados
+  a seguridad social (si la variable existe en el parquet). En ese
+  subgrupo la brecha suele ser positiva y consistente.
+  Variable sugerida a buscar: tipo_contrato, cotizante_pension, o similar.
+
+OPCIÓN B — Mostrar medianas absolutas en lugar de brecha porcentual
+  Volver a la gráfica de líneas original (Viz 1 de p3_salariales.qmd)
+  que mostraba la mediana de hombres y mujeres por año. Esa gráfica
+  sí es correcta y comunicativamente clara.
+
+OPCIÓN C — Brecha en percentiles altos por sector
+  Calcular la brecha dentro de sectores específicos (ej. solo
+  "Universitario" o solo "Profesionales y técnicos") donde la
+  composición es más homogénea y la brecha de género es visible.
+
+OPCIÓN D — Usar la brecha ajustada del modelo Oaxaca-Blinder
+  Si ya se tiene el modelo estimado (como en el ESPE 111), usar el
+  componente "no explicado" como medida de brecha por año. Esto
+  requiere correr el modelo para cada año por separado.
+
+=======================================================================
+VARIABLES DISPONIBLES EN df_base (relevantes para el análisis)
+=======================================================================
+
+- ing_total: ingreso laboral total (INGLABO) — variable principal
+- fex: factor de expansión
+- sexo / sexo_label: 1=Hombres, 2=Mujeres
+- anio: 2019 a 2025
+- edad: 15 a 99
+- niv_edu_armon / niv_edu_label: nivel educativo armonizado
+- condicion_activ: 1 = ocupado
+- rama2d_orig: rama de actividad económica a 2 dígitos
+
+Variables de formalidad que podrían existir (no confirmadas):
+  cotizante_pension, tipo_contrato, horas_trabajo
+
+=======================================================================
+ESTRUCTURA ACTUAL DEL DASHBOARD (p3_salarialesnuevo.qmd)
+=======================================================================
+
+- Formato: Quarto dashboard (format: dashboard)
+- Columna 1: Visualización 1 — Boxplot de distribución de ingresos
+  por sexo con deslizador por año (2019–2025). Esta SÍ funciona bien.
+  Ocupa la mitad derecha de la página.
+- Columna 2: Visualización 2 — Gráfica de columnas de brecha porcentual.
+  Esta es la que tiene el problema descrito arriba.
+
+=======================================================================
+FIN DEL DOCUMENTO
+=======================================================================

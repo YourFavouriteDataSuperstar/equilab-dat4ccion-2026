@@ -37,6 +37,9 @@ __pycache__/
 venv/
 .venv/
 
+# claude
+.claude/
+
 # Sistema operativo
 .DS_Store
 Thumbs.db

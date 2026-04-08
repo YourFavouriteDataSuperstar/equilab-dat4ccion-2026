@@ -1,0 +1,718 @@
+---
+title: "Acceso Laboral"
+format:
+  dashboard:
+    orientation: rows
+    scrolling: true
+    theme: cosmo
+    css: styles/equilab.css
+    nav-buttons:
+      - icon: house
+        href: index.qmd
+      - icon: github
+        href: https://github.com/equilab-ean/equilab-dat4ccion-2026
+---
+
+```{r setup}
+#| include: false
+
+# ── Librerías (solo visualización — datos ya pre-calculados) ─
+library(arrow)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(plotly)
+library(DT)
+library(crosstalk)
+library(htmltools)
+library(scales)
+
+# ── Constantes globales ──────────────────────────────────────
+COLOR_HOMBRES <- "#2166AC"
+COLOR_MUJERES <- "#D6604D"
+CAPTION       <- "Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026."
+COLOR_BRECHA       <- "#0f3460"
+COLOR_EXPLICADO    <- "#4DBBD5"
+COLOR_NO_EXPLICADO <- "#E64B35"
+
+# ── Carga de datos PRE-CALCULADOS ────────────────────────────
+# Generados por: source("procesamiento/05_precalcular_p1.R")
+tasas_raw      <- read_parquet("datos/tasas_p1_completo.parquet")
+tabla_dpto_raw <- read_parquet("datos/tasas_p1_departamental.parquet")
+tasas_global   <- read_parquet("datos/tasas_p1_global.parquet")
+
+# ── Carga datos BOY (Descomposición de participación) ────────
+# Generados por: source("procesamiento/07_precalcular_p4.R")
+boy_all  <- read_parquet("datos/p4_boy_resultados.parquet")
+boy_yun  <- read_parquet("datos/p4_boy_yun.parquet")
+
+boy_por_anio  <- boy_all |> filter(corte == "Nacional")
+boy_por_zona  <- boy_all |> filter(corte == "Zona")
+boy_por_etnia <- boy_all |> filter(corte == "Etnia")
+
+anio_reciente_boy <- max(boy_por_anio$anio)
+boy_rec    <- boy_por_anio |> filter(anio == anio_reciente_boy)
+boy_brecha <- boy_rec |> filter(componente == "Brecha") |> pull(valor)
+boy_dot    <- boy_rec |> filter(componente == "Dotaciones") |> pull(valor)
+boy_coef   <- boy_rec |> filter(componente == "Coeficientes") |> pull(valor)
+boy_tasa_h <- boy_rec |> filter(componente == "Tasa H") |> pull(valor)
+boy_tasa_m <- boy_rec |> filter(componente == "Tasa M") |> pull(valor)
+
+# ── Preparar datos para los 3 filtros ────────────────────────
+# Se incluyen TODAS las combinaciones (8 niveles) para permitir
+# mezclar filtros: etnia="Grupo étnico" + zona="Cabecera" funciona
+# porque existe la fila precalculada para ese cruce exacto.
+# "Todos" → "Ninguno" en las columnas de filtro (valor por defecto)
+tasas_filtrable <- tasas_raw |>
+  mutate(
+    etnia_f = if_else(etnia_label   == "Todos", "Ninguno", etnia_label),
+    zona_f  = if_else(zona_label    == "Todos", "Ninguno", zona_label),
+    edu_f   = if_else(niv_edu_label == "Todos", "Ninguno", niv_edu_label),
+    se_tgp  = (cv_TGP * TGP) / 100,
+    li      = round(TGP - 1.96 * se_tgp, 1),
+    ls      = round(TGP + 1.96 * se_tgp, 1)
+  ) |>
+  select(-se_tgp)
+
+# ── Value boxes — cifras globales 2025 ───────────────────────
+vb <- tasas_filtrable |>
+  filter(anio == 2025, etnia_f == "Ninguno",
+         zona_f == "Ninguno", edu_f == "Ninguno")
+
+tgp_m <- vb |> filter(sexo_label == "Mujeres") |> pull(TGP)
+tgp_h <- vb |> filter(sexo_label == "Hombres") |> pull(TGP)
+to_m  <- vb |> filter(sexo_label == "Mujeres") |> pull(TO)
+to_h  <- vb |> filter(sexo_label == "Hombres") |> pull(TO)
+td_m  <- vb |> filter(sexo_label == "Mujeres") |> pull(TD)
+td_h  <- vb |> filter(sexo_label == "Hombres") |> pull(TD)
+
+brecha_tgp <- round(tgp_h - tgp_m, 1)
+brecha_to  <- round(to_h  - to_m,  1)
+
+# ── SharedData — un objeto por pestaña ───────────────────────
+sd_tgp  <- SharedData$new(tasas_filtrable)
+sd_totd <- SharedData$new(tasas_filtrable)
+
+# ── Tabla departamental con nombres ──────────────────────────
+nombres_dpto <- c(
+  "05" = "Antioquia",    "08" = "Atlántico",   "11" = "Bogotá D.C.",
+  "13" = "Bolívar",      "15" = "Boyacá",       "17" = "Caldas",
+  "18" = "Caquetá",      "19" = "Cauca",        "20" = "Cesar",
+  "23" = "Córdoba",      "25" = "Cundinamarca", "27" = "Chocó",
+  "41" = "Huila",        "44" = "La Guajira",   "47" = "Magdalena",
+  "50" = "Meta",         "52" = "Nariño",       "54" = "N. de Santander",
+  "63" = "Quindío",      "66" = "Risaralda",    "68" = "Santander",
+  "70" = "Sucre",        "73" = "Tolima",       "76" = "Valle del Cauca",
+  "81" = "Arauca",       "85" = "Casanare",     "86" = "Putumayo",
+  "88" = "San Andrés",   "91" = "Amazonas",     "94" = "Guainía",
+  "95" = "Guaviare",     "97" = "Vaupés",       "99" = "Vichada"
+)
+
+tabla_dpto <- tabla_dpto_raw |>
+  mutate(Departamento = nombres_dpto[dpto_cod], Sexo = sexo_label) |>
+  select(Departamento, Sexo, TGP, cv_TGP, cal_TGP,
+         TO, cv_TO, cal_TO, TD, cv_TD, cal_TD) |>
+  arrange(Departamento, Sexo)
+
+# ── Tabla brecha de género por año ───────────────────────────
+tabla_brecha <- tasas_global |>
+  select(anio, sexo_label, TGP, TO, TD) |>
+  pivot_wider(names_from = sexo_label, values_from = c(TGP, TO, TD)) |>
+  mutate(
+    `Brecha TGP (pp)` = round(TGP_Hombres - TGP_Mujeres, 1),
+    `Brecha TO (pp)`  = round(TO_Hombres  - TO_Mujeres,  1),
+    `Brecha TD (pp)`  = round(TD_Mujeres  - TD_Hombres,  1)
+  ) |>
+  select(
+    Año = anio,
+    `TGP Hombres` = TGP_Hombres, `TGP Mujeres` = TGP_Mujeres, `Brecha TGP (pp)`,
+    `TO Hombres`  = TO_Hombres,  `TO Mujeres`  = TO_Mujeres,  `Brecha TO (pp)`,
+    `TD Hombres`  = TD_Hombres,  `TD Mujeres`  = TD_Mujeres,  `Brecha TD (pp)`
+  )
+```
+
+
+# Tasa Global de Participación {.tabset}
+
+## Row {height="15%"}
+
+```{r}
+#| content: valuebox
+#| title: "TGP Mujeres — 2025"
+list(value = paste0(tgp_m, "%"), color = COLOR_MUJERES, icon = "person-fill")
+```
+
+```{r}
+#| content: valuebox
+#| title: "TGP Hombres — 2025"
+list(value = paste0(tgp_h, "%"), color = COLOR_HOMBRES, icon = "person-fill")
+```
+
+```{r}
+#| content: valuebox
+#| title: "Brecha TGP — 2025 (H − M)"
+list(value = paste0(brecha_tgp, " pp"), color = "#0f3460", icon = "arrow-left-right")
+```
+
+## Row {height="85%"}
+
+### Filtros {width="20%"}
+
+```{r}
+#| echo: false
+tags$div(
+  style = "padding: 10px;",
+  tags$p(tags$b("Interseccionalidad"),
+         style = "font-size: 14px; color: #0f3460; margin-bottom: 4px;"),
+  tags$p("Filtra por una dimensión a la vez. Selecciona ",
+         tags$b("Nacional"), " para ver el promedio nacional.",
+         style = "font-size: 11px; color: #6c757d; margin-bottom: 14px;"),
+  filter_select("f_etnia_tgp", "Pertenencia étnica:",
+                sd_tgp, ~etnia_f, multiple = FALSE),
+  tags$div(style = "margin-top: 10px;",
+    filter_select("f_zona_tgp", "Zona:",
+                  sd_tgp, ~zona_f, multiple = FALSE)
+  ),
+  tags$div(style = "margin-top: 10px;",
+    filter_select("f_edu_tgp", "Nivel educativo:",
+                  sd_tgp, ~edu_f, multiple = FALSE)
+  )
+)
+```
+
+### TGP por Sexo y Año {width="80%"}
+
+```{r}
+#| title: "Tasa Global de Participación (TGP) — Colombia 2019–2025"
+#| echo: false
+#| message: false
+#| warning: false
+
+p_tgp <- ggplot(
+  sd_tgp,
+  aes(x = anio, y = TGP, color = sexo_label, fill = sexo_label, group = sexo_label)
+) +
+  geom_ribbon(aes(ymin = li, ymax = ls), alpha = 0.15, color = NA) +
+  geom_line(linewidth = 1.1) +
+  geom_point(size = 2.5, aes(text = paste0(
+    "<b>Año:</b> ",  anio,
+    "<br><b>Sexo:</b> ",  sexo_label,
+    "<br><b>TGP:</b> ",   TGP, "%",
+    "<br><b>IC 95%:</b> [", li, "% – ", ls, "%]",
+    "<br><b>CV:</b> ",    cv_TGP, "% (", cal_TGP, ")",
+    "<br><b>n obs:</b> ", format(n_obs, big.mark = ".")
+  ))) +
+  geom_vline(xintercept = 2021, linetype = "dashed", color = "gray50", linewidth = 0.6) +
+  annotate("text", x = 2021.15, y = 35,
+           label = "Cambio de\nMarco Muestral",
+           hjust = 0, size = 2.6, color = "gray40", fontface = "italic") +
+  scale_color_manual(values = c("Hombres" = COLOR_HOMBRES, "Mujeres" = COLOR_MUJERES)) +
+  scale_fill_manual(values  = c("Hombres" = COLOR_HOMBRES, "Mujeres" = COLOR_MUJERES)) +
+  scale_x_continuous(breaks = 2019:2025) +
+  labs(x = "Año", y = "Tasa (%)") +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "none")
+
+ggplotly(p_tgp, tooltip = "text") |>
+  layout(
+    legend    = list(orientation = "h", x = 0.25, y = 1.08),
+    hovermode = "closest",
+    margin    = list(b = 80),
+    annotations = list(list(
+      text = CAPTION, xref = "paper", yref = "paper",
+      x = 0, y = -0.22, showarrow = FALSE,
+      font = list(size = 10, color = "gray50"), align = "left"
+    ))
+  )
+```
+
+
+# Tasa de Ocupación y Desempleo {.tabset}
+
+## Row {height="15%"}
+
+```{r}
+#| content: valuebox
+#| title: "TO Mujeres — 2025"
+list(value = paste0(to_m, "%"), color = COLOR_MUJERES, icon = "briefcase-fill")
+```
+
+```{r}
+#| content: valuebox
+#| title: "TO Hombres — 2025"
+list(value = paste0(to_h, "%"), color = COLOR_HOMBRES, icon = "briefcase-fill")
+```
+
+```{r}
+#| content: valuebox
+#| title: "Brecha TO — 2025 (H − M)"
+list(value = paste0(brecha_to, " pp"), color = "#0f3460", icon = "arrow-left-right")
+```
+
+## Row {height="85%"}
+
+### Filtros {width="20%"}
+
+```{r}
+#| echo: false
+tags$div(
+  style = "padding: 10px;",
+  tags$p(tags$b("Interseccionalidad"),
+         style = "font-size: 14px; color: #0f3460; margin-bottom: 4px;"),
+  tags$p("Filtra por una dimensión a la vez. Selecciona ",
+         tags$b("Nacional"), " para ver el promedio nacional.",
+         style = "font-size: 11px; color: #6c757d; margin-bottom: 14px;"),
+  filter_select("f_etnia_totd", "Pertenencia étnica:",
+                sd_totd, ~etnia_f, multiple = FALSE),
+  tags$div(style = "margin-top: 10px;",
+    filter_select("f_zona_totd", "Zona:",
+                  sd_totd, ~zona_f, multiple = FALSE)
+  ),
+  tags$div(style = "margin-top: 10px;",
+    filter_select("f_edu_totd", "Nivel educativo:",
+                  sd_totd, ~edu_f, multiple = FALSE)
+  )
+)
+```
+
+### Tasa de Ocupación (TO) {width="40%"}
+
+```{r}
+#| title: "Tasa de Ocupación (TO) por Sexo y Año"
+#| echo: false
+#| message: false
+#| warning: false
+
+plot_ly(
+  sd_totd,
+  x             = ~factor(anio),
+  y             = ~TO,
+  color         = ~sexo_label,
+  colors        = c("Hombres" = COLOR_HOMBRES, "Mujeres" = COLOR_MUJERES),
+  type          = "bar",
+  text          = ~paste0(
+    "<b>Año:</b> ", anio,
+    "<br><b>Sexo:</b> ", sexo_label,
+    "<br><b>TO:</b> ", TO, "%",
+    "<br><b>CV:</b> ", cv_TO, "% (", cal_TO, ")",
+    "<br><b>n obs:</b> ", format(n_obs, big.mark = ".")
+  ),
+  hovertemplate = "%{text}<extra></extra>"
+) |>
+  layout(
+    barmode = "group",
+    bargap  = 0.3,
+    xaxis   = list(title = "Año"),
+    yaxis   = list(title = "Tasa (%)", range = c(0, 80)),
+    legend  = list(orientation = "h", x = 0.25, y = 1.08),
+    plot_bgcolor  = "white",
+    paper_bgcolor = "white",
+    margin  = list(b = 60),
+    annotations = list(list(
+      text = CAPTION, xref = "paper", yref = "paper",
+      x = 0, y = -0.3, showarrow = FALSE,
+      font = list(size = 9, color = "gray50"), align = "left"
+    ))
+  )
+```
+
+### Tasa de Desempleo (TD) {width="40%"}
+
+```{r}
+#| title: "Tasa de Desempleo (TD) por Sexo y Año"
+#| echo: false
+#| message: false
+#| warning: false
+
+plot_ly(
+  sd_totd,
+  x             = ~factor(anio),
+  y             = ~TD,
+  color         = ~sexo_label,
+  colors        = c("Hombres" = COLOR_HOMBRES, "Mujeres" = COLOR_MUJERES),
+  type          = "bar",
+  text          = ~paste0(
+    "<b>Año:</b> ", anio,
+    "<br><b>Sexo:</b> ", sexo_label,
+    "<br><b>TD:</b> ", TD, "%",
+    "<br><b>CV:</b> ", cv_TD, "% (", cal_TD, ")",
+    "<br><b>n obs:</b> ", format(n_obs, big.mark = ".")
+  ),
+  hovertemplate = "%{text}<extra></extra>"
+) |>
+  layout(
+    barmode = "group",
+    bargap  = 0.3,
+    xaxis   = list(title = "Año"),
+    yaxis   = list(title = "Tasa (%)", range = c(0, 30)),
+    legend  = list(orientation = "h", x = 0.25, y = 1.08),
+    plot_bgcolor  = "white",
+    paper_bgcolor = "white",
+    margin  = list(b = 60),
+    annotations = list(list(
+      text = CAPTION, xref = "paper", yref = "paper",
+      x = 0, y = -0.3, showarrow = FALSE,
+      font = list(size = 9, color = "gray50"), align = "left"
+    ))
+  )
+```
+
+
+# Descomposición de Participación
+
+## Row
+
+::: {.callout-note appearance="minimal"}
+**Antes del salario, ¿quién puede trabajar?**
+Los indicadores anteriores muestran las tasas de participación y ocupación. Pero la mayor brecha
+de género está en quién logra participar del mercado laboral. Esta sección analiza
+la población completa en edad de trabajar para entender las barreras de entrada,
+descomponiendo la brecha en lo que se explica por características y lo que no.
+:::
+
+## Tarjetas {height=8%}
+
+```{r}
+#| content: valuebox
+#| title: "De cada 100 hombres en edad de trabajar, participan"
+list(
+  value = paste0(round(boy_tasa_h * 100), " de 100"),
+  color = COLOR_HOMBRES,
+  icon  = "person-check"
+)
+```
+
+```{r}
+#| content: valuebox
+#| title: "De cada 100 mujeres en edad de trabajar, participan"
+list(
+  value = paste0(round(boy_tasa_m * 100), " de 100"),
+  color = COLOR_MUJERES,
+  icon  = "person-x"
+)
+```
+
+```{r}
+#| content: valuebox
+#| title: "Brecha de participación"
+list(
+  value = paste0(round(boy_brecha * 100, 1), " puntos"),
+  color = COLOR_NO_EXPLICADO,
+  icon  = "arrow-left-right"
+)
+```
+
+## Row {height=20%}
+### Row {.tabset}
+
+```{r}
+#| title: "¿Cómo ha cambiado la brecha de participación?"
+
+plot_boy <- boy_por_anio |>
+  filter(componente %in% c("Dotaciones", "Coeficientes")) |>
+  mutate(
+    pp = valor * 100,
+    componente = recode(componente,
+      "Dotaciones"   = "Por características",
+      "Coeficientes" = "No explicada"
+    ),
+    componente = factor(componente, levels = c("Por características", "No explicada"))
+  )
+
+p_boy <- ggplot(plot_boy, aes(x = anio, y = pp, fill = componente)) +
+  geom_col(position = "stack", width = 0.7) +
+  geom_hline(yintercept = 0, linewidth = 0.5, color = "#333333") +
+  scale_fill_manual(
+    values = c("Por características" = COLOR_EXPLICADO, "No explicada" = COLOR_NO_EXPLICADO),
+    name = ""
+  ) +
+  scale_x_continuous(breaks = unique(plot_boy$anio)) +
+  labs(x = NULL, y = "Puntos porcentuales", caption = CAPTION) +
+  theme_minimal(base_size = 13) +
+  theme(legend.position = "top")
+
+ggplotly(p_boy, tooltip = c("x", "fill", "y")) |>
+  layout(legend = list(orientation = "h", y = 1.1))
+```
+
+
+
+```{r}
+#| title: "¿Qué factores pesan más?"
+
+if (nrow(boy_yun) > 0) {
+  det_boy <- boy_yun |>
+    mutate(
+      var_grupo = case_when(
+        grepl("esc_anios", variable)   ~ "Educación",
+        grepl("exp_pot2", variable)    ~ "Experiencia²",
+        grepl("exp_pot", variable)     ~ "Experiencia",
+        grepl("zona_label", variable)  ~ "Zona (Urb/Rur)",
+        grepl("edad_grupo", variable)  ~ "Grupo de edad",
+        TRUE ~ variable
+      )
+    ) |>
+    group_by(var_grupo) |>
+    summarise(dotacion = sum(dotacion, na.rm = TRUE),
+              coeficiente = sum(coeficiente, na.rm = TRUE), .groups = "drop") |>
+    pivot_longer(cols = c(dotacion, coeficiente),
+                 names_to = "componente", values_to = "valor") |>
+    mutate(
+      pp = valor * 100,
+      componente_label = ifelse(componente == "dotacion",
+                                "Por características", "No explicada")
+    )
+
+  p_yun <- ggplot(det_boy, aes(x = reorder(var_grupo, abs(pp)),
+                                y = pp, fill = componente_label)) +
+    geom_col(position = "dodge", width = 0.7) +
+    geom_hline(yintercept = 0, linewidth = 0.5, color = "#333333") +
+    coord_flip() +
+    scale_fill_manual(
+      values = c("Por características" = COLOR_EXPLICADO, "No explicada" = COLOR_NO_EXPLICADO),
+      name = ""
+    ) +
+    labs(x = NULL, y = "Puntos porcentuales",
+         subtitle = paste0("Año ", anio_reciente_boy), caption = CAPTION) +
+    theme_minimal(base_size = 12) +
+    theme(legend.position = "top")
+
+  ggplotly(p_yun, tooltip = c("x", "fill", "y")) |>
+    layout(legend = list(orientation = "h", y = 1.1))
+} else {
+  plotly_empty() |> layout(title = "No se pudo calcular contribución por variable")
+}
+```
+
+## Row {height=20%}
+### Row {.tabset}
+
+```{r}
+#| title: "¿Dónde es peor? Por zona"
+plot_boy_zona <- boy_por_zona |>
+  filter(componente == "Brecha", !is.na(valor)) |>
+  mutate(pp = valor * 100)
+
+p_bz <- ggplot(plot_boy_zona, aes(x = anio, y = pp, color = grupo)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 3) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "#adb5bd") +
+  geom_vline(xintercept = 2021, linetype = "dotted", color = "#adb5bd") +
+  scale_color_manual(values = c("Urbano" = "#2166AC", "Rural" = "#B2182B"), name = "") +
+  scale_x_continuous(breaks = unique(plot_boy_zona$anio)) +
+  labs(x = NULL, y = "Brecha de participación (pp)", caption = CAPTION) +
+  theme_minimal(base_size = 13) +
+  theme(legend.position = "top")
+
+ggplotly(p_bz) |> layout(legend = list(orientation = "h", y = 1.1))
+```
+
+
+
+```{r}
+#| title: "¿Dónde es peor? Por etnia"
+plot_boy_etnia <- boy_por_etnia |>
+  filter(componente == "Brecha", !is.na(valor)) |>
+  mutate(pp = valor * 100)
+
+if (nrow(plot_boy_etnia) > 0) {
+  p_be <- ggplot(plot_boy_etnia, aes(x = anio, y = pp, color = grupo)) +
+    geom_line(linewidth = 1.2) +
+    geom_point(size = 3) +
+    geom_hline(yintercept = 0, linetype = "dashed", color = "#adb5bd") +
+    geom_vline(xintercept = 2021, linetype = "dotted", color = "#adb5bd") +
+    scale_color_manual(
+      values = c("No étnico" = "#4393C3", "Étnico" = "#D6604D"), name = ""
+    ) +
+    scale_x_continuous(breaks = unique(plot_boy_etnia$anio)) +
+    labs(x = NULL, y = "Brecha de participación (pp)", caption = CAPTION) +
+    theme_minimal(base_size = 13) +
+    theme(legend.position = "top")
+
+  ggplotly(p_be) |> layout(legend = list(orientation = "h", y = 1.1))
+} else {
+  plotly_empty() |> layout(title = "Muestra insuficiente")
+}
+```
+
+## Row
+
+::: {.callout-important appearance="minimal"}
+**Doble obstáculo:**
+La página de Brechas Salariales muestra que, entre quienes ya trabajan, existe una brecha salarial
+no explicada de ~9%. Esta sección revela que la brecha más grande está *antes*:
+30 de cada 100 mujeres en edad de trabajar no participan del mercado laboral
+(comparado con los hombres). Juntos, estos análisis muestran barreras de entrada
+al mercado y desigualdad salarial una vez dentro.
+:::
+
+## Row
+
+::: {.callout-tip appearance="minimal" collapse="true"}
+## Nota metodológica
+
+Método: **Blinder-Oaxaca-Yun (BOY)** con modelo logit no lineal.
+Variable dependiente: participa (1 = PEA, 0 = no participa).
+Datos: PET completa (población en edad de trabajar, 15–65 años).
+Se estiman logits separados por sexo y se construye un contrafactual:
+¿cuál sería la tasa de participación femenina si sus características
+tuvieran el mismo efecto que en los hombres?
+La diferencia se descompone en dotaciones (diferencias en X) y
+coeficientes (diferencias en efectos de X). Pesos de Yun (2004)
+permiten identificar la contribución de cada variable.
+La línea punteada en 2021 indica el cambio de marco muestral censal.
+:::
+
+## Tabla detalle {height=20%}
+
+```{r}
+#| title: "Tabla detallada de resultados BOY"
+
+tabla_boy <- boy_all |>
+  filter(componente %in% c("Brecha", "Dotaciones", "Coeficientes")) |>
+  mutate(
+    pp = round(valor * 100, 2),
+    componente_label = recode(componente,
+      "Brecha"       = "Brecha total (pp)",
+      "Dotaciones"   = "Por características (pp)",
+      "Coeficientes" = "No explicada (pp)"
+    )
+  ) |>
+  select(anio, corte, grupo, componente_label, pp, n_hombres, n_mujeres) |>
+  arrange(anio, corte, grupo, componente_label)
+
+datatable(
+  tabla_boy,
+  rownames   = FALSE,
+  filter     = "top",
+  extensions = "Buttons",
+  colnames   = c("Año", "Corte", "Grupo", "Componente",
+                  "Puntos porc.", "N Hombres", "N Mujeres"),
+  options    = list(
+    pageLength = 10, scrollX = TRUE,
+    dom = "Bfrtip", buttons = list("csv", "excel"),
+    language = list(search = "Buscar:", info = "_START_ a _END_ de _TOTAL_",
+                    paginate = list(previous = "Anterior", `next` = "Siguiente"))
+  ),
+  caption = htmltools::tags$caption(
+    style = "color: gray; font-size: 11px;",
+    paste("Descomposición BOY — Participación laboral |", CAPTION)
+  )
+)
+```
+
+
+# Calidad Estadística Departamental {.tabset}
+
+## Row {height="100%"}
+
+### Calidad por Departamento — 2025 {width="100%"}
+
+```{r}
+#| echo: false
+#| message: false
+
+datatable(
+  tabla_dpto,
+  rownames   = FALSE,
+  filter     = "top",
+  extensions = "Buttons",
+  options    = list(
+    pageLength = 15, scrollX = TRUE,
+    dom = "Bfrtip", buttons = list("csv", "excel"),
+    language = list(search = "Buscar:", info = "_START_ a _END_ de _TOTAL_",
+                    paginate = list(previous = "Anterior", `next` = "Siguiente"))
+  ),
+  caption = htmltools::tags$caption(style = "color: gray; font-size: 11px;", CAPTION)
+) |>
+  formatStyle("cal_TGP", backgroundColor = styleEqual(
+    c("Preciso","Aceptable","Regular","No confiable"),
+    c("#d4edda","#fff3cd",  "#ffe5d0","#f8d7da"))) |>
+  formatStyle("cal_TO", backgroundColor = styleEqual(
+    c("Preciso","Aceptable","Regular","No confiable"),
+    c("#d4edda","#fff3cd",  "#ffe5d0","#f8d7da"))) |>
+  formatStyle("cal_TD", backgroundColor = styleEqual(
+    c("Preciso","Aceptable","Regular","No confiable"),
+    c("#d4edda","#fff3cd",  "#ffe5d0","#f8d7da")))
+```
+
+
+# Brecha de Género {.tabset}
+
+## Row {height="100%"}
+
+### Brecha TGP · TO · TD por Año {width="100%"}
+
+```{r}
+#| echo: false
+#| message: false
+
+datatable(
+  tabla_brecha,
+  rownames   = FALSE,
+  filter     = "top",
+  extensions = "Buttons",
+  options    = list(
+    pageLength = 10, scrollX = TRUE,
+    dom = "Bfrtip", buttons = list("csv", "excel"),
+    language = list(search = "Buscar:", info = "_START_ a _END_ de _TOTAL_",
+                    paginate = list(previous = "Anterior", `next` = "Siguiente"))
+  ),
+  caption = htmltools::tags$caption(style = "color: gray; font-size: 11px;", CAPTION)
+) |>
+  formatStyle("Brecha TGP (pp)",
+    background = styleColorBar(range(tabla_brecha$`Brecha TGP (pp)`, na.rm = TRUE), COLOR_HOMBRES),
+    backgroundSize = "100% 80%", backgroundRepeat = "no-repeat", backgroundPosition = "center") |>
+  formatStyle("Brecha TO (pp)",
+    background = styleColorBar(range(tabla_brecha$`Brecha TO (pp)`, na.rm = TRUE), COLOR_HOMBRES),
+    backgroundSize = "100% 80%", backgroundRepeat = "no-repeat", backgroundPosition = "center") |>
+  formatStyle("Brecha TD (pp)",
+    background = styleColorBar(range(tabla_brecha$`Brecha TD (pp)`, na.rm = TRUE), COLOR_MUJERES),
+    backgroundSize = "100% 80%", backgroundRepeat = "no-repeat", backgroundPosition = "center")
+```
+
+
+```{=html}
+<style>
+  /* Ocultar la opción "(All)" de los dropdowns crosstalk */
+  .selectize-dropdown-content .option[data-value=""] { display: none !important; }
+  .selectize-input .item[data-value=""]              { display: none !important; }
+</style>
+
+<script>
+/* Establece "Nacional" en los 6 filtros crosstalk.
+   Usa un intervalo que reintenta cada 100ms hasta que todos estén listos
+   (o hasta 30 segundos). Esto garantiza que selectize ya esté montado. */
+(function () {
+  var TARGET = "Ninguno";
+  var IDS = [
+    "f_etnia_tgp", "f_zona_tgp", "f_edu_tgp",
+    "f_etnia_totd", "f_zona_totd", "f_edu_totd"
+  ];
+  var done = {};
+
+  var iv = setInterval(function () {
+    var allDone = true;
+    IDS.forEach(function (id) {
+      if (done[id]) return;
+      /* El div contenedor tiene el id; el <select> está adentro */
+      var container = document.getElementById(id);
+      var selectEl  = container && container.querySelector("select");
+      var sz = selectEl
+        ? (selectEl.selectize || (window.$ && $(selectEl).data("selectize")))
+        : null;
+      if (sz) {
+        sz.setValue([TARGET], false);
+        done[id] = true;
+      } else {
+        allDone = false;
+      }
+    });
+    if (allDone) clearInterval(iv);
+  }, 100);
+
+  /* Cancelar tras 30 segundos para no seguir corriendo indefinidamente */
+  setTimeout(function () { clearInterval(iv); }, 30000);
+})();
+</script>
+```
