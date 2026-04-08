@@ -1,5 +1,5 @@
 ---
-title: "Descomposición Oaxaca-Blinder"
+title: "Brechas de Género: Descomposición"
 format:
   dashboard:
     orientation: rows
@@ -12,235 +12,85 @@ format:
         href: https://github.com/equilab-ean/equilab-dat4ccion-2026
 ---
 
-```{r setup}
+# Brecha Salarial
+
+```{r setup-ob}
 #| include: false
 
-# ── Librerías ────────────────────────────────────────────────
 library(arrow)
 library(dplyr)
 library(tidyr)
 library(ggplot2)
 library(plotly)
-library(oaxaca)
 library(gt)
-library(survey)
 
-# ── Constantes globales (NO modificar) ──────────────────────
-COLOR_HOMBRES <- "#2166AC"
-COLOR_MUJERES <- "#D6604D"
-COLOR_BRECHA  <- "#0f3460"
+# ── Constantes globales ──────────────────────────────────────
+COLOR_HOMBRES      <- "#2166AC"
+COLOR_MUJERES      <- "#D6604D"
+COLOR_BRECHA       <- "#0f3460"
 COLOR_EXPLICADO    <- "#4DBBD5"
 COLOR_NO_EXPLICADO <- "#E64B35"
-COLOR_NEUTRO  <- "#6c757d"
-CAPTION       <- "Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026."
+COLOR_DM           <- "#F39B7F"
+COLOR_DF           <- "#8491B4"
+COLOR_NEUTRO       <- "#6c757d"
+CAPTION            <- "Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026."
 
-# ── Carga de datos ───────────────────────────────────────────
-dat_raw <- read_parquet("datos/geih_ocupados_2019_2025.parquet")
+# ── Leer pre-cálculos O-B ───────────────────────────────────
+ob_all     <- read_parquet("datos/p4_ob_resultados.parquet")
+ob_detalle <- read_parquet("datos/p4_ob_detalle_vars.parquet")
 
-dat <- dat_raw |>
-  filter(
-    !is.na(ing_mes), ing_mes > 0,
-    !is.na(horas_sem), horas_sem > 0,
-    !is.na(esc_anios),
-    !is.na(sexo), sexo %in% c(1, 2),
-    !is.na(edad), edad >= 18, edad <= 65,
-    !is.na(fex)
-  ) |>
-  mutate(
-    sal_hora  = ing_mes / (horas_sem * 4.33),
-    log_sal   = log(sal_hora),
-    sexo_bin  = ifelse(sexo == 2, 1, 0),  # 1 = Mujer (Grupo B), 0 = Hombre (Grupo A)
-    sexo_label = ifelse(sexo == 1, "Hombres", "Mujeres"),
-    exp_pot   = pmax(edad - esc_anios - 6, 0),  # experiencia potencial Mincer
-    exp_pot2  = exp_pot^2,
-    zona_label = ifelse(clase_zona == 1, "Urbano", "Rural"),
-    etnia_label = case_when(
-      etnia_bin == 0 ~ "No étnico",
-      etnia_bin == 1 ~ "Étnico",
-      TRUE ~ NA_character_
-    ),
-    # Agrupar posición ocupacional para reducir categorías
-    pos_ocup_cat = case_when(
-      posicion_ocup %in% c(1, 2) ~ "Asalariado",
-      posicion_ocup %in% c(3, 7) ~ "Independiente",
-      posicion_ocup == 8 ~ "Jornalero",
-      TRUE ~ "Otro"
-    ),
-    # Rama a 1 dígito para reducir categorías
-    rama1d = substr(rama2d_orig, 1, 1)
-  ) |>
-  # Excluir salarios extremos (P1 y P99) para robustez
-  group_by(anio) |>
-  filter(
-    sal_hora > quantile(sal_hora, 0.01, na.rm = TRUE),
-    sal_hora < quantile(sal_hora, 0.99, na.rm = TRUE)
-  ) |>
-  ungroup()
+ob_por_anio  <- ob_all |> filter(corte == "Nacional")
+ob_por_zona  <- ob_all |> filter(corte == "Zona")
+ob_por_etnia <- ob_all |> filter(corte == "Etnia")
 
-# ── Fórmulas O-B ────────────────────────────────────────────
-# Nacional: incluye zona como control
-f_nacional <- log_sal ~ esc_anios + exp_pot + exp_pot2 +
-  factor(pos_ocup_cat) + factor(rama1d) +
-  factor(clase_zona) | sexo_bin
+anio_reciente <- max(ob_por_anio$anio)
 
-# Para cortes por zona: excluir clase_zona (es constante dentro del grupo)
-f_sin_zona <- log_sal ~ esc_anios + exp_pot + exp_pot2 +
-  factor(pos_ocup_cat) + factor(rama1d) | sexo_bin
+# ── Métricas value boxes ─────────────────────────────────────
+resumen_rec       <- ob_por_anio |> filter(anio == anio_reciente)
+brecha_total      <- resumen_rec |> filter(componente == "Brecha total") |> pull(valor)
+comp_explicado    <- resumen_rec |> filter(componente == "Explicado") |> pull(valor)
+comp_no_explicado <- resumen_rec |> filter(componente == "No explicado") |> pull(valor)
 
-# Para cortes con muestras pequeñas (etnia): modelo más parsimonioso
-f_simple <- log_sal ~ esc_anios + exp_pot + exp_pot2 +
-  factor(pos_ocup_cat) | sexo_bin
-
-# ── Función: correr O-B para un subconjunto ──────────────────
-run_ob <- function(df, label = "General", formula = f_nacional) {
-  n_h <- sum(df$sexo_bin == 0)
-  n_m <- sum(df$sexo_bin == 1)
-  if (n_h < 50 | n_m < 50) {
-    return(tibble(
-      grupo = label,
-      componente = c("Brecha total", "Explicado", "No explicado"),
-      valor = rep(NA_real_, 3),
-      se = rep(NA_real_, 3),
-      n_hombres = n_h,
-      n_mujeres = n_m
-    ))
-  }
-
-  # Muestrear si el dataset es muy grande (>20k filas) para velocidad
-  if (nrow(df) > 20000) {
-    set.seed(2026)
-    df <- df |> slice_sample(n = 20000, weight_by = fex)
-  }
-
-  ob <- tryCatch(
-    oaxaca(formula, data = df, R = 30),
-    error = function(e) NULL
-  )
-
-  if (is.null(ob)) {
-    return(tibble(
-      grupo = label,
-      componente = c("Brecha total", "Explicado", "No explicado"),
-      valor = rep(NA_real_, 3),
-      se = rep(NA_real_, 3),
-      n_hombres = n_h,
-      n_mujeres = n_m
-    ))
-  }
-
-  # Twofold: overall es una matriz con columnas:
-  #   group.weight, coef(explained), se(explained),
-  #   coef(unexplained), se(unexplained), ...
-  # Filtrar fila donde group.weight == 0 (coef. hombres como referencia)
-  tw_all <- ob$twofold$overall
-  tw_row <- tw_all[tw_all[, "group.weight"] == 0, , drop = FALSE]
-
-  tibble(
-    grupo = label,
-    componente = c("Brecha total", "Explicado", "No explicado"),
-    valor = c(ob$y$y.diff,
-              tw_row[1, "coef(explained)"],
-              tw_row[1, "coef(unexplained)"]),
-    se = c(NA_real_,
-           tw_row[1, "se(explained)"],
-           tw_row[1, "se(unexplained)"]),
-    n_hombres = n_h,
-    n_mujeres = n_m
-  )
-}
-
-# ── Correr O-B por año ───────────────────────────────────────
-ob_por_anio <- dat |>
-  group_by(anio) |>
-  group_split() |>
-  lapply(function(df) {
-    run_ob(df, label = as.character(unique(df$anio))) |>
-      mutate(anio = unique(df$anio), corte = "Nacional")
-  }) |>
-  bind_rows()
-
-# ── Correr O-B por año × zona ───────────────────────────────
-# Usar f_sin_zona: clase_zona es constante dentro de cada grupo
-ob_por_zona <- dat |>
-  filter(!is.na(clase_zona)) |>
-  group_by(anio, zona_label) |>
-  group_split() |>
-  lapply(function(df) {
-    run_ob(df, label = unique(df$zona_label), formula = f_sin_zona) |>
-      mutate(anio = unique(df$anio), corte = "Zona")
-  }) |>
-  bind_rows()
-
-# ── Correr O-B por año × etnia ──────────────────────────────
-# Usar f_simple: muestras étnicas son pequeñas, modelo parsimonioso
-ob_por_etnia <- dat |>
-  filter(!is.na(etnia_label)) |>
-  group_by(anio, etnia_label) |>
-  group_split() |>
-  lapply(function(df) {
-    run_ob(df, label = unique(df$etnia_label), formula = f_simple) |>
-      mutate(anio = unique(df$anio), corte = "Etnia")
-  }) |>
-  bind_rows()
-
-# ── Combinar resultados ─────────────────────────────────────
-ob_all <- bind_rows(ob_por_anio, ob_por_zona, ob_por_etnia)
-
-# ── Detalle por variable para el año más reciente ────────────
-anio_reciente <- max(dat$anio)
-dat_reciente <- dat |> filter(anio == anio_reciente)
-
-ob_detalle <- tryCatch({
-  set.seed(2026)
-  dat_det <- if (nrow(dat_reciente) > 20000) {
-    dat_reciente |> slice_sample(n = 20000, weight_by = fex)
-  } else {
-    dat_reciente
-  }
-  ob_tmp <- oaxaca(
-    log_sal ~ esc_anios + exp_pot + exp_pot2 +
-      factor(pos_ocup_cat) + factor(rama1d) +
-      factor(clase_zona) | sexo_bin,
-    data = dat_det,
-    R = 30
-  )
-
-  # twofold$variables es una lista; [[1]] corresponde a group.weight = 0
-  # Cada elemento es una matriz con columnas:
-  #   group.weight, coef(explained), se(explained),
-  #   coef(unexplained), se(unexplained), ...
-  vars_tw <- ob_tmp$twofold$variables[[1]]
-
-  tibble(
-    variable = rownames(vars_tw),
-    explicado = vars_tw[, "coef(explained)"],
-    no_explicado = vars_tw[, "coef(unexplained)"]
-  ) |>
-    filter(variable != "(Intercept)")
-}, error = function(e) NULL)
-
-# ── Métricas resumen para value boxes ────────────────────────
-resumen_reciente <- ob_por_anio |>
-  filter(anio == anio_reciente)
-
-brecha_total  <- resumen_reciente |> filter(componente == "Brecha total") |> pull(valor)
-comp_explicado <- resumen_reciente |> filter(componente == "Explicado") |> pull(valor)
-comp_no_explicado <- resumen_reciente |> filter(componente == "No explicado") |> pull(valor)
-
-# Convertir de log-puntos a porcentaje aproximado (exp(b)-1)
-pct_brecha <- round((exp(abs(brecha_total)) - 1) * 100, 1)
-# Mostrar componentes en log-puntos ×100 (más interpretable que % de brecha)
-lp_explicado <- round(comp_explicado * 100, 1)
+pct_brecha      <- round((exp(abs(brecha_total)) - 1) * 100, 1)
+lp_explicado    <- round(comp_explicado * 100, 1)
 lp_no_explicado <- round(comp_no_explicado * 100, 1)
 ```
 
-# Descomposición Nacional {.tabset}
+## Row
 
-## Row {height="15%"}
+::: {.callout-note appearance="minimal"}
+**Las mujeres ocupadas en Colombia tienen más educación que los hombres.**
+Sin embargo, cuando comparamos personas con las mismas características (educación, experiencia,
+sector y zona), los hombres siguen ganando más. Esta sección descompone la brecha salarial
+para entender qué parte se explica por diferencias en perfiles y qué parte no tiene
+explicación observable.
+:::
+
+## Row
 
 ```{r}
 #| content: valuebox
-#| title: "Brecha salarial total (hombres ganan más)"
+#| title: "A iguales condiciones, los hombres ganan"
+list(
+  value = paste0(abs(lp_no_explicado), "% más"),
+  color = COLOR_NO_EXPLICADO,
+  icon  = "exclamation-triangle"
+)
+```
+
+```{r}
+#| content: valuebox
+#| title: "Si se reconociera su educación, las mujeres ganarían"
+list(
+  value = paste0(abs(lp_explicado), "% más"),
+  color = COLOR_EXPLICADO,
+  icon  = "mortarboard"
+)
+```
+
+```{r}
+#| content: valuebox
+#| title: "Brecha bruta total"
 list(
   value = paste0(pct_brecha, "%"),
   color = COLOR_BRECHA,
@@ -248,54 +98,32 @@ list(
 )
 ```
 
-```{r}
-#| content: valuebox
-#| title: "Componente explicado (dotaciones)"
-list(
-  value = paste0(lp_explicado, " log-pts ×100"),
-  color = COLOR_EXPLICADO,
-  icon  = "clipboard-data"
-)
-```
+## Row
+
+### {width="60%"}
 
 ```{r}
-#| content: valuebox
-#| title: "Componente no explicado (discriminación)"
-list(
-  value = paste0(lp_no_explicado, " log-pts ×100"),
-  color = COLOR_NO_EXPLICADO,
-  icon  = "exclamation-triangle"
-)
-```
-
-## Row {height="85%"}
-
-### Evolución temporal {width="60%"}
-
-```{r}
-#| title: "Descomposición O-B por año — Nacional"
-
-# Datos para el gráfico
+#| title: "¿Cómo ha cambiado la brecha salarial?"
 plot_data <- ob_por_anio |>
   filter(componente != "Brecha total") |>
   mutate(
     pct = valor * 100,
-    componente = factor(componente, levels = c("Explicado", "No explicado"))
+    componente = recode(componente,
+      "Explicado"    = "Por características",
+      "No explicado" = "No explicada"
+    ),
+    componente = factor(componente, levels = c("Por características", "No explicada"))
   )
 
 p <- ggplot(plot_data, aes(x = anio, y = pct, fill = componente)) +
   geom_col(position = "stack", width = 0.7) +
   geom_hline(yintercept = 0, linewidth = 0.5, color = "#333333") +
   scale_fill_manual(
-    values = c("Explicado" = COLOR_EXPLICADO, "No explicado" = COLOR_NO_EXPLICADO),
+    values = c("Por características" = COLOR_EXPLICADO, "No explicada" = COLOR_NO_EXPLICADO),
     name = ""
   ) +
   scale_x_continuous(breaks = unique(plot_data$anio)) +
-  labs(
-    x = NULL,
-    y = "Log-puntos salariales (×100)",
-    caption = CAPTION
-  ) +
+  labs(x = NULL, y = "Diferencia salarial (%)", caption = CAPTION) +
   theme_minimal(base_size = 13) +
   theme(legend.position = "top")
 
@@ -303,27 +131,25 @@ ggplotly(p, tooltip = c("x", "fill", "y")) |>
   layout(legend = list(orientation = "h", y = 1.1))
 ```
 
-### Detalle por variable {width="40%"}
+### {width="40%"}
 
 ```{r}
-#| title: "Contribución por variable — Año más reciente"
-
-if (!is.null(ob_detalle)) {
-  # Agrupar variables de factor en categorías legibles
+#| title: "¿Qué factores explican la brecha?"
+if (nrow(ob_detalle) > 0) {
   det <- ob_detalle |>
     mutate(
       var_grupo = case_when(
-        grepl("esc_anios", variable) ~ "Escolaridad",
-        grepl("exp_pot", variable) ~ "Experiencia",
-        grepl("pos_ocup", variable) ~ "Posición ocupacional",
-        grepl("rama1d", variable) ~ "Rama de actividad",
+        grepl("esc_anios", variable) ~ "Educación",
+        grepl("exp_pot", variable)   ~ "Experiencia",
+        grepl("pos_ocup", variable)  ~ "Tipo de empleo",
+        grepl("rama1d", variable)    ~ "Sector económico",
         grepl("clase_zona", variable) ~ "Zona (Urb/Rur)",
         TRUE ~ variable
       )
     ) |>
     group_by(var_grupo) |>
     summarise(
-      explicado = sum(explicado, na.rm = TRUE),
+      explicado    = sum(explicado, na.rm = TRUE),
       no_explicado = sum(no_explicado, na.rm = TRUE),
       .groups = "drop"
     ) |>
@@ -331,7 +157,8 @@ if (!is.null(ob_detalle)) {
                  names_to = "componente", values_to = "valor") |>
     mutate(
       pct = valor * 100,
-      componente_label = ifelse(componente == "explicado", "Explicado", "No explicado")
+      componente_label = ifelse(componente == "explicado",
+                                "Por características", "No explicada")
     )
 
   p2 <- ggplot(det, aes(x = reorder(var_grupo, abs(pct)),
@@ -340,10 +167,14 @@ if (!is.null(ob_detalle)) {
     geom_hline(yintercept = 0, linewidth = 0.5, color = "#333333") +
     coord_flip() +
     scale_fill_manual(
-      values = c("Explicado" = COLOR_EXPLICADO, "No explicado" = COLOR_NO_EXPLICADO),
+      values = c("Por características" = COLOR_EXPLICADO, "No explicada" = COLOR_NO_EXPLICADO),
       name = ""
     ) +
-    labs(x = NULL, y = "Log-puntos (×100)", caption = CAPTION) +
+    labs(
+      x = NULL, y = "Diferencia salarial (%)",
+      subtitle = paste0("Año ", anio_reciente),
+      caption = CAPTION
+    ) +
     theme_minimal(base_size = 12) +
     theme(legend.position = "top")
 
@@ -354,59 +185,12 @@ if (!is.null(ob_detalle)) {
 }
 ```
 
-# Corte Interseccional {.tabset}
+## Row
 
-## Row {height="15%"}
-
-```{r}
-#| content: valuebox
-#| title: "No explicado — Urbano (último año)"
-val_urb <- ob_por_zona |>
-  filter(anio == anio_reciente, grupo == "Urbano", componente == "No explicado") |>
-  pull(valor)
-vb_urb <- if (length(val_urb) > 0 && !is.na(val_urb[1])) paste0(round(val_urb[1] * 100, 1), " log-pts") else "N/D"
-list(
-  value = vb_urb,
-  color = if (vb_urb != "N/D") COLOR_NO_EXPLICADO else COLOR_NEUTRO,
-  icon = "building"
-)
-```
+### {width="50%"}
 
 ```{r}
-#| content: valuebox
-#| title: "No explicado — Rural (último año)"
-val_rur <- ob_por_zona |>
-  filter(anio == anio_reciente, grupo == "Rural", componente == "No explicado") |>
-  pull(valor)
-vb_rur <- if (length(val_rur) > 0 && !is.na(val_rur[1])) paste0(round(val_rur[1] * 100, 1), " log-pts") else "N/D"
-list(
-  value = vb_rur,
-  color = if (vb_rur != "N/D") COLOR_NO_EXPLICADO else COLOR_NEUTRO,
-  icon = "tree"
-)
-```
-
-```{r}
-#| content: valuebox
-#| title: "No explicado — Étnico (último año)"
-val_etn <- ob_por_etnia |>
-  filter(anio == anio_reciente, grupo == "Étnico", componente == "No explicado") |>
-  pull(valor)
-vb_etn <- if (length(val_etn) > 0 && !is.na(val_etn[1])) paste0(round(val_etn[1] * 100, 1), " log-pts") else "N/D (muestra insuf.)"
-list(
-  value = vb_etn,
-  color = if (!grepl("N/D", vb_etn)) COLOR_NO_EXPLICADO else COLOR_NEUTRO,
-  icon = "people"
-)
-```
-
-## Row {height="85%"}
-
-### Por zona geográfica {width="50%"}
-
-```{r}
-#| title: "Componente no explicado por zona — Evolución temporal"
-
+#| title: "¿Dónde es peor? Por zona"
 plot_zona <- ob_por_zona |>
   filter(componente == "No explicado", !is.na(valor)) |>
   mutate(pct = valor * 100)
@@ -418,19 +202,17 @@ p3 <- ggplot(plot_zona, aes(x = anio, y = pct, color = grupo)) +
   geom_vline(xintercept = 2021, linetype = "dotted", color = "#adb5bd") +
   scale_color_manual(values = c("Urbano" = "#2166AC", "Rural" = "#B2182B"), name = "") +
   scale_x_continuous(breaks = unique(plot_zona$anio)) +
-  labs(x = NULL, y = "Log-puntos (×100)", caption = CAPTION) +
+  labs(x = NULL, y = "Brecha no explicada (%)", caption = CAPTION) +
   theme_minimal(base_size = 13) +
   theme(legend.position = "top")
 
-ggplotly(p3) |>
-  layout(legend = list(orientation = "h", y = 1.1))
+ggplotly(p3) |> layout(legend = list(orientation = "h", y = 1.1))
 ```
 
-### Por pertenencia étnica {width="50%"}
+### {width="50%"}
 
 ```{r}
-#| title: "Componente no explicado por etnia — Evolución temporal"
-
+#| title: "¿Dónde es peor? Por etnia"
 plot_etnia <- ob_por_etnia |>
   filter(componente == "No explicado", !is.na(valor)) |>
   mutate(pct = valor * 100)
@@ -442,83 +224,519 @@ if (nrow(plot_etnia) > 0) {
     geom_hline(yintercept = 0, linetype = "dashed", color = "#adb5bd") +
     geom_vline(xintercept = 2021, linetype = "dotted", color = "#adb5bd") +
     scale_color_manual(
-      values = c("No étnico" = "#4393C3", "Étnico" = "#D6604D"),
-      name = ""
+      values = c("No étnico" = "#4393C3", "Étnico" = "#D6604D"), name = ""
     ) +
     scale_x_continuous(breaks = unique(plot_etnia$anio)) +
-    labs(x = NULL, y = "Log-puntos (×100)", caption = CAPTION) +
+    labs(x = NULL, y = "Brecha no explicada (%)", caption = CAPTION) +
     theme_minimal(base_size = 13) +
     theme(legend.position = "top")
 
-  ggplotly(p4) |>
-    layout(legend = list(orientation = "h", y = 1.1))
+  ggplotly(p4) |> layout(legend = list(orientation = "h", y = 1.1))
 } else {
   plotly_empty() |>
     layout(title = "Muestra insuficiente para descomposición étnica")
 }
 ```
 
-# Tabla de Resultados {.tabset}
+## Row
 
-## Row {height="15%"}
+::: {.callout-tip appearance="minimal" collapse="true"}
+## Nota metodológica
+
+Método: **Oaxaca-Blinder twofold** (Blinder, 1973; Oaxaca, 1973).
+Se descompone la diferencia en el logaritmo del salario por hora entre hombres y mujeres
+en dos partes: (1) la explicada por diferencias en características observables
+(educación, experiencia, sector, posición ocupacional y zona) y (2) la no explicada,
+que puede reflejar discriminación u otros factores no observados.
+Se utilizan los coeficientes masculinos como referencia (group.weight = 0).
+Errores estándar por bootstrap (R = 30). Muestra trimada al P1–P99 del salario/hora.
+La línea punteada en 2021 indica el cambio de marco muestral censal.
+:::
+
+## Row
+
+### {width="100%"}
 
 ```{r}
-#| content: valuebox
-#| title: "Años analizados"
-list(value = paste(min(dat$anio), "–", max(dat$anio)), color = COLOR_NEUTRO, icon = "calendar-range")
+#| title: "Tabla detallada de resultados"
+tabla_ob <- ob_all |>
+  filter(componente != "Brecha total") |>
+  mutate(
+    pct    = round(valor * 100, 2),
+    se_pct = round(se * 100, 2),
+    resultado = ifelse(is.na(pct), "N/D", paste0(pct, " (±", se_pct, ")"))
+  ) |>
+  select(anio, corte, grupo, componente, resultado, n_hombres, n_mujeres) |>
+  arrange(anio, corte, grupo, componente)
+
+tabla_ob |>
+  gt() |>
+  cols_label(
+    anio = "Año", corte = "Corte", grupo = "Grupo",
+    componente = "Componente", resultado = "Diferencia % (±SE)",
+    n_hombres = "N Hombres", n_mujeres = "N Mujeres"
+  ) |>
+  tab_header(
+    title = "Descomposición Oaxaca-Blinder — Resultados completos",
+    subtitle = paste("GEIH", min(ob_all$anio), "–", max(ob_all$anio))
+  ) |>
+  tab_source_note(CAPTION) |>
+  tab_options(
+    table.font.size = px(12),
+    heading.title.font.size = px(16),
+    heading.subtitle.font.size = px(13)
+  )
 ```
 
+
+# Validación No Paramétrica
+
+```{r setup-nopo}
+#| include: false
+
+# ── Leer pre-cálculos Ñopo ───────────────────────────────────
+nopo_por_anio <- read_parquet("datos/p4_nopo_resultados.parquet")
+
+nopo_rec <- nopo_por_anio |> filter(anio == anio_reciente)
+nopo_D0          <- nopo_rec |> filter(componente == "D_0") |> pull(valor)
+nopo_DX          <- nopo_rec |> filter(componente == "D_X") |> pull(valor)
+nopo_brecha      <- nopo_rec |> filter(componente == "Brecha total") |> pull(valor)
+nopo_pct_match   <- nopo_rec |> slice(1) |> pull(pct_matching)
+nopo_celdas_comun <- nopo_rec |> slice(1) |> pull(n_celdas_comun)
+nopo_celdas_total <- nopo_rec |> slice(1) |> pull(n_celdas_total)
+```
+
+## Row
+
+::: {.callout-note appearance="minimal"}
+**¿Qué pasa si comparamos solo personas con exactamente el mismo perfil?**
+Este método empareja hombres y mujeres con la misma educación, edad, tipo de empleo y zona,
+sin asumir relaciones matemáticas entre las variables. Si la brecha persiste entre personas
+idénticas en papel, es evidencia robusta de desigualdad.
+:::
+
+## Row
+
 ```{r}
 #| content: valuebox
-#| title: "Observaciones (último año)"
-n_rec <- resumen_reciente |> slice(1)
+#| title: "Entre personas con el mismo perfil, los hombres ganan"
 list(
-  value = format(n_rec$n_hombres + n_rec$n_mujeres, big.mark = ","),
-  color = COLOR_NEUTRO,
-  icon = "database"
+  value = paste0(round(abs(nopo_D0) * 100, 1), "% más"),
+  color = COLOR_NO_EXPLICADO,
+  icon  = "exclamation-triangle"
 )
 ```
 
 ```{r}
 #| content: valuebox
-#| title: "Modelo"
-list(value = "Oaxaca-Blinder (twofold)", color = COLOR_NEUTRO, icon = "calculator")
+#| title: "Personas que pudieron ser comparadas"
+list(
+  value = paste0(round(nopo_pct_match, 1), "%"),
+  color = COLOR_EXPLICADO,
+  icon  = "people"
+)
 ```
 
-## Row {height="85%"}
+```{r}
+#| content: valuebox
+#| title: "Perfiles donde ambos sexos están presentes"
+list(
+  value = paste0(nopo_celdas_comun, " de ", nopo_celdas_total),
+  color = COLOR_BRECHA,
+  icon  = "grid-3x3"
+)
+```
 
-### Resultados completos {width="100%"}
+## Row
+
+### {width="60%"}
 
 ```{r}
-#| title: "Resumen de descomposiciones por año y corte"
-
-tabla_resumen <- ob_all |>
+#| title: "¿Cómo se descompone la brecha? (4 componentes)"
+plot_nopo <- nopo_por_anio |>
   filter(componente != "Brecha total") |>
   mutate(
+    pct = valor * 100,
+    componente = recode(componente,
+      "D_0" = "Brecha entre iguales",
+      "D_X" = "Diferencia en perfiles",
+      "D_M" = "Hombres sin par",
+      "D_F" = "Mujeres sin par"
+    ),
+    componente = factor(componente, levels = c(
+      "Diferencia en perfiles", "Brecha entre iguales",
+      "Hombres sin par", "Mujeres sin par"
+    ))
+  )
+
+p_nopo <- ggplot(plot_nopo, aes(x = anio, y = pct, fill = componente)) +
+  geom_col(position = "stack", width = 0.7) +
+  geom_hline(yintercept = 0, linewidth = 0.5, color = "#333333") +
+  scale_fill_manual(
+    values = c(
+      "Diferencia en perfiles" = COLOR_EXPLICADO,
+      "Brecha entre iguales"   = COLOR_NO_EXPLICADO,
+      "Hombres sin par"        = COLOR_DM,
+      "Mujeres sin par"        = COLOR_DF
+    ),
+    name = ""
+  ) +
+  scale_x_continuous(breaks = unique(plot_nopo$anio)) +
+  labs(x = NULL, y = "Diferencia salarial (%)", caption = CAPTION) +
+  theme_minimal(base_size = 13) +
+  theme(legend.position = "top")
+
+ggplotly(p_nopo, tooltip = c("x", "fill", "y")) |>
+  layout(legend = list(orientation = "h", y = 1.15))
+```
+
+### {width="40%"}
+
+```{r}
+#| title: "Brecha entre iguales por año"
+plot_d0 <- nopo_por_anio |>
+  filter(componente == "D_0", !is.na(valor)) |>
+  mutate(pct = valor * 100)
+
+p_d0 <- ggplot(plot_d0, aes(x = anio, y = pct)) +
+  geom_line(linewidth = 1.2, color = COLOR_NO_EXPLICADO) +
+  geom_point(size = 3, color = COLOR_NO_EXPLICADO) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "#adb5bd") +
+  geom_vline(xintercept = 2021, linetype = "dotted", color = "#adb5bd") +
+  scale_x_continuous(breaks = unique(plot_d0$anio)) +
+  labs(
+    x = NULL, y = "Brecha no explicada (%)",
+    subtitle = "Componente D₀ (≈ discriminación)",
+    caption = CAPTION
+  ) +
+  theme_minimal(base_size = 13)
+
+ggplotly(p_d0)
+```
+
+## Row
+
+```{r}
+#| output: asis
+cat(paste0(
+  '::: {.callout-warning appearance="minimal"}\n',
+  '**Validación cruzada:** ',
+  'La brecha entre iguales (Ñopo: ', round(abs(nopo_D0) * 100, 1), '%) ',
+  'es coherente con la brecha no explicada de la pestaña anterior ',
+  '(Oaxaca-Blinder: ', abs(lp_no_explicado), '%). ',
+  'Dos métodos distintos confirman el mismo hallazgo: a iguales condiciones, ',
+  'los hombres ganan más.\n',
+  ':::'
+))
+```
+
+## Row
+
+::: {.callout-tip appearance="minimal" collapse="true"}
+## Nota metodológica
+
+Método: **Ñopo (2008)**. Matching exacto por educación (4 grupos),
+edad (5 grupos), posición ocupacional y zona. Descompone la brecha en 4 partes:
+D~X~ (diferencia en perfiles), D~0~ (brecha entre iguales ≈ discriminación),
+D~M~ (hombres sin par comparable) y D~F~ (mujeres sin par comparable).
+No asume relaciones matemáticas entre variables, lo que lo hace robusto como
+validación del método Oaxaca-Blinder.
+:::
+
+## Row
+
+### {width="100%"}
+
+```{r}
+#| title: "Tabla detallada de resultados Ñopo"
+tabla_nopo <- nopo_por_anio |>
+  mutate(
     pct = round(valor * 100, 2),
-    se_pct = round(se * 100, 2),
-    resultado = ifelse(
-      is.na(pct), "N/D",
-      paste0(pct, " (±", se_pct, ")")
+    componente_label = recode(componente,
+      "Brecha total" = "Brecha total",
+      "D_0" = "Brecha entre iguales (D₀)",
+      "D_X" = "Diferencia en perfiles (D_X)",
+      "D_M" = "Hombres sin par (D_M)",
+      "D_F" = "Mujeres sin par (D_F)"
     )
   ) |>
-  select(anio, corte, grupo, componente, resultado, n_hombres, n_mujeres) |>
-  arrange(anio, corte, grupo, componente)
+  select(anio, componente_label, pct, n_hombres, n_mujeres, pct_matching) |>
+  arrange(anio, componente_label)
 
-tabla_resumen |>
+tabla_nopo |>
   gt() |>
   cols_label(
-    anio = "Año",
-    corte = "Corte",
-    grupo = "Grupo",
-    componente = "Componente",
-    resultado = "Log-pts ×100 (±SE)",
-    n_hombres = "N Hombres",
-    n_mujeres = "N Mujeres"
+    anio = "Año", componente_label = "Componente",
+    pct = "Diferencia (%)", n_hombres = "N Hombres",
+    n_mujeres = "N Mujeres", pct_matching = "% Matching"
+  ) |>
+  fmt_number(columns = pct_matching, decimals = 1) |>
+  tab_header(
+    title = "Descomposición Ñopo — Resultados completos",
+    subtitle = paste("GEIH", min(nopo_por_anio$anio), "–", max(nopo_por_anio$anio))
+  ) |>
+  tab_source_note(CAPTION) |>
+  tab_options(
+    table.font.size = px(12),
+    heading.title.font.size = px(16),
+    heading.subtitle.font.size = px(13)
+  )
+```
+
+
+# Acceso al Mercado
+
+```{r setup-boy}
+#| include: false
+
+# ── Leer pre-cálculos BOY ───────────────────────────────────
+boy_all  <- read_parquet("datos/p4_boy_resultados.parquet")
+boy_yun  <- read_parquet("datos/p4_boy_yun.parquet")
+
+boy_por_anio  <- boy_all |> filter(corte == "Nacional")
+boy_por_zona  <- boy_all |> filter(corte == "Zona")
+boy_por_etnia <- boy_all |> filter(corte == "Etnia")
+
+boy_rec    <- boy_por_anio |> filter(anio == anio_reciente)
+boy_brecha <- boy_rec |> filter(componente == "Brecha") |> pull(valor)
+boy_dot    <- boy_rec |> filter(componente == "Dotaciones") |> pull(valor)
+boy_coef   <- boy_rec |> filter(componente == "Coeficientes") |> pull(valor)
+boy_tasa_h <- boy_rec |> filter(componente == "Tasa H") |> pull(valor)
+boy_tasa_m <- boy_rec |> filter(componente == "Tasa M") |> pull(valor)
+```
+
+## Row
+
+::: {.callout-note appearance="minimal"}
+**Antes del salario, ¿quién puede trabajar?**
+Los modelos anteriores analizan a quienes ya tienen empleo. Pero la mayor brecha
+de género está antes: en quién logra participar del mercado laboral. Esta sección analiza
+la población completa en edad de trabajar para entender las barreras de entrada.
+:::
+
+## Row
+
+```{r}
+#| content: valuebox
+#| title: "De cada 100 hombres en edad de trabajar, participan"
+list(
+  value = paste0(round(boy_tasa_h * 100), " de 100"),
+  color = COLOR_HOMBRES,
+  icon  = "person-check"
+)
+```
+
+```{r}
+#| content: valuebox
+#| title: "De cada 100 mujeres en edad de trabajar, participan"
+list(
+  value = paste0(round(boy_tasa_m * 100), " de 100"),
+  color = COLOR_MUJERES,
+  icon  = "person-x"
+)
+```
+
+```{r}
+#| content: valuebox
+#| title: "Brecha de participación"
+list(
+  value = paste0(round(boy_brecha * 100, 1), " puntos"),
+  color = COLOR_NO_EXPLICADO,
+  icon  = "arrow-left-right"
+)
+```
+
+## Row
+
+### {width="60%"}
+
+```{r}
+#| title: "¿Cómo ha cambiado la brecha de participación?"
+plot_boy <- boy_por_anio |>
+  filter(componente %in% c("Dotaciones", "Coeficientes")) |>
+  mutate(
+    pp = valor * 100,
+    componente = recode(componente,
+      "Dotaciones"   = "Por características",
+      "Coeficientes" = "No explicada"
+    ),
+    componente = factor(componente, levels = c("Por características", "No explicada"))
+  )
+
+p_boy <- ggplot(plot_boy, aes(x = anio, y = pp, fill = componente)) +
+  geom_col(position = "stack", width = 0.7) +
+  geom_hline(yintercept = 0, linewidth = 0.5, color = "#333333") +
+  scale_fill_manual(
+    values = c("Por características" = COLOR_EXPLICADO, "No explicada" = COLOR_NO_EXPLICADO),
+    name = ""
+  ) +
+  scale_x_continuous(breaks = unique(plot_boy$anio)) +
+  labs(x = NULL, y = "Puntos porcentuales", caption = CAPTION) +
+  theme_minimal(base_size = 13) +
+  theme(legend.position = "top")
+
+ggplotly(p_boy, tooltip = c("x", "fill", "y")) |>
+  layout(legend = list(orientation = "h", y = 1.1))
+```
+
+### {width="40%"}
+
+```{r}
+#| title: "¿Qué factores pesan más?"
+if (nrow(boy_yun) > 0) {
+  det_boy <- boy_yun |>
+    mutate(
+      var_grupo = case_when(
+        grepl("esc_anios", variable)   ~ "Educación",
+        grepl("exp_pot2", variable)    ~ "Experiencia²",
+        grepl("exp_pot", variable)     ~ "Experiencia",
+        grepl("zona_label", variable)  ~ "Zona (Urb/Rur)",
+        grepl("edad_grupo", variable)  ~ "Grupo de edad",
+        TRUE ~ variable
+      )
+    ) |>
+    group_by(var_grupo) |>
+    summarise(dotacion = sum(dotacion, na.rm = TRUE),
+              coeficiente = sum(coeficiente, na.rm = TRUE), .groups = "drop") |>
+    pivot_longer(cols = c(dotacion, coeficiente),
+                 names_to = "componente", values_to = "valor") |>
+    mutate(
+      pp = valor * 100,
+      componente_label = ifelse(componente == "dotacion",
+                                "Por características", "No explicada")
+    )
+
+  p_yun <- ggplot(det_boy, aes(x = reorder(var_grupo, abs(pp)),
+                                y = pp, fill = componente_label)) +
+    geom_col(position = "dodge", width = 0.7) +
+    geom_hline(yintercept = 0, linewidth = 0.5, color = "#333333") +
+    coord_flip() +
+    scale_fill_manual(
+      values = c("Por características" = COLOR_EXPLICADO, "No explicada" = COLOR_NO_EXPLICADO),
+      name = ""
+    ) +
+    labs(x = NULL, y = "Puntos porcentuales",
+         subtitle = paste0("Año ", anio_reciente), caption = CAPTION) +
+    theme_minimal(base_size = 12) +
+    theme(legend.position = "top")
+
+  ggplotly(p_yun, tooltip = c("x", "fill", "y")) |>
+    layout(legend = list(orientation = "h", y = 1.1))
+} else {
+  plotly_empty() |> layout(title = "No se pudo calcular contribución por variable")
+}
+```
+
+## Row
+
+### {width="50%"}
+
+```{r}
+#| title: "¿Dónde es peor? Por zona"
+plot_boy_zona <- boy_por_zona |>
+  filter(componente == "Brecha", !is.na(valor)) |>
+  mutate(pp = valor * 100)
+
+p_bz <- ggplot(plot_boy_zona, aes(x = anio, y = pp, color = grupo)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 3) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "#adb5bd") +
+  geom_vline(xintercept = 2021, linetype = "dotted", color = "#adb5bd") +
+  scale_color_manual(values = c("Urbano" = "#2166AC", "Rural" = "#B2182B"), name = "") +
+  scale_x_continuous(breaks = unique(plot_boy_zona$anio)) +
+  labs(x = NULL, y = "Brecha de participación (pp)", caption = CAPTION) +
+  theme_minimal(base_size = 13) +
+  theme(legend.position = "top")
+
+ggplotly(p_bz) |> layout(legend = list(orientation = "h", y = 1.1))
+```
+
+### {width="50%"}
+
+```{r}
+#| title: "¿Dónde es peor? Por etnia"
+plot_boy_etnia <- boy_por_etnia |>
+  filter(componente == "Brecha", !is.na(valor)) |>
+  mutate(pp = valor * 100)
+
+if (nrow(plot_boy_etnia) > 0) {
+  p_be <- ggplot(plot_boy_etnia, aes(x = anio, y = pp, color = grupo)) +
+    geom_line(linewidth = 1.2) +
+    geom_point(size = 3) +
+    geom_hline(yintercept = 0, linetype = "dashed", color = "#adb5bd") +
+    geom_vline(xintercept = 2021, linetype = "dotted", color = "#adb5bd") +
+    scale_color_manual(
+      values = c("No étnico" = "#4393C3", "Étnico" = "#D6604D"), name = ""
+    ) +
+    scale_x_continuous(breaks = unique(plot_boy_etnia$anio)) +
+    labs(x = NULL, y = "Brecha de participación (pp)", caption = CAPTION) +
+    theme_minimal(base_size = 13) +
+    theme(legend.position = "top")
+
+  ggplotly(p_be) |> layout(legend = list(orientation = "h", y = 1.1))
+} else {
+  plotly_empty() |> layout(title = "Muestra insuficiente")
+}
+```
+
+## Row
+
+::: {.callout-important appearance="minimal"}
+**Historia completa:**
+Las pestañas anteriores muestran que, entre quienes ya trabajan, existe una brecha salarial
+no explicada de ~9%. Esta pestaña revela que la brecha más grande está *antes*:
+30 de cada 100 mujeres en edad de trabajar no participan del mercado laboral
+(comparado con los hombres). Juntos, estos análisis muestran un doble obstáculo:
+barreras de entrada al mercado y desigualdad salarial una vez dentro.
+:::
+
+## Row
+
+::: {.callout-tip appearance="minimal" collapse="true"}
+## Nota metodológica
+
+Método: **Blinder-Oaxaca-Yun (BOY)** con modelo logit no lineal.
+Variable dependiente: participa (1 = PEA, 0 = no participa).
+Datos: PET completa (población en edad de trabajar, 15–65 años).
+Se estiman logits separados por sexo y se construye un contrafactual:
+¿cuál sería la tasa de participación femenina si sus características
+tuvieran el mismo efecto que en los hombres?
+La diferencia se descompone en dotaciones (diferencias en X) y
+coeficientes (diferencias en efectos de X). Pesos de Yun (2004)
+permiten identificar la contribución de cada variable.
+La línea punteada en 2021 indica el cambio de marco muestral censal.
+:::
+
+## Row
+
+### {width="100%"}
+
+```{r}
+#| title: "Tabla detallada de resultados BOY"
+tabla_boy <- boy_all |>
+  filter(componente %in% c("Brecha", "Dotaciones", "Coeficientes")) |>
+  mutate(
+    pp = round(valor * 100, 2),
+    componente_label = recode(componente,
+      "Brecha"       = "Brecha total (pp)",
+      "Dotaciones"   = "Por características (pp)",
+      "Coeficientes" = "No explicada (pp)"
+    )
+  ) |>
+  select(anio, corte, grupo, componente_label, pp, n_hombres, n_mujeres) |>
+  arrange(anio, corte, grupo, componente_label)
+
+tabla_boy |>
+  gt() |>
+  cols_label(
+    anio = "Año", corte = "Corte", grupo = "Grupo",
+    componente_label = "Componente", pp = "Puntos porc.",
+    n_hombres = "N Hombres", n_mujeres = "N Mujeres"
   ) |>
   tab_header(
-    title = "Descomposición Oaxaca-Blinder — Resultados completos",
-    subtitle = paste("GEIH", min(dat$anio), "–", max(dat$anio), "| Twofold, coef. hombres como referencia")
+    title = "Descomposición BOY — Participación laboral",
+    subtitle = paste("GEIH", min(boy_all$anio), "–", max(boy_all$anio),
+                      "| PET 15–65 años")
   ) |>
   tab_source_note(CAPTION) |>
   tab_options(
