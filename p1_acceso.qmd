@@ -31,12 +31,32 @@ library(scales)
 COLOR_HOMBRES <- "#2166AC"
 COLOR_MUJERES <- "#D6604D"
 CAPTION       <- "Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026."
+COLOR_BRECHA       <- "#0f3460"
+COLOR_EXPLICADO    <- "#4DBBD5"
+COLOR_NO_EXPLICADO <- "#E64B35"
 
 # ── Carga de datos PRE-CALCULADOS ────────────────────────────
 # Generados por: source("procesamiento/05_precalcular_p1.R")
 tasas_raw      <- read_parquet("datos/tasas_p1_completo.parquet")
 tabla_dpto_raw <- read_parquet("datos/tasas_p1_departamental.parquet")
 tasas_global   <- read_parquet("datos/tasas_p1_global.parquet")
+
+# ── Carga datos BOY (Descomposición de participación) ────────
+# Generados por: source("procesamiento/07_precalcular_p4.R")
+boy_all  <- read_parquet("datos/p4_boy_resultados.parquet")
+boy_yun  <- read_parquet("datos/p4_boy_yun.parquet")
+
+boy_por_anio  <- boy_all |> filter(corte == "Nacional")
+boy_por_zona  <- boy_all |> filter(corte == "Zona")
+boy_por_etnia <- boy_all |> filter(corte == "Etnia")
+
+anio_reciente_boy <- max(boy_por_anio$anio)
+boy_rec    <- boy_por_anio |> filter(anio == anio_reciente_boy)
+boy_brecha <- boy_rec |> filter(componente == "Brecha") |> pull(valor)
+boy_dot    <- boy_rec |> filter(componente == "Dotaciones") |> pull(valor)
+boy_coef   <- boy_rec |> filter(componente == "Coeficientes") |> pull(valor)
+boy_tasa_h <- boy_rec |> filter(componente == "Tasa H") |> pull(valor)
+boy_tasa_m <- boy_rec |> filter(componente == "Tasa M") |> pull(valor)
 
 # ── Preparar datos para los 3 filtros ────────────────────────
 # Se incluyen TODAS las combinaciones (8 niveles) para permitir
@@ -335,6 +355,250 @@ plot_ly(
       font = list(size = 9, color = "gray50"), align = "left"
     ))
   )
+```
+
+
+# Descomposición de Participación
+
+## Row
+
+::: {.callout-note appearance="minimal"}
+**Antes del salario, ¿quién puede trabajar?**
+Los indicadores anteriores muestran las tasas de participación y ocupación. Pero la mayor brecha
+de género está en quién logra participar del mercado laboral. Esta sección analiza
+la población completa en edad de trabajar para entender las barreras de entrada,
+descomponiendo la brecha en lo que se explica por características y lo que no.
+:::
+
+## Tarjetas {height=8%}
+
+```{r}
+#| content: valuebox
+#| title: "De cada 100 hombres en edad de trabajar, participan"
+list(
+  value = paste0(round(boy_tasa_h * 100), " de 100"),
+  color = COLOR_HOMBRES,
+  icon  = "person-check"
+)
+```
+
+```{r}
+#| content: valuebox
+#| title: "De cada 100 mujeres en edad de trabajar, participan"
+list(
+  value = paste0(round(boy_tasa_m * 100), " de 100"),
+  color = COLOR_MUJERES,
+  icon  = "person-x"
+)
+```
+
+```{r}
+#| content: valuebox
+#| title: "Brecha de participación"
+list(
+  value = paste0(round(boy_brecha * 100, 1), " puntos"),
+  color = COLOR_NO_EXPLICADO,
+  icon  = "arrow-left-right"
+)
+```
+
+## Row {height=20%}
+### Row {.tabset}
+
+```{r}
+#| title: "¿Cómo ha cambiado la brecha de participación?"
+
+plot_boy <- boy_por_anio |>
+  filter(componente %in% c("Dotaciones", "Coeficientes")) |>
+  mutate(
+    pp = valor * 100,
+    componente = recode(componente,
+      "Dotaciones"   = "Por características",
+      "Coeficientes" = "No explicada"
+    ),
+    componente = factor(componente, levels = c("Por características", "No explicada"))
+  )
+
+p_boy <- ggplot(plot_boy, aes(x = anio, y = pp, fill = componente)) +
+  geom_col(position = "stack", width = 0.7) +
+  geom_hline(yintercept = 0, linewidth = 0.5, color = "#333333") +
+  scale_fill_manual(
+    values = c("Por características" = COLOR_EXPLICADO, "No explicada" = COLOR_NO_EXPLICADO),
+    name = ""
+  ) +
+  scale_x_continuous(breaks = unique(plot_boy$anio)) +
+  labs(x = NULL, y = "Puntos porcentuales", caption = CAPTION) +
+  theme_minimal(base_size = 13) +
+  theme(legend.position = "top")
+
+ggplotly(p_boy, tooltip = c("x", "fill", "y")) |>
+  layout(legend = list(orientation = "h", y = 1.1))
+```
+
+
+
+```{r}
+#| title: "¿Qué factores pesan más?"
+
+if (nrow(boy_yun) > 0) {
+  det_boy <- boy_yun |>
+    mutate(
+      var_grupo = case_when(
+        grepl("esc_anios", variable)   ~ "Educación",
+        grepl("exp_pot2", variable)    ~ "Experiencia²",
+        grepl("exp_pot", variable)     ~ "Experiencia",
+        grepl("zona_label", variable)  ~ "Zona (Urb/Rur)",
+        grepl("edad_grupo", variable)  ~ "Grupo de edad",
+        TRUE ~ variable
+      )
+    ) |>
+    group_by(var_grupo) |>
+    summarise(dotacion = sum(dotacion, na.rm = TRUE),
+              coeficiente = sum(coeficiente, na.rm = TRUE), .groups = "drop") |>
+    pivot_longer(cols = c(dotacion, coeficiente),
+                 names_to = "componente", values_to = "valor") |>
+    mutate(
+      pp = valor * 100,
+      componente_label = ifelse(componente == "dotacion",
+                                "Por características", "No explicada")
+    )
+
+  p_yun <- ggplot(det_boy, aes(x = reorder(var_grupo, abs(pp)),
+                                y = pp, fill = componente_label)) +
+    geom_col(position = "dodge", width = 0.7) +
+    geom_hline(yintercept = 0, linewidth = 0.5, color = "#333333") +
+    coord_flip() +
+    scale_fill_manual(
+      values = c("Por características" = COLOR_EXPLICADO, "No explicada" = COLOR_NO_EXPLICADO),
+      name = ""
+    ) +
+    labs(x = NULL, y = "Puntos porcentuales",
+         subtitle = paste0("Año ", anio_reciente_boy), caption = CAPTION) +
+    theme_minimal(base_size = 12) +
+    theme(legend.position = "top")
+
+  ggplotly(p_yun, tooltip = c("x", "fill", "y")) |>
+    layout(legend = list(orientation = "h", y = 1.1))
+} else {
+  plotly_empty() |> layout(title = "No se pudo calcular contribución por variable")
+}
+```
+
+## Row {height=20%}
+### Row {.tabset}
+
+```{r}
+#| title: "¿Dónde es peor? Por zona"
+plot_boy_zona <- boy_por_zona |>
+  filter(componente == "Brecha", !is.na(valor)) |>
+  mutate(pp = valor * 100)
+
+p_bz <- ggplot(plot_boy_zona, aes(x = anio, y = pp, color = grupo)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 3) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "#adb5bd") +
+  geom_vline(xintercept = 2021, linetype = "dotted", color = "#adb5bd") +
+  scale_color_manual(values = c("Urbano" = "#2166AC", "Rural" = "#B2182B"), name = "") +
+  scale_x_continuous(breaks = unique(plot_boy_zona$anio)) +
+  labs(x = NULL, y = "Brecha de participación (pp)", caption = CAPTION) +
+  theme_minimal(base_size = 13) +
+  theme(legend.position = "top")
+
+ggplotly(p_bz) |> layout(legend = list(orientation = "h", y = 1.1))
+```
+
+
+
+```{r}
+#| title: "¿Dónde es peor? Por etnia"
+plot_boy_etnia <- boy_por_etnia |>
+  filter(componente == "Brecha", !is.na(valor)) |>
+  mutate(pp = valor * 100)
+
+if (nrow(plot_boy_etnia) > 0) {
+  p_be <- ggplot(plot_boy_etnia, aes(x = anio, y = pp, color = grupo)) +
+    geom_line(linewidth = 1.2) +
+    geom_point(size = 3) +
+    geom_hline(yintercept = 0, linetype = "dashed", color = "#adb5bd") +
+    geom_vline(xintercept = 2021, linetype = "dotted", color = "#adb5bd") +
+    scale_color_manual(
+      values = c("No étnico" = "#4393C3", "Étnico" = "#D6604D"), name = ""
+    ) +
+    scale_x_continuous(breaks = unique(plot_boy_etnia$anio)) +
+    labs(x = NULL, y = "Brecha de participación (pp)", caption = CAPTION) +
+    theme_minimal(base_size = 13) +
+    theme(legend.position = "top")
+
+  ggplotly(p_be) |> layout(legend = list(orientation = "h", y = 1.1))
+} else {
+  plotly_empty() |> layout(title = "Muestra insuficiente")
+}
+```
+
+## Row
+
+::: {.callout-important appearance="minimal"}
+**Doble obstáculo:**
+La página de Brechas Salariales muestra que, entre quienes ya trabajan, existe una brecha salarial
+no explicada de ~9%. Esta sección revela que la brecha más grande está *antes*:
+30 de cada 100 mujeres en edad de trabajar no participan del mercado laboral
+(comparado con los hombres). Juntos, estos análisis muestran barreras de entrada
+al mercado y desigualdad salarial una vez dentro.
+:::
+
+## Row
+
+::: {.callout-tip appearance="minimal" collapse="true"}
+## Nota metodológica
+
+Método: **Blinder-Oaxaca-Yun (BOY)** con modelo logit no lineal.
+Variable dependiente: participa (1 = PEA, 0 = no participa).
+Datos: PET completa (población en edad de trabajar, 15–65 años).
+Se estiman logits separados por sexo y se construye un contrafactual:
+¿cuál sería la tasa de participación femenina si sus características
+tuvieran el mismo efecto que en los hombres?
+La diferencia se descompone en dotaciones (diferencias en X) y
+coeficientes (diferencias en efectos de X). Pesos de Yun (2004)
+permiten identificar la contribución de cada variable.
+La línea punteada en 2021 indica el cambio de marco muestral censal.
+:::
+
+## Tabla detalle {height=20%}
+
+```{r}
+#| title: "Tabla detallada de resultados BOY"
+
+tabla_boy <- boy_all |>
+  filter(componente %in% c("Brecha", "Dotaciones", "Coeficientes")) |>
+  mutate(
+    pp = round(valor * 100, 2),
+    componente_label = recode(componente,
+      "Brecha"       = "Brecha total (pp)",
+      "Dotaciones"   = "Por características (pp)",
+      "Coeficientes" = "No explicada (pp)"
+    )
+  ) |>
+  select(anio, corte, grupo, componente_label, pp, n_hombres, n_mujeres) |>
+  arrange(anio, corte, grupo, componente_label)
+
+datatable(
+  tabla_boy,
+  rownames   = FALSE,
+  filter     = "top",
+  extensions = "Buttons",
+  colnames   = c("Año", "Corte", "Grupo", "Componente",
+                  "Puntos porc.", "N Hombres", "N Mujeres"),
+  options    = list(
+    pageLength = 10, scrollX = TRUE,
+    dom = "Bfrtip", buttons = list("csv", "excel"),
+    language = list(search = "Buscar:", info = "_START_ a _END_ de _TOTAL_",
+                    paginate = list(previous = "Anterior", `next` = "Siguiente"))
+  ),
+  caption = htmltools::tags$caption(
+    style = "color: gray; font-size: 11px;",
+    paste("Descomposición BOY — Participación laboral |", CAPTION)
+  )
+)
 ```
 
 
