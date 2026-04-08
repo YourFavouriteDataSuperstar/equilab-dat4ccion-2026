@@ -23,6 +23,7 @@ library(tidyr)
 library(ggplot2)
 library(plotly)
 library(gt)
+library(DT)
 
 # ── Constantes globales ──────────────────────────────────────
 COLOR_HOMBRES      <- "#2166AC"
@@ -99,7 +100,7 @@ list(
 ```
 
 
-## Row {height=10%}
+## Row {height=20%}
 ### Row {.tabset}
 
 ```{r}
@@ -185,7 +186,7 @@ if (nrow(ob_detalle) > 0) {
 }
 ```
 
-## Row {height=10%}
+## Row {height=20%}
 ### Row {.tabset}
 
 ```{r}
@@ -251,8 +252,7 @@ Errores estándar por bootstrap (R = 30). Muestra trimada al P1–P99 del salari
 La línea punteada en 2021 indica el cambio de marco muestral censal.
 :::
 
-## Tabla detalle {height=50%}
-
+## Tabla detalle {height=20%}
 
 ```{r}
 #| title: "Tabla detallada de resultados"
@@ -267,23 +267,24 @@ tabla_ob <- ob_all |>
   select(anio, corte, grupo, componente, resultado, n_hombres, n_mujeres) |>
   arrange(anio, corte, grupo, componente)
 
-tabla_ob |>
-  gt() |>
-  cols_label(
-    anio = "Año", corte = "Corte", grupo = "Grupo",
-    componente = "Componente", resultado = "Diferencia % (±SE)",
-    n_hombres = "N Hombres", n_mujeres = "N Mujeres"
-  ) |>
-  tab_header(
-    title = "Descomposición Oaxaca-Blinder — Resultados completos",
-    subtitle = paste("GEIH", min(ob_all$anio), "–", max(ob_all$anio))
-  ) |>
-  tab_source_note(CAPTION) |>
-  tab_options(
-    table.font.size = px(12),
-    heading.title.font.size = px(16),
-    heading.subtitle.font.size = px(13)
+datatable(
+  tabla_ob,
+  rownames   = FALSE,
+  filter     = "top",
+  extensions = "Buttons",
+  colnames   = c("Año", "Corte", "Grupo", "Componente",
+                  "Diferencia % (±SE)", "N Hombres", "N Mujeres"),
+  options    = list(
+    pageLength = 10, scrollX = TRUE,
+    dom = "Bfrtip", buttons = list("csv", "excel"),
+    language = list(search = "Buscar:", info = "_START_ a _END_ de _TOTAL_",
+                    paginate = list(previous = "Anterior", `next` = "Siguiente"))
+  ),
+  caption = htmltools::tags$caption(
+    style = "color: gray; font-size: 11px;",
+    paste("Descomposición Oaxaca-Blinder —", CAPTION)
   )
+)
 ```
 
 
@@ -444,17 +445,16 @@ validación del método Oaxaca-Blinder.
 
 ## Row
 
-### {width="100%"}
-
 ```{r}
 #| title: "Tabla detallada de resultados Ñopo"
-#| fig-height: 5
+
 tabla_nopo <- nopo_por_anio |>
   mutate(
     pct = round(valor * 100, 2),
+    pct_matching = round(pct_matching, 1),
     componente_label = recode(componente,
       "Brecha total" = "Brecha total",
-      "D_0" = "Brecha entre iguales (D₀)",
+      "D_0" = "Brecha entre iguales (D0)",
       "D_X" = "Diferencia en perfiles (D_X)",
       "D_M" = "Hombres sin par (D_M)",
       "D_F" = "Mujeres sin par (D_F)"
@@ -463,24 +463,24 @@ tabla_nopo <- nopo_por_anio |>
   select(anio, componente_label, pct, n_hombres, n_mujeres, pct_matching) |>
   arrange(anio, componente_label)
 
-tabla_nopo |>
-  gt() |>
-  cols_label(
-    anio = "Año", componente_label = "Componente",
-    pct = "Diferencia (%)", n_hombres = "N Hombres",
-    n_mujeres = "N Mujeres", pct_matching = "% Matching"
-  ) |>
-  fmt_number(columns = pct_matching, decimals = 1) |>
-  tab_header(
-    title = "Descomposición Ñopo — Resultados completos",
-    subtitle = paste("GEIH", min(nopo_por_anio$anio), "–", max(nopo_por_anio$anio))
-  ) |>
-  tab_source_note(CAPTION) |>
-  tab_options(
-    table.font.size = px(12),
-    heading.title.font.size = px(16),
-    heading.subtitle.font.size = px(13)
+datatable(
+  tabla_nopo,
+  rownames   = FALSE,
+  filter     = "top",
+  extensions = "Buttons",
+  colnames   = c("Año", "Componente", "Diferencia (%)",
+                  "N Hombres", "N Mujeres", "% Matching"),
+  options    = list(
+    pageLength = 10, scrollX = TRUE,
+    dom = "Bfrtip", buttons = list("csv", "excel"),
+    language = list(search = "Buscar:", info = "_START_ a _END_ de _TOTAL_",
+                    paginate = list(previous = "Anterior", `next` = "Siguiente"))
+  ),
+  caption = htmltools::tags$caption(
+    style = "color: gray; font-size: 11px;",
+    paste("Descomposición Ñopo —", CAPTION)
   )
+)
 ```
 
 
@@ -709,10 +709,9 @@ La línea punteada en 2021 indica el cambio de marco muestral censal.
 
 ## Row
 
-### {width="100%"}
-
 ```{r}
 #| title: "Tabla detallada de resultados BOY"
+
 tabla_boy <- boy_all |>
   filter(componente %in% c("Brecha", "Dotaciones", "Coeficientes")) |>
   mutate(
@@ -726,22 +725,22 @@ tabla_boy <- boy_all |>
   select(anio, corte, grupo, componente_label, pp, n_hombres, n_mujeres) |>
   arrange(anio, corte, grupo, componente_label)
 
-tabla_boy |>
-  gt() |>
-  cols_label(
-    anio = "Año", corte = "Corte", grupo = "Grupo",
-    componente_label = "Componente", pp = "Puntos porc.",
-    n_hombres = "N Hombres", n_mujeres = "N Mujeres"
-  ) |>
-  tab_header(
-    title = "Descomposición BOY — Participación laboral",
-    subtitle = paste("GEIH", min(boy_all$anio), "–", max(boy_all$anio),
-                      "| PET 15–65 años")
-  ) |>
-  tab_source_note(CAPTION) |>
-  tab_options(
-    table.font.size = px(12),
-    heading.title.font.size = px(16),
-    heading.subtitle.font.size = px(13)
+datatable(
+  tabla_boy,
+  rownames   = FALSE,
+  filter     = "top",
+  extensions = "Buttons",
+  colnames   = c("Año", "Corte", "Grupo", "Componente",
+                  "Puntos porc.", "N Hombres", "N Mujeres"),
+  options    = list(
+    pageLength = 10, scrollX = TRUE,
+    dom = "Bfrtip", buttons = list("csv", "excel"),
+    language = list(search = "Buscar:", info = "_START_ a _END_ de _TOTAL_",
+                    paginate = list(previous = "Anterior", `next` = "Siguiente"))
+  ),
+  caption = htmltools::tags$caption(
+    style = "color: gray; font-size: 11px;",
+    paste("Descomposición BOY — Participación laboral |", CAPTION)
   )
+)
 ```
