@@ -548,6 +548,167 @@ h1, h2, h3, h4 {
 .eq-momento-card.diversidades { background-color: #d1e4e9; border: 1.5px solid #a8c5cc; }
 .eq-momento-card.placeholder  { visibility: hidden; }
 
+/* ============================================================
+   PÁGINA 4 — Mujeres diversas (estilos específicos)
+   ============================================================ */
+
+/* ── Hero de entrada p4 ────────────────────────────────────── */
+.p4-hero {
+  background: linear-gradient(135deg, #6b2d50 0%, #0086ab 100%);
+  color: #f4f4f4;
+  padding: 4rem 3rem 3.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.p4-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+}
+
+.p4-hero-badge {
+  display: inline-block;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.35);
+  border-radius: 2rem;
+  padding: 0.25rem 1rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-family: var(--fuente-cuerpo);
+  font-weight: 600;
+}
+
+.p4-hero h1 {
+  font-family: var(--fuente-titulo);
+  font-weight: 900;
+  font-size: clamp(2.2rem, 5vw, 3.6rem);
+  line-height: 1.05;
+  color: #f4f4f4;
+  margin: 0;
+  max-width: 700px;
+}
+
+.p4-hero p {
+  font-family: var(--fuente-cuerpo);
+  font-size: 1.05rem;
+  opacity: 0.88;
+  max-width: 600px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.p4-hero-colores {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.p4-hero-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--fuente-cuerpo);
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.3rem 0.85rem;
+  border-radius: 2rem;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
+.p4-hero-chip .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.p4-hero-chip.cis  .dot { background: #f0a8cc; }
+.p4-hero-chip.trans .dot { background: #7dd8f0; }
+
+/* ── Bloques de narrativa textual ──────────────────────────── */
+.eq-hicimos-texto {
+  max-width: 520px;
+  font-family: var(--fuente-cuerpo);
+  font-size: 1rem;
+  line-height: 1.8;
+  color: #212529;
+  padding: 2.5rem 2rem;
+  background: #ffffff;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  border-left: 4px solid #0086ab;
+  text-align: left;
+}
+
+.eq-hicimos-texto p + p {
+  margin-top: 1rem;
+}
+
+.eq-hicimos-texto strong {
+  color: #0086ab;
+}
+
+/* ── Número de sección en sidebar h2 ───────────────────────── */
+.p4-seccion-num {
+  display: inline-block;
+  font-family: var(--fuente-titulo);
+  font-weight: 900;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #ffffff;
+  background: #0086ab;
+  padding: 0.15rem 0.55rem;
+  border-radius: 0.2rem;
+  margin-bottom: 0.4rem;
+  vertical-align: middle;
+}
+
+/* ── Bloque de nota metodológica ───────────────────────────── */
+.p4-nota-metodologica {
+  max-width: 520px;
+  font-family: var(--fuente-cuerpo);
+  font-size: 0.88rem;
+  line-height: 1.65;
+  color: #212529;
+  padding: 1.5rem 1.5rem 1.5rem 1.3rem;
+  background: #f8f9fa;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.07);
+  border-left: 4px solid #6b2d50;
+  max-height: 75vh;
+  overflow-y: auto;
+}
+
+.p4-nota-metodologica p + p {
+  margin-top: 1rem;
+}
+
+.p4-nota-metodologica strong {
+  color: #6b2d50;
+}
+
+.p4-nota-metodologica code {
+  background: #ede7f6;
+  padding: 0.1em 0.4em;
+  border-radius: 3px;
+  font-size: 0.85em;
+  color: #4a1942;
+}
+
 /* ── Grid de creadoras ─────────────────────────────────────── */
 .eq-creadoras-grid {
   display: grid;
