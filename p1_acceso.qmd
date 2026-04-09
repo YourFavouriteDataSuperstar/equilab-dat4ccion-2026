@@ -31,7 +31,7 @@ library(scales)
 COLOR_HOMBRES <- "#5f7300"
 COLOR_MUJERES <- "#6b2d50"
 CAPTION       <- "Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026."
-COLOR_BRECHA       <- "#0f3460"
+COLOR_BRECHA       <- "#004457"
 COLOR_EXPLICADO    <- "#4DBBD5"
 COLOR_NO_EXPLICADO <- "#E64B35"
 
@@ -151,7 +151,7 @@ list(value = paste0(tgp_h, "%"), color = COLOR_HOMBRES, icon = "person-fill")
 ```{r}
 #| content: valuebox
 #| title: "Brecha TGP — 2025 (H − M)"
-list(value = paste0(brecha_tgp, " pp"), color = "#0f3460", icon = "arrow-left-right")
+list(value = paste0(brecha_tgp, " pp"), color = "#004457", icon = "arrow-left-right")
 ```
 
 ## Row {height="85%"}
@@ -246,7 +246,7 @@ list(value = paste0(to_h, "%"), color = COLOR_HOMBRES, icon = "briefcase-fill")
 ```{r}
 #| content: valuebox
 #| title: "Brecha TO — 2025 (H − M)"
-list(value = paste0(brecha_to, " pp"), color = "#0f3460", icon = "arrow-left-right")
+list(value = paste0(brecha_to, " pp"), color = "#004457", icon = "arrow-left-right")
 ```
 
 ## Row {height="85%"}
