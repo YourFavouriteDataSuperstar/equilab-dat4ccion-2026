@@ -26,8 +26,8 @@ library(crosstalk)
 library(htmltools)
 
 # ── Constantes globales ──────────────────────────────────────
-COLOR_HOMBRES <- "#2166AC"
-COLOR_MUJERES <- "#D6604D"
+COLOR_HOMBRES <- "#5f7300"
+COLOR_MUJERES <- "#6b2d50"
 CAPTION       <- "Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026."
 
 # ── Carga de datos PRE-CALCULADOS ────────────────────────────
@@ -99,7 +99,7 @@ list(value = paste0(pct_cuentapropia_m, "%"), color = COLOR_MUJERES, icon = "bri
 ```{r}
 #| content: valuebox
 #| title: "Mujeres sin remuneración familiar — 2025"
-list(value = paste0(pct_sinremun_m, "%"), color = "#0f3460", icon = "person-x-fill")
+list(value = paste0(pct_sinremun_m, "%"), color = "#004457", icon = "person-x-fill")
 ```
 
 ## Row
@@ -258,7 +258,7 @@ list(value = paste0(horas_h, " h"), color = COLOR_HOMBRES, icon = "clock-fill")
 ```{r}
 #| content: valuebox
 #| title: "Brecha de jornada (H − M)"
-list(value = paste0(brecha_horas, " h"), color = "#0f3460", icon = "arrow-left-right")
+list(value = paste0(brecha_horas, " h"), color = "#004457", icon = "arrow-left-right")
 ```
 
 ## Row
@@ -358,7 +358,7 @@ list(value = paste0(pct_inf_h, "%"), color = COLOR_HOMBRES, icon = "exclamation-
 ```{r}
 #| content: valuebox
 #| title: "Índice de Duncan — 2025"
-list(value = paste0(duncan, "%"), color = "#0f3460", icon = "diagram-3-fill")
+list(value = paste0(duncan, "%"), color = "#004457", icon = "diagram-3-fill")
 ```
 
 ## Row {height="420px"}
