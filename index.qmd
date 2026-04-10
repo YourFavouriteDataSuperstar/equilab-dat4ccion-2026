@@ -57,6 +57,10 @@ la bienvenida...*]{.portada-bienvenida}
 hicimos...*]{.eq-sidebar-titulo}
 :::
 
+:::{focus-on="cr-hicimos"}
+[*La GEIH del DANE mide mensualmente las condiciones del mercado laboral colombiano, la pobreza monetaria y las condiciones de vida de los hogares. Es la principal fuente de indicadores de empleo, desempleo, ingresos laborales y posición ocupacional en Colombia.*]{.eq-sidebar-sub}
+:::
+
 :::{#cr-hicimos}
 ```{=html}
 <div class="eq-hicimos-texto">
@@ -83,6 +87,10 @@ hicimos...*]{.eq-sidebar-titulo}
 [*Conoce más de\
 nuestra\
 metodología...*]{.eq-sidebar-titulo}
+:::
+
+:::{focus-on="cr-metodologia"}
+[*Decisiones de diseño, fuentes de datos, filtros aplicados y limitaciones del estudio. Todo lo que necesitas saber sobre cómo se construyó este análisis.*]{.eq-sidebar-sub}
 :::
 
 :::{#cr-metodologia}
@@ -193,6 +201,10 @@ análisis...*]{.eq-sidebar-titulo}
 :::{focus-on="cr-creadoras"}
 [*Conoce a las\
 creadoras...*]{.eq-sidebar-titulo}
+:::
+
+:::{focus-on="cr-creadoras"}
+[*Cuatro estudiantes comprometidas con la equidad de género y el uso de datos para la toma de decisiones en Colombia.*]{.eq-sidebar-sub}
 :::
 
 :::{#cr-creadoras}
