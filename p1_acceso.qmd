@@ -140,7 +140,7 @@ tabla_brecha <- tasas_global |>
 #| output: asis
 
 htmltools::HTML('
-<div style="max-width: 800px; margin: 0.5rem auto; padding: 1rem 2rem; line-height: 1.7;">
+<div style="max-width: 800px; margin: 0 auto; padding: 0.5rem 2rem; line-height: 1.7;">
 
   <h2 style="color: #004457; font-size: 1.6rem; margin-bottom: 0.2rem; font-weight: 700;">
     ¿Quién puede trabajar en Colombia?
@@ -193,7 +193,7 @@ htmltools::HTML('
 ```
 
 
-# TGP {.tabset}
+# Tasa Global de Participación {.tabset}
 
 ## Row {height="150px"}
 
@@ -423,6 +423,8 @@ plot_ly(
     ))
   )
 ```
+
+## Row
 
 ::: {.callout-tip appearance="minimal"}
 **Mensaje clave:** La tasa de desempleo femenina es consistentemente mayor que la
