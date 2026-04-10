@@ -690,7 +690,7 @@ datatable(
 ```
 
 
-# Tablas de Referencia {.tabset}
+# Tablas de Referencia
 
 ## Row
 
