@@ -161,13 +161,13 @@ Al desagregar por nivel educativo, la brecha se amplifica. Esta sección muestra
 panorama descriptivo antes de aplicar los modelos econométricos de las siguientes pestañas.
 :::
 
-## Tarjetas {height=8%}
+## Tarjetas {height="150px"}
 
 ```{r}
 #| content: valuebox
-#| title: "Ingreso mediano Mujeres — 2025"
+#| title: "Promedio salarial Mujeres — 2025"
 list(
-  value = paste0("$", format(round(vb_med_m), big.mark = ".")),
+  value = paste0("$", format(round(vb_mean_m), big.mark = ".")),
   color = COLOR_MUJERES,
   icon  = "cash-stack"
 )
@@ -175,21 +175,11 @@ list(
 
 ```{r}
 #| content: valuebox
-#| title: "Ingreso mediano Hombres — 2025"
+#| title: "Promedio salarial Hombres — 2025"
 list(
-  value = paste0("$", format(round(vb_med_h), big.mark = ".")),
+  value = paste0("$", format(round(vb_mean_h), big.mark = ".")),
   color = COLOR_HOMBRES,
   icon  = "cash-stack"
-)
-```
-
-```{r}
-#| content: valuebox
-#| title: "Brecha en la mediana"
-list(
-  value = paste0(vb_brecha_desc, "%"),
-  color = COLOR_BRECHA,
-  icon  = "arrow-left-right"
 )
 ```
 
@@ -203,7 +193,7 @@ list(
 )
 ```
 
-## Row {height=20%}
+## Row {height=25%}
 ### Row {.tabset}
 
 ```{r}
@@ -339,33 +329,26 @@ ggplotly(p_edu, tooltip = "text") |>
 
 ## Row
 
-::: {.callout-tip appearance="minimal"}
-**Mensaje clave:** Las medianas de ingreso convergen al salario mínimo para ambos
-sexos, pero la distribución masculina tiene una cola superior más larga: los hombres
-acceden con más frecuencia a los empleos mejor pagados. La brecha salarial se
-esconde en los extremos de la distribución, no en el centro — por eso necesitamos
-mirar más allá de las medianas.
+::: {.callout-note appearance="minimal"}
+**¿Cómo leer el boxplot?** Cada "caja" agrupa el **50% central** de los ingresos
+para esa categoría — la línea del medio es la mediana (el valor donde la mitad gana
+más y la mitad gana menos). Los "bigotes" muestran el rango típico (del percentil 5
+al 95). Si la caja de los hombres está más arriba que la de las mujeres, significa que
+la mitad central de los hombres gana más. Cuando las cajas se solapan poco, la brecha
+es clara. *Nota: el gráfico muestra el 90% central de la distribución; el 5% de
+personas con los ingresos más altos no aparece para facilitar la comparación visual.*
 :::
 
 ## Row
 
 ::: {.callout-tip appearance="minimal"}
-**Mensaje clave:** La brecha salarial **crece con la educación**. Las mujeres con
-posgrado enfrentan la mayor diferencia salarial — evidencia de un "techo de cristal"
-en los niveles más altos. Paradójicamente, la menor brecha está donde ambos sexos
-convergen al mínimo. Esto sugiere que las políticas de equidad educativa, siendo
-necesarias, no son suficientes para cerrar la brecha.
-:::
-
-## Row
-
-::: {.callout-warning appearance="minimal"}
-**¿Por qué la brecha en medianas parece pequeña?**
-Las medianas generales de hombres y mujeres convergen al salario mínimo a partir de 2022,
-pero la brecha en **medias** (`r vb_brecha_media`%) revela la asimetría en la cola superior
-de la distribución. La brecha real se esconde *dentro* de cada nivel educativo y sector.
-Por eso necesitamos los modelos econométricos de las siguientes pestañas, que comparan
-personas con las mismas características.
+**Hallazgos clave:** La brecha salarial **crece con la educación**: las mujeres con
+posgrado enfrentan la mayor diferencia — evidencia de un "techo de cristal" en los niveles
+más altos. Paradójicamente, la menor brecha está donde ambos sexos convergen al mínimo.
+La brecha en **promedios** (`r vb_brecha_media`%) revela que los hombres acceden con más
+frecuencia a los empleos mejor pagados. Esto sugiere que las políticas de equidad educativa,
+siendo necesarias, no son suficientes para cerrar la brecha — por eso necesitamos los
+modelos econométricos de las siguientes pestañas.
 :::
 
 ## Tabla detalle {height=20%}
@@ -373,12 +356,14 @@ personas con las mismas características.
 ```{r}
 #| title: "Brecha salarial por nivel educativo — serie completa"
 
+tabla_edu <- brecha_edu |>
+  mutate(niv_edu_label = factor(niv_edu_label,
+    levels = c("Primaria", "Secundaria", "Media",
+               "Técnico / Tecnológico", "Universitario", "Posgrado"))) |>
+  arrange(anio, niv_edu_label)
+
 datatable(
-  brecha_edu |>
-    mutate(niv_edu_label = factor(niv_edu_label,
-      levels = c("Primaria", "Secundaria", "Media",
-                 "Técnico / Tecnológico", "Universitario", "Posgrado"))) |>
-    arrange(anio, niv_edu_label),
+  tabla_edu,
   rownames   = FALSE,
   filter     = "top",
   extensions = "Buttons",
@@ -396,7 +381,18 @@ datatable(
     style = "color: gray; font-size: 11px;",
     paste("Brecha salarial por educación —", CAPTION)
   )
-)
+) |>
+  formatCurrency(columns = c("mediana_h", "mediana_m"),
+                 currency = "$", interval = 3, mark = ".", digits = 0,
+                 dec.mark = ",") |>
+  formatStyle(
+    "brecha_pct",
+    backgroundColor = styleInterval(
+      c(5, 15, 25),
+      c("#d4edda", "#fff3cd", "#f8d7da", "#d9534f")
+    ),
+    fontWeight = "bold"
+  )
 ```
 
 
@@ -412,7 +408,7 @@ para entender qué parte se explica por diferencias en perfiles y qué parte no 
 explicación observable.
 :::
 
-## Tarjetas {height=8%}
+## Tarjetas {height="150px"}
 
 ```{r}
 #| content: valuebox
@@ -662,7 +658,7 @@ sin asumir relaciones matemáticas entre las variables. Si la brecha persiste en
 idénticas en papel, es evidencia robusta de desigualdad.
 :::
 
-## Tarjetas {height=8%}
+## Tarjetas {height="150px"}
 
 ```{r}
 #| content: valuebox
