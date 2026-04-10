@@ -24,6 +24,7 @@ execute:
 # ── Librerias ────────────────────────────────────────────────
 library(arrow)
 library(dplyr)
+library(tidyr)
 library(ggplot2)
 library(plotly)
 library(scales)
@@ -121,42 +122,74 @@ representan el **52.3%** de la muestra expandida.]{.eq-sidebar-sub}
 
 :::{#cr-panorama}
 ```{r}
-#| fig-width: 5
-#| fig-height: 4
+#| fig-width: 6
+#| fig-height: 5
+#| warning: false
+#| message: false
 
-panorama_plot <- panorama |>
+ICONS_PER_ROW <- 25
+
+pano <- panorama |>
   mutate(
     identidad_label = factor(identidad_label,
       levels = c("Mujer cis", "Hombre cis", "Mujer trans",
                  "Hombre trans", "No binario", "Otra identidad")),
-    color = case_when(
-      identidad_label == "Mujer cis" ~ COLOR_CIS,
+    n_icons = pmax(1L, round(as.numeric(pct_pob))),
+    n_rows  = ceiling(n_icons / ICONS_PER_ROW),
+    color   = case_when(
+      identidad_label == "Mujer cis"   ~ COLOR_CIS,
       identidad_label == "Mujer trans" ~ COLOR_TRANS,
       TRUE ~ COLOR_NEUTRO
     )
+  ) |>
+  arrange(desc(identidad_label)) |>
+  mutate(y_base = cumsum(lag(n_rows, default = 0L) + 1.5))
+
+icons_df <- pano |>
+  rowwise() |>
+  mutate(pos = list(seq_len(n_icons))) |>
+  unnest(pos) |>
+  mutate(
+    x   = ((pos - 1L) %% ICONS_PER_ROW) + 1L,
+    y   = y_base + (pos - 1L) %/% ICONS_PER_ROW,
+    tip = paste0("<b>", identidad_label, "</b><br>",
+                 pct_pob, "% del total expandido<br>",
+                 "Población: ", format(round(poblacion), big.mark = "."),
+                 "<br>Observaciones: ", format(n_obs, big.mark = "."))
   )
 
-p <- ggplot(panorama_plot,
-       aes(x = reorder(identidad_label, -poblacion),
-           y = poblacion / 1e6,
-           fill = color,
-           text = paste0(identidad_label,
-                         "\nPoblación: ", format(round(poblacion), big.mark = "."),
-                         "\nObservaciones: ", format(n_obs, big.mark = "."),
-                         "\n% del total: ", pct_pob, "%"))) +
-  geom_col(width = 0.7) +
-  scale_fill_identity() +
-  scale_y_continuous(labels = label_number(suffix = "M", scale = 1)) +
-  labs(x = NULL, y = "Población expandida (millones)",
-       caption = CAPTION) +
-  theme_minimal(base_family = "Public Sans") +
+labs_df <- pano |>
+  mutate(
+    y_label = y_base + (n_rows - 1) / 2,
+    lbl     = paste0(identidad_label, "  ", pct_pob, "%")
+  )
+
+p_iso <- ggplot() +
+  geom_point(
+    data  = icons_df,
+    aes(x = x, y = y, color = color, text = tip),
+    size  = 3.5, shape = 19
+  ) +
+  geom_text(
+    data  = labs_df,
+    aes(x = 0.2, y = y_label, label = lbl, color = color),
+    hjust = 1, size = 2.8, fontface = "bold"
+  ) +
+  scale_color_identity() +
+  scale_x_continuous(limits = c(-12, 26), expand = c(0, 0)) +
+  theme_void(base_family = "Public Sans") +
   theme(
-    axis.text.x = element_text(angle = 30, hjust = 1, size = 9),
-    plot.caption = element_text(size = 7, color = "#6c757d")
-  )
+    plot.margin  = margin(8, 8, 8, 8),
+    plot.caption = element_text(size = 7, color = "#6c757d", hjust = 0)
+  ) +
+  labs(caption = CAPTION)
 
-ggplotly(p, tooltip = "text") |>
-  layout(showlegend = FALSE)
+ggplotly(p_iso, tooltip = "text") |>
+  layout(
+    showlegend    = FALSE,
+    paper_bgcolor = "rgba(0,0,0,0)",
+    plot_bgcolor  = "rgba(0,0,0,0)"
+  )
 ```
 :::
 
@@ -249,7 +282,11 @@ p <- ggplot(tasas_plot,
   )
 
 ggplotly(p, tooltip = "text") |>
-  layout(legend = list(orientation = "h", x = 0.2, y = 1.1))
+  layout(
+    legend        = list(orientation = "h", x = 0.2, y = 1.1),
+    paper_bgcolor = "rgba(0,0,0,0)",
+    plot_bgcolor  = "rgba(0,0,0,0)"
+  )
 ```
 :::
 
@@ -325,7 +362,11 @@ p <- ggplot(pos_plot,
   )
 
 ggplotly(p, tooltip = "text") |>
-  layout(legend = list(orientation = "h", x = 0.2, y = 1.08))
+  layout(
+    legend        = list(orientation = "h", x = 0.2, y = 1.08),
+    paper_bgcolor = "rgba(0,0,0,0)",
+    plot_bgcolor  = "rgba(0,0,0,0)"
+  )
 ```
 :::
 
@@ -404,7 +445,11 @@ p <- ggplot(sal_plot,
   )
 
 ggplotly(p, tooltip = "text") |>
-  layout(showlegend = FALSE)
+  layout(
+    showlegend    = FALSE,
+    paper_bgcolor = "rgba(0,0,0,0)",
+    plot_bgcolor  = "rgba(0,0,0,0)"
+  )
 ```
 :::
 
@@ -500,7 +545,7 @@ metodológica*]{.eq-sidebar-titulo}
 
 :::{#cr-metodo}
 ```{=html}
-<div class="p4-nota-metodologica">
+<div class="p4-nota-metodologica" style="display:grid; grid-template-columns:1fr 1fr; gap:1rem 1.5rem; font-size:0.88rem; line-height:1.5;">
   <p><strong>Fuente:</strong> DANE, Gran Encuesta Integrada de Hogares (GEIH),
   módulo de identidad de género y orientación sexual. Marco muestral 2018.
   Período: enero 2022 – marzo 2025.</p>
