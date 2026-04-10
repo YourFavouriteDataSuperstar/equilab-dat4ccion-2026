@@ -134,7 +134,7 @@ tabla_brecha <- tasas_global |>
 
 # Tasa Global de Participación {.tabset}
 
-## Row {height="15%"}
+## Row {height="150px"}
 
 ```{r}
 #| content: valuebox
@@ -154,7 +154,7 @@ list(value = paste0(tgp_h, "%"), color = COLOR_HOMBRES, icon = "person-fill")
 list(value = paste0(brecha_tgp, " pp"), color = "#0f3460", icon = "arrow-left-right")
 ```
 
-## Row {height="85%"}
+## Row
 
 ### Filtros {width="20%"}
 
@@ -229,7 +229,7 @@ ggplotly(p_tgp, tooltip = "text") |>
 
 # Tasa de Ocupación y Desempleo {.tabset}
 
-## Row {height="15%"}
+## Row {height="150px"}
 
 ```{r}
 #| content: valuebox
@@ -370,7 +370,7 @@ la población completa en edad de trabajar para entender las barreras de entrada
 descomponiendo la brecha en lo que se explica por características y lo que no.
 :::
 
-## Tarjetas {height=8%}
+## Tarjetas {height="150px"}
 
 ```{r}
 #| content: valuebox
@@ -604,7 +604,7 @@ datatable(
 
 # Calidad Estadística Departamental {.tabset}
 
-## Row {height="100%"}
+## Row 
 
 ### Calidad por Departamento — 2025 {width="100%"}
 
@@ -639,7 +639,7 @@ datatable(
 
 # Brecha de Género {.tabset}
 
-## Row {height="100%"}
+## Row 
 
 ### Brecha TGP · TO · TD por Año {width="100%"}
 
