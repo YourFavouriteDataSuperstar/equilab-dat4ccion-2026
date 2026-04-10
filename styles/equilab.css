@@ -31,6 +31,13 @@
   --transicion:    0.2s ease;
 }
 
+/* ── Value boxes — texto blanco ─────────────────────────────── */
+.bslib-value-box .value-box-title,
+.bslib-value-box .value-box-value,
+.bslib-value-box .bi {
+  color: #ffffff !important;
+}
+
 /* ── Reset y base ───────────────────────────────────────────── */
 body {
   font-family: var(--fuente-cuerpo);
