@@ -27,13 +27,13 @@ library(htmltools)
 library(scales)
 
 # ── Constantes globales ──────────────────────────────────────
-COLOR_HOMBRES      <- "#2166AC"
-COLOR_MUJERES      <- "#D6604D"
-COLOR_BRECHA       <- "#0f3460"
+COLOR_HOMBRES      <- "#5f7300"
+COLOR_MUJERES      <- "#6b2d50"
+COLOR_BRECHA       <- "#004457"
 COLOR_EXPLICADO    <- "#4DBBD5"
 COLOR_NO_EXPLICADO <- "#E64B35"
-COLOR_DM           <- "#F39B7F"
-COLOR_DF           <- "#8491B4"
+COLOR_DM           <- "#B77097"
+COLOR_DF           <- "#97A360"
 COLOR_NEUTRO       <- "#6c757d"
 CAPTION            <- "Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026."
 
@@ -409,7 +409,7 @@ p3 <- ggplot(plot_zona, aes(x = anio, y = pct, color = grupo)) +
   geom_point(size = 3) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "#adb5bd") +
   geom_vline(xintercept = 2021, linetype = "dotted", color = "#adb5bd") +
-  scale_color_manual(values = c("Urbano" = "#2166AC", "Rural" = "#B2182B"), name = "") +
+  scale_color_manual(values = c("Urbano" = "#0086AB", "Rural" = "#D46025"), name = "") +
   scale_x_continuous(breaks = unique(plot_zona$anio)) +
   labs(x = NULL, y = "Brecha no explicada (%)", caption = CAPTION) +
   theme_minimal(base_size = 13) +
@@ -432,7 +432,7 @@ if (nrow(plot_etnia) > 0) {
     geom_hline(yintercept = 0, linetype = "dashed", color = "#adb5bd") +
     geom_vline(xintercept = 2021, linetype = "dotted", color = "#adb5bd") +
     scale_color_manual(
-      values = c("No étnico" = "#4393C3", "Étnico" = "#D6604D"), name = ""
+      values = c("No étnico" = "#6EBED3", "Étnico" = "#F29767"), name = ""
     ) +
     scale_x_continuous(breaks = unique(plot_etnia$anio)) +
     labs(x = NULL, y = "Brecha no explicada (%)", caption = CAPTION) +
