@@ -489,8 +489,7 @@ plot_boy_linea <- boy_por_anio |>
 
 p_boy <- ggplot(plot_boy_linea, aes(x = anio, y = pp,
                   text = paste0("Año: ", anio, "\nBrecha: ", round(pp, 1), " pp"))) +
-  geom_line(linewidth = 1.3, color = COLOR_BRECHA) +
-  geom_point(size = 3.5, color = COLOR_BRECHA) +
+  geom_point(size = 4, color = COLOR_BRECHA) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "#adb5bd") +
   geom_vline(xintercept = 2021, linetype = "dotted", color = "#adb5bd") +
   scale_x_continuous(breaks = unique(plot_boy_linea$anio)) +
@@ -544,6 +543,17 @@ if (nrow(boy_yun) > 0) {
   plotly_empty() |> layout(title = "No se pudo calcular contribución por variable")
 }
 ```
+
+## Row
+
+::: {.callout-note appearance="minimal"}
+**¿Cómo leer estas gráficas?** Cada punto muestra la brecha de participación laboral
+entre hombres y mujeres para un año. El modelo descompone esa brecha: la mayor parte
+se explica por **características observables** (zona, experiencia, educación, edad) —
+es decir, hombres y mujeres tienen perfiles distintos que afectan si participan o no.
+El treemap muestra exactamente qué pesa más: por ejemplo, vivir en zona rural o tener
+menor experiencia laboral reduce la probabilidad de participar, y eso afecta más a las mujeres.
+:::
 
 ## Row {height=20%}
 ### Row {.tabset}
