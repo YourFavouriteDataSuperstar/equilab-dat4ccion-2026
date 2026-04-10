@@ -31,11 +31,18 @@
   --transicion:    0.2s ease;
 }
 
-/* ── Value boxes — texto blanco ─────────────────────────────── */
+/* ── Value boxes — texto blanco y tamaño reducido ───────────── */
 .bslib-value-box .value-box-title,
 .bslib-value-box .value-box-value,
 .bslib-value-box .bi {
   color: #ffffff !important;
+}
+.bslib-value-box .value-box-title {
+  font-size: 1.0rem !important;
+  line-height: 1.3 !important;
+}
+.bslib-value-box .value-box-value {
+  font-size: 2rem !important;
 }
 
 /* ── Reset y base ───────────────────────────────────────────── */
