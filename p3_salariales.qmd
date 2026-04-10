@@ -39,6 +39,7 @@ CAPTION            <- "Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DA
 
 # ── Tab 1: datos descriptivos (CORREGIDO: usa ing_total mensual) ─
 boxplot_stats <- read_parquet("datos/p3_boxplot_stats.parquet")
+boxplot_edu   <- read_parquet("datos/p3_boxplot_edu.parquet")
 brecha_edu    <- read_parquet("datos/p3_brecha_educacion.parquet")
 
 anio_max <- max(boxplot_stats$anio)
@@ -142,9 +143,12 @@ list(
 ### Row {.tabset}
 
 ```{r}
-#| title: "Distribución del ingreso laboral mensual — por sexo"
+#| title: "Distribución del ingreso laboral mensual — por sexo y nivel educativo"
 
-anios <- sort(unique(boxplot_stats$anio))
+# Orden de niveles educativos
+orden_edu <- c("Básica", "Media", "Superior", "Posgrado")
+
+anios <- sort(unique(boxplot_edu$anio))
 pasos <- list()
 
 fig_box <- plot_ly()
@@ -152,43 +156,72 @@ fig_box <- plot_ly()
 for (i in seq_along(anios)) {
   yr <- anios[i]
   for (sx in c("Hombres", "Mujeres")) {
-    bs  <- boxplot_stats |> filter(anio == yr, sexo_label == sx)
+    bs <- boxplot_edu |>
+      filter(anio == yr, sexo_label == sx) |>
+      mutate(niv_edu_grupo = factor(niv_edu_grupo, levels = orden_edu)) |>
+      arrange(niv_edu_grupo)
     col <- if (sx == "Hombres") COLOR_HOMBRES else COLOR_MUJERES
-    # Convertir a millones para mejor lectura
-    fig_box <- fig_box |> add_trace(
-      type        = "box",
-      name        = sx,
-      q1          = list(bs$q1 / 1e6),
-      median      = list(bs$median / 1e6),
-      q3          = list(bs$q3 / 1e6),
-      lowerfence  = list(bs$lower / 1e6),
-      upperfence  = list(bs$upper / 1e6),
-      x0          = sx,
-      marker      = list(color = paste0(col, "99")),
-      line        = list(color = col, width = 2),
-      fillcolor   = paste0(col, "44"),
-      width       = 0.5,
-      visible     = (i == 1),
-      showlegend  = (i == 1),
-      legendgroup = sx
-    )
+
+    if (nrow(bs) > 0) {
+      fig_box <- fig_box |> add_trace(
+        type        = "box",
+        name        = sx,
+        x           = as.character(bs$niv_edu_grupo),
+        q1          = bs$q1,
+        median      = bs$median,
+        q3          = bs$q3,
+        lowerfence  = bs$lower,
+        upperfence  = bs$upper,
+        offsetgroup  = sx,
+        alignmentgroup = "True",
+        marker      = list(color = paste0(col, "99"), size = 3),
+        line        = list(color = col, width = 2),
+        fillcolor   = paste0(col, "44"),
+        visible     = (i == length(anios)),
+        showlegend  = (i == length(anios)),
+        legendgroup = sx,
+        hovertemplate = paste0(
+          "<b>", sx, " — %{x}</b><br>",
+          "Mediana: $%{median:,.0f}<br>",
+          "Q1: $%{q1:,.0f}<br>",
+          "Q3: $%{q3:,.0f}<br>",
+          "<extra></extra>"
+        )
+      )
+    }
   }
-  vis <- rep(FALSE, length(anios) * 2)
-  vis[c(2 * i - 1, 2 * i)] <- TRUE
+}
+
+# Slider: 2 traces por año (Hombres, Mujeres)
+n_traces_per_year <- 2
+for (i in seq_along(anios)) {
+  vis <- rep(FALSE, length(anios) * n_traces_per_year)
+  idx_start <- (i - 1) * n_traces_per_year + 1
+  idx_end   <- i * n_traces_per_year
+  vis[idx_start:idx_end] <- TRUE
+
   pasos[[i]] <- list(
     method = "update",
-    label  = as.character(yr),
+    label  = as.character(anios[i]),
     args   = list(list(visible = vis))
   )
 }
 
 fig_box |>
   layout(
-    xaxis = list(title = ""),
-    yaxis = list(title = "Ingreso mensual (millones COP)", tickprefix = "$",
-                 ticksuffix = "M",
-                 zeroline = FALSE, gridcolor = "rgba(0,0,0,0.08)"),
-    legend  = list(orientation = "h", y = 1.08, x = 0.3),
+    xaxis = list(
+      title = "",
+      categoryorder = "array",
+      categoryarray = orden_edu
+    ),
+    yaxis = list(
+      title = "Ingreso mensual (COP)",
+      tickprefix = "$",
+      tickformat = ",.0f",
+      zeroline = FALSE,
+      gridcolor = "rgba(0,0,0,0.08)"
+    ),
+    legend  = list(orientation = "h", y = 1.08, x = 0.35),
     boxmode = "group",
     plot_bgcolor  = "white",
     paper_bgcolor = "white",
@@ -198,10 +231,10 @@ fig_box |>
       steps        = pasos,
       pad          = list(t = 40)
     )),
-    margin = list(t = 80, b = 80, l = 80, r = 30),
+    margin = list(t = 80, b = 80, l = 100, r = 30),
     annotations = list(list(
       text = CAPTION, xref = "paper", yref = "paper",
-      x = 0, y = -0.2, showarrow = FALSE,
+      x = 0, y = -0.18, showarrow = FALSE,
       font = list(size = 9, color = "gray50"), align = "left"
     ))
   )
