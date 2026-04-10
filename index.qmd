@@ -105,12 +105,12 @@ metodología...*]{.eq-sidebar-titulo}
 :::
 
 <!-- ═══════════════════════════════════════════════════════════
-     SECCIONES 4-7: MOMENTOS DE ANALISIS (reveal progresivo)
+     SECCIONES 4-7: MOMENTOS DE ANALISIS (zoom progresivo)
      ═══════════════════════════════════════════════════════════ -->
 
 :::{.cr-section .lila-section .momentos-section layout="sidebar-left"}
 
-:::{focus-on="cr-momentos-1"}
+:::{focus-on="cr-momentos"}
 [*Estos fueron\
 nuestros cuatro\
 momentos de\
@@ -119,78 +119,104 @@ análisis...*]{.eq-sidebar-titulo}
 [*Da click en cada uno para conocer más*]{.eq-sidebar-sub}
 :::
 
-:::{focus-on="cr-momentos-2"}
-[*Estos fueron\
-nuestros cuatro\
-momentos de\
-análisis...*]{.eq-sidebar-titulo}
-
-[*Da click en cada uno para conocer más*]{.eq-sidebar-sub}
+:::{focus-on="cr-momentos"}
+[*Analiza quiénes participan en el mercado laboral colombiano y quiénes quedan fuera. A través de la Tasa Global de Participación, Tasa de Ocupación y Tasa de Desempleo desagregadas por sexo, territorio y año, esta sección revela la magnitud y persistencia de la brecha de participación entre hombres y mujeres entre 2019 y 2025.*]{.eq-sidebar-sub}
 :::
 
-:::{focus-on="cr-momentos-3"}
-[*Estos fueron\
-nuestros cuatro\
-momentos de\
-análisis...*]{.eq-sidebar-titulo}
-
-[*Da click en cada uno para conocer más*]{.eq-sidebar-sub}
+:::{focus-on="cr-momentos"}
+[*Acceder al mercado laboral no garantiza condiciones dignas. Esta sección examina en qué tipo de empleos se insertan las mujeres colombianas, su posición ocupacional, nivel de informalidad, jornada laboral y segregación sectorial; mostrando cómo las brechas de género van más allá del simple hecho de tener o no tener trabajo.*]{.eq-sidebar-sub}
 :::
 
-:::{focus-on="cr-momentos-4"}
-[*Estos fueron\
-nuestros cuatro\
-momentos de\
-análisis...*]{.eq-sidebar-titulo}
-
-[*Da click en cada uno para conocer más*]{.eq-sidebar-sub}
+:::{focus-on="cr-momentos"}
+[*El corazón analítico del Radar. A través del modelo de descomposición Oaxaca-Blinder validado con el método Ñopo, esta sección separa cuánto de la brecha salarial se explica por características observables y cuánto responde a discriminación estructural, revelando que a iguales condiciones, los hombres ganan un 8,9% más.*]{.eq-sidebar-sub}
 :::
 
-:::{#cr-momentos-1}
+:::{focus-on="cr-momentos"}
+[*Por primera vez en un análisis de acceso público, esta sección caracteriza las condiciones laborales de las mujeres trans en Colombia y las compara con las de las mujeres cisgénero, aprovechando las preguntas sobre identidad de género que la GEIH incorpora desde 2022.*]{.eq-sidebar-sub}
+:::
+
+:::{#cr-momentos}
 ```{=html}
 <div class="eq-momentos-grid">
-  <a href="p1_acceso.qmd" class="eq-momento-card acceso">Participación y acceso al mercado laboral</a>
-  <div class="eq-momento-card placeholder"></div>
-  <div class="eq-momento-card placeholder"></div>
-  <div class="eq-momento-card placeholder"></div>
-</div>
-```
-:::
-
-:::{#cr-momentos-2}
-```{=html}
-<div class="eq-momentos-grid">
-  <a href="p1_acceso.qmd" class="eq-momento-card acceso">Participación y acceso al mercado laboral</a>
-  <a href="p2_calidad.qmd" class="eq-momento-card calidad">Condiciones y estabilidad del empleo</a>
-  <div class="eq-momento-card placeholder"></div>
-  <div class="eq-momento-card placeholder"></div>
-</div>
-```
-:::
-
-:::{#cr-momentos-3}
-```{=html}
-<div class="eq-momentos-grid">
-  <a href="p1_acceso.qmd" class="eq-momento-card acceso">Participación y acceso al mercado laboral</a>
-  <a href="p2_calidad.qmd" class="eq-momento-card calidad">Condiciones y estabilidad del empleo</a>
-  <a href="p3_salariales.qmd" class="eq-momento-card salariales">Brechas salariales de género</a>
-  <div class="eq-momento-card placeholder"></div>
-</div>
-```
-:::
-
-:::{#cr-momentos-4}
-```{=html}
-<div class="eq-momentos-grid">
-  <a href="p1_acceso.qmd" class="eq-momento-card acceso">Participación y acceso al mercado laboral</a>
-  <a href="p2_calidad.qmd" class="eq-momento-card calidad">Condiciones y estabilidad del empleo</a>
-  <a href="p3_salariales.qmd" class="eq-momento-card salariales">Brechas salariales de género</a>
-  <a href="p4_mujeres_diversas.qmd" class="eq-momento-card diversidades">Análisis de diversidades</a>
+  <a id="card-acceso" href="p1_acceso.qmd" class="eq-momento-card acceso">Participación y acceso al mercado laboral</a>
+  <a id="card-calidad" href="p2_calidad.qmd" class="eq-momento-card calidad">Condiciones y estabilidad del empleo</a>
+  <a id="card-salariales" href="p3_salariales.qmd" class="eq-momento-card salariales">Brechas salariales de género</a>
+  <a id="card-diversidades" href="p4_mujeres_diversas.qmd" class="eq-momento-card diversidades">Análisis de diversidades</a>
 </div>
 ```
 :::
 
 :::
+
+```{ojs}
+//| echo: false
+//| output: false
+{
+  crTriggerIndex;
+
+  // Mapa: índice del trigger → id del card a enfocar
+  // Triggers: 0=portada, 1-2=hicimos, 3-4=metodologia, 5=momentos-intro,
+  //           6=acceso, 7=calidad, 8=salariales, 9=diversidades
+  const cardMap = {
+    6: "card-acceso",
+    7: "card-calidad",
+    8: "card-salariales",
+    9: "card-diversidades"
+  };
+
+  const grid = document.querySelector("#cr-momentos .eq-momentos-grid");
+  if (!grid) return;
+
+  const cardId = cardMap[crTriggerIndex];
+  const allCards = grid.querySelectorAll(".eq-momento-card");
+
+  // Resetear transform para medir posiciones reales
+  grid.style.transition = "none";
+  grid.style.transform = "";
+  grid.style.transformOrigin = "";
+
+  if (cardId) {
+    const card = document.getElementById(cardId);
+    if (!card) return;
+
+    const gRect = grid.getBoundingClientRect();
+    const cRect = card.getBoundingClientRect();
+
+    const ccx = (cRect.left - gRect.left) + cRect.width  / 2;
+    const ccy = (cRect.top  - gRect.top)  + cRect.height / 2;
+
+    const s  = 2.2;
+    const tx = gRect.width  / 2 - ccx * s;
+    const ty = gRect.height / 2 - ccy * s;
+
+    // Marcar card activo y ocultar los demás
+    allCards.forEach(c => {
+      if (c.id === cardId) {
+        c.classList.add("eq-card-active");
+        c.classList.remove("eq-card-hidden");
+      } else {
+        c.classList.add("eq-card-hidden");
+        c.classList.remove("eq-card-active");
+      }
+    });
+
+    requestAnimationFrame(() => {
+      grid.style.transition      = "transform 0.7s ease";
+      grid.style.transformOrigin = "0 0";
+      grid.style.transform       = `translate(${tx}px, ${ty}px) scale(${s})`;
+    });
+  } else {
+    // Mostrar todos los cards
+    allCards.forEach(c => {
+      c.classList.remove("eq-card-active", "eq-card-hidden");
+    });
+    requestAnimationFrame(() => {
+      grid.style.transition = "transform 0.7s ease";
+      grid.style.transform  = "";
+    });
+  }
+}
+```
 
 <!-- ═══════════════════════════════════════════════════════════
      SECCION 8: CREADORAS
@@ -204,7 +230,7 @@ creadoras...*]{.eq-sidebar-titulo}
 :::
 
 :::{focus-on="cr-creadoras"}
-[*Cuatro estudiantes comprometidas con la equidad de género y el uso de datos para la toma de decisiones en Colombia.*]{.eq-sidebar-sub}
+[*Comprometidas con la equidad de género y el uso de datos para la toma de decisiones en Colombia.*]{.eq-sidebar-sub}
 :::
 
 :::{#cr-creadoras}
