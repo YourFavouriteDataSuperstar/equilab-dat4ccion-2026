@@ -140,16 +140,16 @@ tabla_brecha <- tasas_global |>
 #| output: asis
 
 htmltools::HTML('
-<div style="max-width: 800px; margin: 2rem auto; padding: 2rem 2.5rem; line-height: 1.8;">
+<div style="max-width: 800px; margin: 0.5rem auto; padding: 1rem 2rem; line-height: 1.7;">
 
-  <h2 style="color: #004457; font-size: 1.8rem; margin-bottom: 0.3rem; font-weight: 700;">
+  <h2 style="color: #004457; font-size: 1.6rem; margin-bottom: 0.2rem; font-weight: 700;">
     ¿Quién puede trabajar en Colombia?
   </h2>
-  <p style="color: #6c757d; font-size: 0.95rem; margin-bottom: 1.8rem; border-bottom: 2px solid #e9ecef; padding-bottom: 1rem;">
+  <p style="color: #6c757d; font-size: 0.9rem; margin-bottom: 1.2rem; border-bottom: 2px solid #e9ecef; padding-bottom: 0.8rem;">
     Acceso laboral con perspectiva de género — Colombia 2019–2025
   </p>
 
-  <p style="font-size: 1.05rem; color: #333;">
+  <p style="font-size: 1rem; color: #333;">
     En 2025, <strong style="color: #5f7300;">81 de cada 100 hombres</strong> en edad de trabajar
     participan en el mercado laboral. Para las mujeres, son solo
     <strong style="color: #6b2d50;">48 de cada 100</strong>. Esta brecha de
@@ -157,11 +157,11 @@ htmltools::HTML('
     desde 2019 y se amplió durante la pandemia.
   </p>
 
-  <h3 style="color: #004457; font-size: 1.15rem; margin-top: 2rem; margin-bottom: 1rem;">
+  <h3 style="color: #004457; font-size: 1.1rem; margin-top: 1.2rem; margin-bottom: 0.8rem;">
     ¿Qué vas a encontrar aquí?
   </h3>
 
-  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.2rem; margin-bottom: 2rem;">
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.2rem;">
 
     <div style="background: #f0f4e8; border-radius: 8px; padding: 1.2rem; border-left: 4px solid #5f7300;">
       <strong style="color: #5f7300;">1 · Panorama general</strong><br>
@@ -193,7 +193,7 @@ htmltools::HTML('
 ```
 
 
-# Tasa Global de Participación {.tabset}
+# Participación y Empleo {.tabset}
 
 ## Row {height="150px"}
 
@@ -293,8 +293,6 @@ En 2020, la participación femenina cayó a su mínimo histórico — y aún no 
 niveles pre-pandemia en todos los subgrupos. Filtra por **zona rural** para ver
 dónde la brecha es más persistente.
 :::
-
-# Tasa de Ocupación y Desempleo {.tabset}
 
 ## Row {height="150px"}
 
@@ -681,23 +679,21 @@ datatable(
 ```
 
 
-# Calidad Estadística Departamental {.tabset}
+# Tablas de Referencia {.tabset}
 
 ## Row
 
 ::: {.callout-note appearance="minimal"}
-**¿Puedo confiar en estos datos para mi departamento?**
-El semáforo de calidad estadística indica la precisión de cada estimación según su coeficiente
-de variación (CV). Las celdas **verdes** (Preciso, CV ≤7%) son aptas para diseño de política;
-las **amarillas** (Aceptable, CV ≤14%) son útiles como referencia; las **rojas** (No confiable, CV >20%)
-requieren cautela — los tamaños de muestra en esos departamentos son insuficientes para estimaciones robustas.
+Estas tablas permiten consultar los datos en detalle. La primera muestra la **calidad estadística
+por departamento** con semáforo de confiabilidad; la segunda consolida la **brecha de género
+histórica** en las tres tasas principales.
 :::
 
 ## Row
-
-### Calidad por Departamento — 2025 {width="100%"}
+### Row {.tabset}
 
 ```{r}
+#| title: "Calidad Departamental — 2025"
 #| echo: false
 #| message: false
 
@@ -712,7 +708,8 @@ datatable(
     language = list(search = "Buscar:", info = "_START_ a _END_ de _TOTAL_",
                     paginate = list(previous = "Anterior", `next` = "Siguiente"))
   ),
-  caption = htmltools::tags$caption(style = "color: gray; font-size: 11px;", CAPTION)
+  caption = htmltools::tags$caption(style = "color: gray; font-size: 11px;",
+    "Semáforo: Verde = Preciso (CV ≤7%), Amarillo = Aceptable (CV ≤14%), Rojo = No confiable (CV >20%)")
 ) |>
   formatStyle("cal_TGP", backgroundColor = styleEqual(
     c("Preciso","Aceptable","Regular","No confiable"),
@@ -725,23 +722,8 @@ datatable(
     c("#d4edda","#fff3cd",  "#ffe5d0","#f8d7da")))
 ```
 
-
-# Brecha de Género {.tabset}
-
-## Row
-
-::: {.callout-note appearance="minimal"}
-**Resumen: la brecha en perspectiva histórica.**
-Esta tabla consolida las tres tasas principales (participación, ocupación, desempleo) por sexo y año,
-con la brecha en puntos porcentuales. Úsala para identificar tendencias y compararlas con hitos
-de política laboral o eventos macroeconómicos (p.ej., la pandemia en 2020, la recuperación en 2021-2022).
-:::
-
-## Row
-
-### Brecha TGP · TO · TD por Año {width="100%"}
-
 ```{r}
+#| title: "Brecha de Género por Año"
 #| echo: false
 #| message: false
 
