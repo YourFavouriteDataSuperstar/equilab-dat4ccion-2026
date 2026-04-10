@@ -481,39 +481,46 @@ list(
 ### Row {.tabset}
 
 ```{r}
-#| title: "¿Cómo ha cambiado la brecha de participación?"
+#| title: "¿Cuánto de la brecha se explica?"
 
 plot_boy <- boy_por_anio |>
   filter(componente %in% c("Dotaciones", "Coeficientes")) |>
   mutate(
-    pp = valor * 100,
+    pp = abs(valor * 100),
     componente = recode(componente,
       "Dotaciones"   = "Por características",
       "Coeficientes" = "No explicada"
     ),
     componente = factor(componente, levels = c("Por características", "No explicada"))
-  )
+  ) |>
+  group_by(anio) |>
+  mutate(
+    total = sum(pp),
+    pct = round(pp / total * 100, 1)
+  ) |>
+  ungroup()
 
-p_boy <- ggplot(plot_boy, aes(x = anio, y = pp, fill = componente)) +
-  geom_col(position = "stack", width = 0.7) +
-  geom_hline(yintercept = 0, linewidth = 0.5, color = "#333333") +
+p_boy <- ggplot(plot_boy, aes(x = anio, y = pct, fill = componente,
+                               text = paste0(componente, "\n", pct, "% de la brecha"))) +
+  geom_col(position = "fill", width = 0.7) +
+  geom_hline(yintercept = 0.5, linetype = "dashed", color = "#adb5bd", linewidth = 0.4) +
   scale_fill_manual(
     values = c("Por características" = COLOR_EXPLICADO, "No explicada" = COLOR_NO_EXPLICADO),
     name = ""
   ) +
+  scale_y_continuous(labels = scales::percent, breaks = c(0, 0.25, 0.5, 0.75, 1)) +
   scale_x_continuous(breaks = unique(plot_boy$anio)) +
-  labs(x = NULL, y = "Puntos porcentuales", caption = CAPTION) +
+  labs(x = NULL, y = "Proporción de la brecha", caption = CAPTION) +
   theme_minimal(base_size = 13) +
   theme(legend.position = "top")
 
-ggplotly(p_boy, tooltip = c("x", "fill", "y")) |>
+ggplotly(p_boy, tooltip = "text") |>
   layout(legend = list(orientation = "h", y = 1.1))
 ```
 
 
-
 ```{r}
-#| title: "¿Qué factores pesan más?"
+#| title: "¿Qué explica la brecha?"
 
 if (nrow(boy_yun) > 0) {
   det_boy <- boy_yun |>
@@ -528,31 +535,27 @@ if (nrow(boy_yun) > 0) {
       )
     ) |>
     group_by(var_grupo) |>
-    summarise(dotacion = sum(dotacion, na.rm = TRUE),
-              coeficiente = sum(coeficiente, na.rm = TRUE), .groups = "drop") |>
-    pivot_longer(cols = c(dotacion, coeficiente),
-                 names_to = "componente", values_to = "valor") |>
+    summarise(dotacion = sum(abs(dotacion), na.rm = TRUE), .groups = "drop") |>
     mutate(
-      pp = valor * 100,
-      componente_label = ifelse(componente == "dotacion",
-                                "Por características", "No explicada")
+      pp = dotacion * 100,
+      pct_total = round(pp / sum(pp) * 100, 1)
     )
 
-  p_yun <- ggplot(det_boy, aes(x = reorder(var_grupo, abs(pp)),
-                                y = pp, fill = componente_label)) +
-    geom_col(position = "dodge", width = 0.7) +
-    geom_hline(yintercept = 0, linewidth = 0.5, color = "#333333") +
+  p_yun <- ggplot(det_boy, aes(x = reorder(var_grupo, pct_total), y = pct_total,
+                                text = paste0(var_grupo, "\n", pct_total,
+                                              "% de lo explicado"))) +
+    geom_col(fill = COLOR_EXPLICADO, width = 0.6) +
+    geom_text(aes(label = paste0(pct_total, "%")), hjust = -0.2, size = 3.5,
+              color = "#333333") +
     coord_flip() +
-    scale_fill_manual(
-      values = c("Por características" = COLOR_EXPLICADO, "No explicada" = COLOR_NO_EXPLICADO),
-      name = ""
-    ) +
-    labs(x = NULL, y = "Puntos porcentuales",
-         subtitle = paste0("Año ", anio_reciente_boy), caption = CAPTION) +
+    scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +
+    labs(x = NULL, y = "Contribución (%)",
+         subtitle = paste0("De la brecha explicada — Año ", anio_reciente_boy),
+         caption = CAPTION) +
     theme_minimal(base_size = 12) +
-    theme(legend.position = "top")
+    theme(legend.position = "none")
 
-  ggplotly(p_yun, tooltip = c("x", "fill", "y")) |>
+  ggplotly(p_yun, tooltip = "text") |>
     layout(legend = list(orientation = "h", y = 1.1))
 } else {
   plotly_empty() |> layout(title = "No se pudo calcular contribución por variable")
