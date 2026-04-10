@@ -1,6 +1,17 @@
 ---
 title: "Ficha Metodológica"
-format: closeread-html
+format:
+  closeread-html:
+    remove-header-space: true
+    debug-mode: false
+    cr-style:
+      narrative-background-color-sidebar: "#f4f4f4"
+      narrative-text-color-sidebar: "#212529"
+      narrative-font-family: "'Public Sans', 'Segoe UI', system-ui, sans-serif"
+      narrative-font-size: "1.1rem"
+      narrative-sidebar-width: "minmax(380px, 1fr)"
+      narrative-border-radius: "5px"
+      section-background-color: "#ffffff"
 css: styles/equilab.css
 ---
 
