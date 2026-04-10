@@ -545,35 +545,8 @@ metodológica*]{.eq-sidebar-titulo}
 
 :::{#cr-metodo}
 ```{=html}
-<div class="p4-nota-metodologica" style="display:grid; grid-template-columns:1fr 1fr; gap:1rem 1.5rem; font-size:0.88rem; line-height:1.5;">
-  <p><strong>Fuente:</strong> DANE, Gran Encuesta Integrada de Hogares (GEIH),
-  módulo de identidad de género y orientación sexual. Marco muestral 2018.
-  Período: enero 2022 – marzo 2025.</p>
-
-  <p><strong>Identidad de género:</strong> se construye a partir del cruce
-  entre la pregunta P3271 (sexo al nacer: masculino/femenino) y P3039
-  (¿usted se reconoce como?: hombre, mujer, persona no binaria,
-  otra identidad). Solo se aplica a mayores de 18 años.</p>
-
-  <p><strong>Mujer trans:</strong> persona que se reconoce como mujer
-  (P3039 = 2) y cuyo sexo asignado al nacer fue masculino (P3271 = 1).
-  Total en la muestra: 640 observaciones.</p>
-
-  <p><strong>Confiabilidad:</strong> todas las estimaciones incluyen el
-  coeficiente de variación (CV) calculado con <code>survey::svydesign</code>.
-  Estimaciones con CV &gt; 20% se marcan como no confiables y deben
-  interpretarse con cautela.</p>
-
-  <p><strong>Limitación principal:</strong> el tamaño muestral de mujeres
-  trans es reducido (640 obs. en PET, 393 ocupadas, 173 con ingreso válido),
-  lo que impide desagregaciones adicionales por departamento, educación
-  o año individual, y descarta la aplicación de modelos de descomposición
-  como Oaxaca-Blinder.</p>
-
-  <p><strong>Proxy de informalidad:</strong> posición ocupacional en
-  categorías 4 (cuenta propia), 6 (trabajador familiar sin pago),
-  7 y 8 (jornalero / sin remuneración en otra empresa), agrupados
-  para evitar el problema de swap de códigos entre marcos muestrales.</p>
+<div class="p4-nota-metodologica" style="font-size:0.85rem; line-height:1.6;">
+  <p><strong>Fuente:</strong> DANE, Gran Encuesta Integrada de Hogares (GEIH), módulo de identidad de género y orientación sexual. Marco muestral 2018. Período: enero 2022 – marzo 2025. <strong>Identidad de género:</strong> se construye cruzando P3271 (sexo al nacer: masculino/femenino) y P3039 (¿usted se reconoce como?: hombre, mujer, persona no binaria, otra identidad); solo aplica a mayores de 18 años. <strong>Mujer trans:</strong> persona que se reconoce como mujer (P3039 = 2) con sexo asignado al nacer masculino (P3271 = 1); total en la muestra: 640 observaciones. <strong>Confiabilidad:</strong> todas las estimaciones incluyen el coeficiente de variación (CV) calculado con <code>survey::svydesign</code>; estimaciones con CV &gt; 20% se marcan como no confiables. <strong>Limitación principal:</strong> el tamaño muestral de mujeres trans es reducido (640 obs. en PET, 393 ocupadas, 173 con ingreso válido), lo que impide desagregaciones por departamento, educación o año individual y descarta modelos como Oaxaca-Blinder. <strong>Proxy de informalidad:</strong> posición ocupacional en categorías 4 (cuenta propia), 6 (trabajador familiar sin pago), 7 y 8 (jornalero/sin remuneración), agrupadas para evitar swap de códigos entre marcos muestrales.</p>
 </div>
 ```
 :::
