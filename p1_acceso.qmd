@@ -131,7 +131,7 @@ tabla_brecha <- tasas_global |>
   )
 ```
 
-# Contexto {.tabset}
+# Panorama General {.tabset}
 
 ## Row {height="100%"}
 
@@ -211,7 +211,7 @@ list(value = paste0(tgp_h, "%"), color = COLOR_HOMBRES, icon = "gender-male")
 
 ```{r}
 #| content: valuebox
-#| title: "Brecha TGP — 2025 (H − M)"
+#| title: "Brecha TGP — 2025"
 list(value = paste0(brecha_tgp, " pp"), color = "#004457", icon = "arrow-left-right")
 ```
 
@@ -313,7 +313,7 @@ list(value = paste0(to_h, "%"), color = COLOR_HOMBRES, icon = "gender-male")
 
 ```{r}
 #| content: valuebox
-#| title: "Brecha TO — 2025 (H − M)"
+#| title: "Brecha TO — 2025"
 list(value = paste0(brecha_to, " pp"), color = "#004457", icon = "arrow-left-right")
 ```
 
@@ -433,7 +433,7 @@ En 2025 la brecha de desempleo es de ~4 pp. Esto sugiere que las barreras no son
 de *entrada* al mercado, sino también de *acceso al empleo*.
 :::
 
-# Descomposición de Participación
+# Causas de la brecha
 
 ## Row
 
@@ -672,7 +672,7 @@ datatable(
                   "Puntos porc.", "N Hombres", "N Mujeres"),
   options    = list(
     pageLength = 10, scrollX = TRUE,
-    dom = "Bfrtip", buttons = list("csv", "excel"),
+    dom = "Bfrtip", buttons = list(list(extend = "csv", text = "Descargar CSV"), list(extend = "excel", text = "Descargar Excel")),
     language = list(search = "Buscar:", info = "_START_ a _END_ de _TOTAL_",
                     paginate = list(previous = "Anterior", `next` = "Siguiente"))
   ),
@@ -697,6 +697,13 @@ histórica** en las tres tasas principales.
 ## Row
 ### Row {.tabset}
 
+::: {.callout-note appearance="minimal"}
+**¿Puedo confiar en estos datos para mi departamento?**
+El semáforo indica la precisión de cada estimación según su coeficiente de variación (CV).
+Las celdas **verdes** (CV ≤7%) son aptas para diseño de política; las **amarillas** (CV ≤14%)
+son útiles como referencia; las **rojas** (CV >20%) requieren cautela.
+:::
+
 ```{r}
 #| title: "Calidad Departamental — 2025"
 #| echo: false
@@ -709,7 +716,7 @@ datatable(
   extensions = "Buttons",
   options    = list(
     pageLength = 15, scrollX = TRUE,
-    dom = "Bfrtip", buttons = list("csv", "excel"),
+    dom = "Bfrtip", buttons = list(list(extend = "csv", text = "Descargar CSV"), list(extend = "excel", text = "Descargar Excel")),
     language = list(search = "Buscar:", info = "_START_ a _END_ de _TOTAL_",
                     paginate = list(previous = "Anterior", `next` = "Siguiente"))
   ),
@@ -727,6 +734,13 @@ datatable(
     c("#d4edda","#fff3cd",  "#ffe5d0","#f8d7da")))
 ```
 
+::: {.callout-note appearance="minimal"}
+**La brecha en perspectiva histórica.**
+Esta tabla consolida participación, ocupación y desempleo por sexo y año, con la brecha
+en puntos porcentuales. Úsala para comparar tendencias con hitos de política laboral
+o eventos macro (pandemia 2020, recuperación 2021-2022).
+:::
+
 ```{r}
 #| title: "Brecha de Género por Año"
 #| echo: false
@@ -739,7 +753,7 @@ datatable(
   extensions = "Buttons",
   options    = list(
     pageLength = 10, scrollX = TRUE,
-    dom = "Bfrtip", buttons = list("csv", "excel"),
+    dom = "Bfrtip", buttons = list(list(extend = "csv", text = "Descargar CSV"), list(extend = "excel", text = "Descargar Excel")),
     language = list(search = "Buscar:", info = "_START_ a _END_ de _TOTAL_",
                     paginate = list(previous = "Anterior", `next` = "Siguiente"))
   ),
