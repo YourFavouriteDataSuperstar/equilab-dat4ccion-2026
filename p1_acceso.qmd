@@ -193,7 +193,7 @@ htmltools::HTML('
 ```
 
 
-# Participación y Empleo {.tabset}
+# TGP {.tabset}
 
 ## Row {height="150px"}
 
@@ -215,7 +215,7 @@ list(value = paste0(tgp_h, "%"), color = COLOR_HOMBRES, icon = "gender-male")
 list(value = paste0(brecha_tgp, " pp"), color = "#004457", icon = "arrow-left-right")
 ```
 
-## Row {height="450px"}
+## Row
 
 ### Filtros {width="20%"}
 
@@ -294,6 +294,9 @@ niveles pre-pandemia en todos los subgrupos. Filtra por **zona rural** para ver
 dónde la brecha es más persistente.
 :::
 
+
+# Ocupación y Desempleo {.tabset}
+
 ## Row {height="150px"}
 
 ```{r}
@@ -314,7 +317,7 @@ list(value = paste0(to_h, "%"), color = COLOR_HOMBRES, icon = "gender-male")
 list(value = paste0(brecha_to, " pp"), color = "#004457", icon = "arrow-left-right")
 ```
 
-## Row {height="450px"}
+## Row {height="85%"}
 
 ### Filtros {width="20%"}
 
