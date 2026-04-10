@@ -178,20 +178,7 @@ plot_ly(
 
 ## Row
 
-### . {width="20%"}
-
-```{r}
-#| echo: false
-tags$div(
-  style = "padding: 10px; padding-top: 20px;",
-  tags$p(
-    tags$b("Nota:"), " El mapa de calor muestra la evolución histórica a nivel nacional (sin filtros).",
-    style = "font-size: 10px; color: #6c757d;"
-  )
-)
-```
-
-### ¿Cómo se distribuye el empleo según tipo? — Colombia 2019–2025 {width="80%"}
+### ¿Cómo se distribuye el empleo según tipo? — Colombia 2019–2025 {width="100%"}
 
 ```{r}
 #| title: "Composición por sexo según posición ocupacional — Colombia 2019–2025"
@@ -231,12 +218,20 @@ p_heat <- ggplot(
 
 ggplotly(p_heat, tooltip = "text") |>
   layout(
-    margin = list(b = 50),
-    annotations = list(list(
-      text = CAPTION, xref = "paper", yref = "paper",
-      x = 0, y = -0.15, showarrow = FALSE,
-      font = list(size = 9, color = "gray50"), align = "left"
-    ))
+    margin = list(b = 70),
+    annotations = list(
+      list(
+        text = CAPTION, xref = "paper", yref = "paper",
+        x = 0, y = -0.15, showarrow = FALSE,
+        font = list(size = 9, color = "gray50"), align = "left"
+      ),
+      list(
+        text = "<i>Nota: El mapa de calor muestra la evolución histórica a nivel nacional (sin filtros).</i>",
+        xref = "paper", yref = "paper",
+        x = 0, y = -0.22, showarrow = FALSE,
+        font = list(size = 9, color = "#6c757d"), align = "left"
+      )
+    )
   )
 ```
 
