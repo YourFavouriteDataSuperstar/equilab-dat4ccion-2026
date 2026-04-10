@@ -84,7 +84,71 @@ nopo_celdas_total <- nopo_rec |> slice(1) |> pull(n_celdas_total)
 ```
 
 
-# Distribución Salarial
+# Panorama General
+
+## Row
+
+```{r}
+#| echo: false
+#| output: asis
+
+htmltools::HTML('
+<div style="max-width: 1100px; margin: 0 auto; padding: 0.3rem 2rem; line-height: 1.7;">
+
+  <h2 style="color: #004457; font-size: 1.6rem; margin-bottom: 0.2rem; font-weight: 700;">
+    ¿Cuánto menos ganan las mujeres en Colombia?
+  </h2>
+  <p style="color: #6c757d; font-size: 0.95rem; margin-bottom: 1rem; border-bottom: 2px solid #e9ecef; padding-bottom: 0.5rem;">
+    Brechas salariales con perspectiva de género — Colombia 2019–2025
+  </p>
+
+  <p style="font-size: 1.05rem; color: #333; margin-bottom: 0.8rem;">
+    Las páginas anteriores mostraron que las mujeres
+    <a href="p1_acceso.qmd" style="color: #004457; font-weight: 600;">participan menos</a>
+    en el mercado laboral y que quienes participan enfrentan
+    <a href="p2_calidad.qmd" style="color: #004457; font-weight: 600;">condiciones más precarias</a>.
+    Ahora la pregunta clave: <strong>¿les pagan igual?</strong>
+  </p>
+
+  <p style="font-size: 1.05rem; color: #333; margin-bottom: 1rem;">
+    La respuesta corta es no. Pero esta sección va más allá del dato: usa <strong>tres métodos
+    complementarios</strong> para entender no solo <em>cuánto</em> es la brecha, sino
+    <em>por qué</em> existe y si es <em>real</em>.
+  </p>
+
+  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1rem;">
+
+    <div style="background: #f3eaef; border-radius: 8px; padding: 1rem 1.2rem; border-left: 4px solid #6b2d50;">
+      <strong style="color: #6b2d50; font-size: 0.9rem;">1 · Panorama descriptivo</strong><br>
+      <span style="font-size: 0.9rem; color: #555;">¿Cuánto ganan hombres y mujeres? ¿Cómo varía la brecha por nivel educativo?</span>
+    </div>
+
+    <div style="background: #f0f4e8; border-radius: 8px; padding: 1rem 1.2rem; border-left: 4px solid #5f7300;">
+      <strong style="color: #5f7300; font-size: 0.9rem;">2 · Descomposición (O-B)</strong><br>
+      <span style="font-size: 0.9rem; color: #555;">¿Cuánto de la brecha se explica por educación, sector y experiencia? ¿Cuánto es discriminación?</span>
+    </div>
+
+    <div style="background: #e8f4f8; border-radius: 8px; padding: 1rem 1.2rem; border-left: 4px solid #004457;">
+      <strong style="color: #004457; font-size: 0.9rem;">3 · Validación (Ñopo)</strong><br>
+      <span style="font-size: 0.9rem; color: #555;">¿Se confirma la brecha cuando comparamos personas con exactamente el mismo perfil?</span>
+    </div>
+
+  </div>
+
+  <div style="background: #f8f9fa; border-radius: 8px; padding: 0.8rem 1.2rem; border: 1px solid #dee2e6;">
+    <p style="margin: 0; font-size: 0.95rem; color: #555;">
+      <strong style="color: #004457;">Nota:</strong> Los ingresos se miden como ingreso laboral
+      mensual total (INGLABO). Los modelos econométricos comparan personas con las mismas
+      características para aislar la brecha <em>a iguales condiciones</em>.
+    </p>
+  </div>
+
+</div>
+')
+```
+
+
+# ¿Cuánto ganan?
 
 ## Row
 
@@ -121,7 +185,7 @@ list(
 
 ```{r}
 #| content: valuebox
-#| title: "Brecha mediana bruta"
+#| title: "Brecha en la mediana"
 list(
   value = paste0(vb_brecha_desc, "%"),
   color = COLOR_BRECHA,
@@ -131,7 +195,7 @@ list(
 
 ```{r}
 #| content: valuebox
-#| title: "Brecha en medias"
+#| title: "Brecha en el promedio"
 list(
   value = paste0(vb_brecha_media, "%"),
   color = COLOR_BRECHA,
@@ -275,6 +339,26 @@ ggplotly(p_edu, tooltip = "text") |>
 
 ## Row
 
+::: {.callout-tip appearance="minimal"}
+**Mensaje clave:** Las medianas de ingreso convergen al salario mínimo para ambos
+sexos, pero la distribución masculina tiene una cola superior más larga: los hombres
+acceden con más frecuencia a los empleos mejor pagados. La brecha salarial se
+esconde en los extremos de la distribución, no en el centro — por eso necesitamos
+mirar más allá de las medianas.
+:::
+
+## Row
+
+::: {.callout-tip appearance="minimal"}
+**Mensaje clave:** La brecha salarial **crece con la educación**. Las mujeres con
+posgrado enfrentan la mayor diferencia salarial — evidencia de un "techo de cristal"
+en los niveles más altos. Paradójicamente, la menor brecha está donde ambos sexos
+convergen al mínimo. Esto sugiere que las políticas de equidad educativa, siendo
+necesarias, no son suficientes para cerrar la brecha.
+:::
+
+## Row
+
 ::: {.callout-warning appearance="minimal"}
 **¿Por qué la brecha en medianas parece pequeña?**
 Las medianas generales de hombres y mujeres convergen al salario mínimo a partir de 2022,
@@ -303,7 +387,8 @@ datatable(
                   "N Hombres", "N Mujeres"),
   options    = list(
     pageLength = 10, scrollX = TRUE,
-    dom = "Bfrtip", buttons = list("csv", "excel"),
+    dom = "Bfrtip", buttons = list(list(extend = "csv", text = "Descargar CSV"),
+                                      list(extend = "excel", text = "Descargar Excel")),
     language = list(search = "Buscar:", info = "_START_ a _END_ de _TOTAL_",
                     paginate = list(previous = "Anterior", `next` = "Siguiente"))
   ),
@@ -315,7 +400,7 @@ datatable(
 ```
 
 
-# Brecha Salarial (O-B)
+# ¿Por qué les pagan menos?
 
 ## Row
 
@@ -445,6 +530,15 @@ if (nrow(ob_detalle) > 0) {
 }
 ```
 
+## Row
+
+::: {.callout-tip appearance="minimal"}
+**Mensaje clave:** La brecha no explicada — la que persiste después de controlar por
+educación, experiencia, sector y zona — se ha mantenido relativamente estable.
+Esto indica que la discriminación salarial no se reduce solo con el paso del tiempo:
+requiere intervención activa de política pública.
+:::
+
 ## Row {height=20%}
 ### Row {.tabset}
 
@@ -498,6 +592,15 @@ if (nrow(plot_etnia) > 0) {
 
 ## Row
 
+::: {.callout-tip appearance="minimal"}
+**Mensaje clave:** La brecha no explicada es **peor en zonas rurales** y para
+**mujeres de grupos étnicos**, donde la intersección de género con otras dimensiones
+de desigualdad amplifica la penalización salarial. Las políticas de equidad salarial
+deben priorizar estos territorios y poblaciones.
+:::
+
+## Row
+
 ::: {.callout-tip appearance="minimal" collapse="true"}
 ## Nota metodológica
 
@@ -535,7 +638,8 @@ datatable(
                   "Diferencia % (±SE)", "N Hombres", "N Mujeres"),
   options    = list(
     pageLength = 10, scrollX = TRUE,
-    dom = "Bfrtip", buttons = list("csv", "excel"),
+    dom = "Bfrtip", buttons = list(list(extend = "csv", text = "Descargar CSV"),
+                                      list(extend = "excel", text = "Descargar Excel")),
     language = list(search = "Buscar:", info = "_START_ a _END_ de _TOTAL_",
                     paginate = list(previous = "Anterior", `next` = "Siguiente"))
   ),
@@ -547,7 +651,7 @@ datatable(
 ```
 
 
-# Validación (Ñopo)
+# ¿Es real la brecha?
 
 ## Row
 
@@ -582,11 +686,11 @@ list(
 
 ```{r}
 #| content: valuebox
-#| title: "Perfiles donde ambos sexos están presentes"
+#| title: "Brecha salarial total — 2025"
 list(
-  value = paste0(nopo_celdas_comun, " de ", nopo_celdas_total),
+  value = paste0(pct_brecha, "%"),
   color = COLOR_BRECHA,
-  icon  = "grid-3x3"
+  icon  = "arrow-left-right"
 )
 ```
 
@@ -650,7 +754,7 @@ p_d0 <- ggplot(plot_d0, aes(x = anio, y = pct)) +
   scale_x_continuous(breaks = unique(plot_d0$anio)) +
   labs(
     x = NULL, y = "Brecha no explicada (%)",
-    subtitle = "Componente D₀ (≈ discriminación)",
+    subtitle = "Componente D₀ (brecha entre iguales)",
     caption = CAPTION
   ) +
   theme_minimal(base_size = 13)
@@ -681,7 +785,7 @@ cat(paste0(
 
 Método: **Ñopo (2008)**. Matching exacto por educación (4 grupos),
 edad (5 grupos), posición ocupacional y zona. Descompone la brecha en 4 partes:
-D~X~ (diferencia en perfiles), D~0~ (brecha entre iguales ≈ discriminación),
+D~X~ (diferencia en perfiles), D~0~ (brecha entre iguales),
 D~M~ (hombres sin par comparable) y D~F~ (mujeres sin par comparable).
 No asume relaciones matemáticas entre variables, lo que lo hace robusto como
 validación del método Oaxaca-Blinder.
@@ -716,7 +820,8 @@ datatable(
                   "N Hombres", "N Mujeres", "% Matching"),
   options    = list(
     pageLength = 10, scrollX = TRUE,
-    dom = "Bfrtip", buttons = list("csv", "excel"),
+    dom = "Bfrtip", buttons = list(list(extend = "csv", text = "Descargar CSV"),
+                                      list(extend = "excel", text = "Descargar Excel")),
     language = list(search = "Buscar:", info = "_START_ a _END_ de _TOTAL_",
                     paginate = list(previous = "Anterior", `next` = "Siguiente"))
   ),
@@ -726,3 +831,64 @@ datatable(
   )
 )
 ```
+
+::: {.callout-tip appearance="minimal" collapse="true"}
+## Replicabilidad
+
+Este análisis es **replicable y adaptable** a otros contextos:
+
+- **Datos:** Cualquier encuesta de hogares con variables de sexo, edad, educación,
+  ingreso laboral, sector, posición ocupacional y factor de expansión. En la región:
+  ENOE (México), EPH (Argentina), PNAD (Brasil), CASEN (Chile).
+- **Código:** Disponible en [GitHub](https://github.com/equilab-ean/equilab-dat4ccion-2026).
+  Scripts R modulares con paquetes `oaxaca` y funciones custom para Ñopo.
+- **Limitaciones conocidas:** Bootstrap R=30 (ampliar para publicación formal).
+  Muestra trimada P1–P99 del salario/hora. Proxy de experiencia (edad - educación - 6).
+  El ingreso por hora se calcula como ing_total / (horas_sem × 4.33).
+- **Escalamiento:** Los módulos O-B y Ñopo pueden aplicarse a cualquier variable continua
+  de resultado (salario, horas, productividad) con las mismas variables de matching.
+:::
+
+## Implicaciones para la política pública
+
+::: {.callout-warning appearance="minimal" icon=false}
+### ¿Qué revelan estos datos sobre las brechas salariales?
+
+Esta sección demuestra, con tres métodos independientes, que **las mujeres colombianas
+ganan menos que los hombres a iguales condiciones**. Tres hallazgos clave:
+
+1. **La brecha en el promedio salarial es de `r vb_brecha_media`%**, y crece
+   significativamente con el nivel educativo — las mujeres más calificadas enfrentan
+   la mayor penalización salarial.
+
+2. **`r abs(lp_no_explicado)`% de la brecha no se explica por diferencias en educación,
+   experiencia o sector** (Oaxaca-Blinder). La validación por matching exacto (Ñopo)
+   confirma una brecha de `r round(abs(nopo_D0) * 100, 1)`% entre personas con el
+   mismo perfil. Dos métodos distintos, un mismo resultado.
+
+3. **La brecha es peor en zonas rurales y para mujeres de grupos étnicos**, donde la
+   intersección de género con otras dimensiones de desigualdad amplifica la penalización
+   salarial.
+
+**¿Quién debería actuar?** El Ministerio del Trabajo (políticas de transparencia salarial
+y auditorías de brecha), el Ministerio de Educación (retorno equitativo a la inversión
+educativa), secretarías departamentales (focalización en territorios con mayor brecha),
+y organizaciones de empleadores (diagnóstico interno de equidad remunerativa).
+
+### Síntesis del Radar de Brechas
+
+Las tres páginas de este dashboard cuentan una historia completa:
+
+- **Acceso laboral →** Solo 48 de cada 100 mujeres participan del mercado laboral (vs 81 hombres).
+  Más de la mitad de la brecha no se explica por características observables.
+- **Calidad del empleo →** Las mujeres se concentran en empleos domésticos, informales y
+  sin remuneración, con alta segregación sectorial.
+- **Brechas salariales →** A iguales condiciones, los hombres ganan entre 8-10% más.
+  La brecha crece con la educación y es peor en la ruralidad y para grupos étnicos.
+
+Estos hallazgos confirman que **la desigualdad laboral de género en Colombia es estructural,
+multidimensional y persistente**. No se resolverá solo con más educación ni solo con el
+paso del tiempo.
+
+**← Página anterior:** [Calidad del Empleo](p2_calidad.qmd) | **Inicio →** [Radar de Brechas](index.qmd)
+:::
