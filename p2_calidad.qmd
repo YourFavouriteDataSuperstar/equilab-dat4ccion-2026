@@ -423,7 +423,7 @@ list(value = paste0(pct_inf_h, "%"), color = COLOR_HOMBRES, icon = "exclamation-
 
 ```{r}
 #| content: valuebox
-#| title: "Segregación sectorial — 2025"
+#| title: "Segregación sectorial (Índice de Duncan) — 2025"
 list(value = paste0(duncan, "%"), color = "#004457", icon = "diagram-3-fill")
 ```
 
@@ -515,6 +515,8 @@ plot_ly(
     margin = list(t = 40, b = 50, l = 60, r = 20)
   )
 ```
+
+## Row
 
 ::: {.callout-tip appearance="minimal"}
 **Mensaje clave:** La informalidad femenina se ha mantenido persistentemente por encima
