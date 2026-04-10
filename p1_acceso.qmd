@@ -62,12 +62,12 @@ boy_tasa_m <- boy_rec |> filter(componente == "Tasa M") |> pull(valor)
 # Se incluyen TODAS las combinaciones (8 niveles) para permitir
 # mezclar filtros: etnia="Grupo étnico" + zona="Cabecera" funciona
 # porque existe la fila precalculada para ese cruce exacto.
-# "Todos" → "Ninguno" en las columnas de filtro (valor por defecto)
+# "Todos" → "Nacional" en las columnas de filtro (valor por defecto)
 tasas_filtrable <- tasas_raw |>
   mutate(
-    etnia_f = if_else(etnia_label   == "Todos", "Ninguno", etnia_label),
-    zona_f  = if_else(zona_label    == "Todos", "Ninguno", zona_label),
-    edu_f   = if_else(niv_edu_label == "Todos", "Ninguno", niv_edu_label),
+    etnia_f = if_else(etnia_label   == "Todos", "Nacional", etnia_label),
+    zona_f  = if_else(zona_label    == "Todos", "Nacional", zona_label),
+    edu_f   = if_else(niv_edu_label == "Todos", "Nacional", niv_edu_label),
     se_tgp  = (cv_TGP * TGP) / 100,
     li      = round(TGP - 1.96 * se_tgp, 1),
     ls      = round(TGP + 1.96 * se_tgp, 1)
@@ -76,8 +76,8 @@ tasas_filtrable <- tasas_raw |>
 
 # ── Value boxes — cifras globales 2025 ───────────────────────
 vb <- tasas_filtrable |>
-  filter(anio == 2025, etnia_f == "Ninguno",
-         zona_f == "Ninguno", edu_f == "Ninguno")
+  filter(anio == 2025, etnia_f == "Nacional",
+         zona_f == "Nacional", edu_f == "Nacional")
 
 tgp_m <- vb |> filter(sexo_label == "Mujeres") |> pull(TGP)
 tgp_h <- vb |> filter(sexo_label == "Hombres") |> pull(TGP)
@@ -131,6 +131,23 @@ tabla_brecha <- tasas_global |>
   )
 ```
 
+::: {.callout-note appearance="minimal" icon=false}
+## ¿Quién puede trabajar en Colombia?
+
+En 2025, **81 de cada 100 hombres** en edad de trabajar participan en el mercado laboral.
+Para las mujeres, son solo **48 de cada 100**. Esta brecha de **33 puntos porcentuales** no es
+nueva — persiste desde 2019 y se amplió durante la pandemia.
+
+Esta sección presenta tres niveles de análisis:
+
+1. **Panorama general** → Tasas de participación, ocupación y desempleo por sexo (2019–2025)
+2. **Descomposición econométrica** → ¿Cuánto de la brecha se explica por diferencias en educación,
+   experiencia o zona? ¿Cuánto es discriminación estructural?
+3. **Calidad de los datos** → Precisión estadística por departamento para evaluar la confiabilidad
+
+Usa los **filtros por subgrupo** para explorar cómo cambian las brechas según etnia,
+zona urbana/rural, o nivel educativo.
+:::
 
 # Tasa Global de Participación {.tabset}
 
@@ -162,10 +179,9 @@ list(value = paste0(brecha_tgp, " pp"), color = "#004457", icon = "arrow-left-ri
 #| echo: false
 tags$div(
   style = "padding: 10px;",
-  tags$p(tags$b("Interseccionalidad"),
+  tags$p(tags$b("Explora por subgrupo"),
          style = "font-size: 14px; color: #0f3460; margin-bottom: 4px;"),
-  tags$p("Filtra por una dimensión a la vez. Selecciona ",
-         tags$b("Nacional"), " para ver el promedio nacional.",
+  tags$p("Selecciona una categoría para ver cómo cambian las brechas. Por defecto se muestra el total nacional.",
          style = "font-size: 11px; color: #6c757d; margin-bottom: 14px;"),
   filter_select("f_etnia_tgp", "Pertenencia étnica:",
                 sd_tgp, ~etnia_f, multiple = FALSE),
@@ -226,6 +242,13 @@ ggplotly(p_tgp, tooltip = "text") |>
   )
 ```
 
+::: {.callout-tip appearance="minimal"}
+**Mensaje clave:** La brecha de participación se redujo ~3 puntos entre 2019 y 2025,
+pero esto se debe más a la recuperación post-COVID de las mujeres que a un cambio estructural.
+En 2020, la participación femenina cayó a su mínimo histórico — y aún no recupera
+niveles pre-pandemia en todos los subgrupos. Filtra por **zona rural** para ver
+dónde la brecha es más persistente.
+:::
 
 # Tasa de Ocupación y Desempleo {.tabset}
 
@@ -257,10 +280,9 @@ list(value = paste0(brecha_to, " pp"), color = "#004457", icon = "arrow-left-rig
 #| echo: false
 tags$div(
   style = "padding: 10px;",
-  tags$p(tags$b("Interseccionalidad"),
+  tags$p(tags$b("Explora por subgrupo"),
          style = "font-size: 14px; color: #0f3460; margin-bottom: 4px;"),
-  tags$p("Filtra por una dimensión a la vez. Selecciona ",
-         tags$b("Nacional"), " para ver el promedio nacional.",
+  tags$p("Selecciona una categoría para ver cómo cambian las brechas. Por defecto se muestra el total nacional.",
          style = "font-size: 11px; color: #6c757d; margin-bottom: 14px;"),
   filter_select("f_etnia_totd", "Pertenencia étnica:",
                 sd_totd, ~etnia_f, multiple = FALSE),
@@ -357,6 +379,12 @@ plot_ly(
   )
 ```
 
+::: {.callout-tip appearance="minimal"}
+**Mensaje clave:** La tasa de desempleo femenina es consistentemente mayor que la
+masculina — incluso cuando las mujeres participan, les cuesta más encontrar empleo.
+En 2025 la brecha de desempleo es de ~4 pp. Esto sugiere que las barreras no son solo
+de *entrada* al mercado, sino también de *acceso al empleo*.
+:::
 
 # Descomposición de Participación
 
@@ -539,7 +567,7 @@ if (nrow(plot_boy_etnia) > 0) {
 
 ::: {.callout-important appearance="minimal"}
 **Doble obstáculo:**
-La página de Brechas Salariales muestra que, entre quienes ya trabajan, existe una brecha salarial
+La página de [Brechas Salariales](p3_salariales.qmd) muestra que, entre quienes ya trabajan, existe una brecha salarial
 no explicada de ~9%. Esta sección revela que la brecha más grande está *antes*:
 30 de cada 100 mujeres en edad de trabajar no participan del mercado laboral
 (comparado con los hombres). Juntos, estos análisis muestran barreras de entrada
@@ -550,6 +578,13 @@ al mercado y desigualdad salarial una vez dentro.
 
 ::: {.callout-tip appearance="minimal" collapse="true"}
 ## Nota metodológica
+
+**En palabras simples:** Imaginemos que pudiéramos darle a cada mujer las mismas
+características que los hombres (misma educación, experiencia, ubicación). Si la brecha de
+participación se cerrara completamente, sabrías que la diferencia era solo cuestión de
+características. Pero si una parte persiste — esa es la parte "no explicada", que refleja
+barreras estructurales como la discriminación, las normas de género, o la carga de cuidado
+no remunerado.
 
 Método: **Blinder-Oaxaca-Yun (BOY)** con modelo logit no lineal.
 Variable dependiente: participa (1 = PEA, 0 = no participa).
@@ -604,7 +639,17 @@ datatable(
 
 # Calidad Estadística Departamental {.tabset}
 
-## Row 
+## Row
+
+::: {.callout-note appearance="minimal"}
+**¿Puedo confiar en estos datos para mi departamento?**
+El semáforo de calidad estadística indica la precisión de cada estimación según su coeficiente
+de variación (CV). Las celdas **verdes** (Preciso, CV ≤7%) son aptas para diseño de política;
+las **amarillas** (Aceptable, CV ≤14%) son útiles como referencia; las **rojas** (No confiable, CV >20%)
+requieren cautela — los tamaños de muestra en esos departamentos son insuficientes para estimaciones robustas.
+:::
+
+## Row
 
 ### Calidad por Departamento — 2025 {width="100%"}
 
@@ -639,7 +684,16 @@ datatable(
 
 # Brecha de Género {.tabset}
 
-## Row 
+## Row
+
+::: {.callout-note appearance="minimal"}
+**Resumen: la brecha en perspectiva histórica.**
+Esta tabla consolida las tres tasas principales (participación, ocupación, desempleo) por sexo y año,
+con la brecha en puntos porcentuales. Úsala para identificar tendencias y compararlas con hitos
+de política laboral o eventos macroeconómicos (p.ej., la pandemia en 2020, la recuperación en 2021-2022).
+:::
+
+## Row
 
 ### Brecha TGP · TO · TD por Año {width="100%"}
 
@@ -672,6 +726,37 @@ datatable(
 ```
 
 
+## Implicaciones para la política pública
+
+::: {.callout-warning appearance="minimal" icon=false}
+### ¿Qué revelan estos datos?
+
+Los resultados de esta sección muestran que **la brecha de participación laboral de género en
+Colombia es estructural, no coyuntural**. Tres hallazgos clave para tomadores de decisión:
+
+1. **33 puntos de brecha en TGP** que se sostienen año tras año indican barreras sistémicas
+   — no falta de voluntad. Las principales: carga de cuidado no remunerado (90.7% feminizado),
+   informalidad, y normas sociales de género.
+
+2. **La descomposición BOY revela que más de la mitad de la brecha no se explica por diferencias
+   en educación o experiencia.** Esto apunta a discriminación estructural en el mercado laboral.
+
+3. **Las brechas varían significativamente por departamento, zona y etnia.** La tabla departamental
+   permite identificar dónde focalizar intervenciones: los departamentos con CV "Preciso" tienen
+   estimaciones confiables para diseñar política local.
+
+**¿Quién debería usar estos datos?** Secretarías de la mujer departamentales, el Ministerio del
+Trabajo, el DNP, y organizaciones que diseñan programas de inserción laboral femenina. La tabla
+departamental con semáforo de calidad permite priorizar territorios con datos confiables.
+
+**Siguiente análisis →** [Calidad del Empleo](p2_calidad.qmd): ¿en qué condiciones trabajan
+quienes logran entrar al mercado?
+:::
+
+::: {style="text-align: center; padding: 1rem; color: #6c757d; font-size: 0.9rem;"}
+**←** [Inicio](index.qmd) · **Siguiente →** [Calidad del Empleo](p2_calidad.qmd)
+:::
+
 ```{=html}
 <style>
   /* Ocultar la opción "(All)" de los dropdowns crosstalk */
@@ -684,7 +769,7 @@ datatable(
    Usa un intervalo que reintenta cada 100ms hasta que todos estén listos
    (o hasta 30 segundos). Esto garantiza que selectize ya esté montado. */
 (function () {
-  var TARGET = "Ninguno";
+  var TARGET = "Nacional";
   var IDS = [
     "f_etnia_tgp", "f_zona_tgp", "f_edu_tgp",
     "f_etnia_totd", "f_zona_totd", "f_edu_totd"
