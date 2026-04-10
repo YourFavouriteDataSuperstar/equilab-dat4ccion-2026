@@ -80,7 +80,63 @@ sd_informalidad <- SharedData$new(informalidad_fil)
 ```
 
 
-# Posición Ocupacional {.tabset}
+# Panorama General {.tabset}
+
+## Row {height="100%"}
+
+```{r}
+#| echo: false
+#| output: asis
+
+htmltools::HTML('
+<div style="max-width: 1100px; margin: 0 auto; padding: 0.3rem 2rem; line-height: 1.7;">
+
+  <h2 style="color: #004457; font-size: 1.6rem; margin-bottom: 0.2rem; font-weight: 700;">
+    ¿En qué condiciones trabajan las mujeres en Colombia?
+  </h2>
+  <p style="color: #6c757d; font-size: 0.95rem; margin-bottom: 1rem; border-bottom: 2px solid #e9ecef; padding-bottom: 0.5rem;">
+    Calidad del empleo con perspectiva de género — Colombia 2019–2025
+  </p>
+
+  <p style="font-size: 1.05rem; color: #333; margin-bottom: 0.8rem;">
+    La <a href="p1_acceso.qmd" style="color: #004457; font-weight: 600;">página anterior</a>
+    mostró que <strong style="color: #6b2d50;">solo 48 de cada 100 mujeres</strong> en edad de
+    trabajar participan del mercado laboral. Pero llegar al mercado es solo la mitad del
+    problema: <strong>¿en qué condiciones trabajan quienes logran entrar?</strong>
+  </p>
+
+  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1rem;">
+
+    <div style="background: #f3eaef; border-radius: 8px; padding: 1rem 1.2rem; border-left: 4px solid #6b2d50;">
+      <strong style="color: #6b2d50; font-size: 0.9rem;">1 · Tipo de empleo</strong><br>
+      <span style="font-size: 0.9rem; color: #555;">¿En qué posiciones ocupacionales se concentran las mujeres? ¿Cuántas trabajan sin remuneración?</span>
+    </div>
+
+    <div style="background: #f0f4e8; border-radius: 8px; padding: 1rem 1.2rem; border-left: 4px solid #5f7300;">
+      <strong style="color: #5f7300; font-size: 0.9rem;">2 · Jornada laboral</strong><br>
+      <span style="font-size: 0.9rem; color: #555;">¿Cuántas horas trabajan mujeres y hombres? ¿La brecha de jornada remunerada oculta una doble jornada?</span>
+    </div>
+
+    <div style="background: #e8f4f8; border-radius: 8px; padding: 1rem 1.2rem; border-left: 4px solid #004457;">
+      <strong style="color: #004457; font-size: 0.9rem;">3 · Informalidad y segregación</strong><br>
+      <span style="font-size: 0.9rem; color: #555;">¿Cuántas mujeres están en la informalidad? ¿En qué sectores se concentran?</span>
+    </div>
+
+  </div>
+
+  <div style="background: #f8f9fa; border-radius: 8px; padding: 0.8rem 1.2rem; border: 1px solid #dee2e6;">
+    <p style="margin: 0; font-size: 0.95rem; color: #555;">
+      <strong style="color: #004457;">Tip:</strong> Cada pestaña tiene <strong>filtros por subgrupo</strong>
+      que permiten desagregar por etnia, zona y nivel educativo.
+    </p>
+  </div>
+
+</div>
+')
+```
+
+
+# Tipo de empleo {.tabset}
 
 ## Row {height="150px"}
 
@@ -110,10 +166,9 @@ list(value = paste0(pct_sinremun_m, "%"), color = "#004457", icon = "person-x-fi
 #| echo: false
 tags$div(
   style = "padding: 10px;",
-  tags$p(tags$b("Interseccionalidad"),
+  tags$p(tags$b("Explora por subgrupo"),
          style = "font-size: 14px; color: #0f3460; margin-bottom: 4px;"),
-  tags$p("Selecciona un subgrupo para comparar. ",
-         tags$b("Ninguno"), " muestra el nivel nacional.",
+  tags$p("Selecciona una categoría para ver cómo cambian las brechas. Por defecto se muestra el total nacional.",
          style = "font-size: 11px; color: #6c757d; margin-bottom: 14px;"),
   filter_select("f_etnia_tab1", "Pertenencia étnica:",
                 sd_posicion, ~etnia_f, multiple = FALSE),
@@ -235,8 +290,15 @@ ggplotly(p_heat, tooltip = "text") |>
   )
 ```
 
+::: {.callout-tip appearance="minimal"}
+**Mensaje clave:** El empleo doméstico es mayoritariamente femenino, y casi la mitad
+de trabajadores familiares sin remuneración son mujeres. Estas posiciones se
+caracterizan por menor protección social, ingresos más bajos e inestabilidad laboral.
+Filtra por **zona rural** para ver cómo se intensifica esta concentración.
+:::
 
-# Jornada Laboral {.tabset}
+
+# Jornada laboral {.tabset}
 
 ## Row {height="150px"}
 
@@ -254,7 +316,7 @@ list(value = paste0(horas_h, " h"), color = COLOR_HOMBRES, icon = "clock-fill")
 
 ```{r}
 #| content: valuebox
-#| title: "Brecha de jornada (H − M)"
+#| title: "Brecha de jornada — 2025"
 list(value = paste0(brecha_horas, " h"), color = "#004457", icon = "arrow-left-right")
 ```
 
@@ -266,10 +328,9 @@ list(value = paste0(brecha_horas, " h"), color = "#004457", icon = "arrow-left-r
 #| echo: false
 tags$div(
   style = "padding: 10px;",
-  tags$p(tags$b("Interseccionalidad"),
+  tags$p(tags$b("Explora por subgrupo"),
          style = "font-size: 14px; color: #0f3460; margin-bottom: 4px;"),
-  tags$p("Selecciona un subgrupo para comparar. ",
-         tags$b("Ninguno"), " muestra el nivel nacional.",
+  tags$p("Selecciona una categoría para ver cómo cambian las brechas. Por defecto se muestra el total nacional.",
          style = "font-size: 11px; color: #6c757d; margin-bottom: 14px;"),
   filter_select("f_etnia_tab2", "Pertenencia étnica:",
                 sd_horas, ~etnia_f, multiple = FALSE),
@@ -335,8 +396,16 @@ plot_ly(
   )
 ```
 
+::: {.callout-tip appearance="minimal"}
+**Mensaje clave:** Las mujeres trabajan en promedio menos horas *remuneradas* que los
+hombres — pero esto no significa menor carga laboral. Según la Encuesta Nacional de
+Uso del Tiempo (ENUT 2016–2017, DANE), las mujeres colombianas dedican en promedio
+7 horas diarias al trabajo de cuidado no remunerado, frente a 2 horas los hombres.
+La "brecha de jornada" remunerada oculta una doble jornada invisible.
+:::
 
-# Informalidad y Segregación {.tabset}
+
+# Informalidad y sectores {.tabset}
 
 ## Row {height="150px"}
 
@@ -354,7 +423,7 @@ list(value = paste0(pct_inf_h, "%"), color = COLOR_HOMBRES, icon = "exclamation-
 
 ```{r}
 #| content: valuebox
-#| title: "Índice de Duncan — 2025"
+#| title: "Segregación sectorial — 2025"
 list(value = paste0(duncan, "%"), color = "#004457", icon = "diagram-3-fill")
 ```
 
@@ -366,10 +435,9 @@ list(value = paste0(duncan, "%"), color = "#004457", icon = "diagram-3-fill")
 #| echo: false
 tags$div(
   style = "padding: 10px;",
-  tags$p(tags$b("Interseccionalidad"),
+  tags$p(tags$b("Explora por subgrupo"),
          style = "font-size: 14px; color: #0f3460; margin-bottom: 4px;"),
-  tags$p("Selecciona un subgrupo para comparar. ",
-         tags$b("Ninguno"), " muestra el nivel nacional.",
+  tags$p("Selecciona una categoría para ver cómo cambian las brechas. Por defecto se muestra el total nacional.",
          style = "font-size: 11px; color: #6c757d; margin-bottom: 14px;"),
   filter_select("f_etnia_tab3", "Pertenencia étnica:",
                 sd_informalidad, ~etnia_f, multiple = FALSE),
@@ -448,11 +516,16 @@ plot_ly(
   )
 ```
 
+::: {.callout-tip appearance="minimal"}
+**Mensaje clave:** La informalidad femenina se ha mantenido persistentemente por encima
+de la masculina. El proxy utilizado (cuenta propia + familiar sin remuneración +
+jornalero) captura las formas de empleo con menor acceso a seguridad social, pensión
+y protección ante despido — condiciones que afectan desproporcionadamente a las mujeres.
+:::
+
 ## Row
 
-### . {width="20%"}
-
-### ¿En qué sectores económicos trabajan mujeres y hombres? — Colombia 2025 {width="80%"}
+### ¿En qué sectores económicos trabajan mujeres y hombres? — Colombia 2025 {width="100%"}
 
 
 ```{r}
@@ -512,6 +585,44 @@ plot_ly(
     margin = list(l = 10, r = 10, t = 30, b = 80)
   )
 ```
+
+::: {.callout-note appearance="minimal"}
+**¿Qué significa el Índice de Duncan?** Mide cuántas mujeres tendrían que cambiar de
+sector económico para que su distribución sectorial fuera igual a la de los hombres.
+Un valor de `r duncan`% indica segregación significativa: las mujeres se concentran
+en servicios domésticos, educación y salud, mientras que construcción, transporte y
+agricultura son predominantemente masculinos. Esta segregación contribuye a la brecha
+salarial porque los sectores feminizados tienden a pagar menos.
+:::
+
+## Implicaciones
+
+::: {.callout-warning appearance="minimal" icon=false}
+### ¿Qué revelan estos datos?
+
+Las mujeres que logran entrar al mercado laboral colombiano enfrentan
+**condiciones sistemáticamente peores**:
+
+1. **Se concentran en empleos precarios**: doméstico, cuenta propia y sin
+   remuneración familiar — posiciones con menor acceso a seguridad social y pensión.
+
+2. **Trabajan menos horas remuneradas** pero cargan con una jornada de cuidado
+   no remunerado que las encuestas de empleo no capturan.
+
+3. **La segregación sectorial** (Duncan = `r duncan`%) muestra que mujeres y hombres
+   no trabajan en los mismos sectores — y los sectores feminizados pagan menos.
+
+**¿Quién debería actuar?** Ministerio del Trabajo (formalización con enfoque de
+género), secretarías de desarrollo económico (programas de diversificación sectorial),
+y entidades de protección social (cobertura para trabajo doméstico y cuenta propia).
+
+**Siguiente análisis →** [Brechas Salariales](p3_salariales.qmd): ¿cuánto ganan
+las mujeres comparado con los hombres?
+:::
+
+::: {style="text-align: center; padding: 1rem 0; color: #6c757d; font-size: 0.9rem;"}
+**←** [Acceso Laboral](p1_acceso.qmd) · **Siguiente →** [Brechas Salariales](p3_salariales.qmd)
+:::
 
 
 ```{=html}
