@@ -13,6 +13,9 @@ format:
       narrative-border-radius: "5px"
       section-background-color: "#f4f4f4"
 css: styles/equilab.css
+execute:
+  warning: false
+  message: false
 ---
 
 ```{r}
@@ -21,6 +24,7 @@ css: styles/equilab.css
 # ── Librerias ────────────────────────────────────────────────
 library(arrow)
 library(dplyr)
+library(tidyr)
 library(ggplot2)
 library(plotly)
 library(scales)
@@ -52,6 +56,19 @@ calidad_id   <- calidad |> filter(anio == "2022-2025", tipo == "identidad")
 salarios_id  <- salarios |> filter(anio == "2022-2025", tipo == "identidad")
 ```
 
+```{=html}
+<div class="p4-hero">
+  <span class="p4-hero-badge">Análisis 4 · DAT4CCIÓN 2026</span>
+  <h1>Mujeres diversas<br>en el mercado laboral</h1>
+  <p>Condiciones de acceso, calidad de empleo e ingresos de mujeres
+  cisgénero y mujeres trans en Colombia, 2022–2025.</p>
+  <div class="p4-hero-colores">
+    <span class="p4-hero-chip cis"><span class="dot"></span>Mujer cis</span>
+    <span class="p4-hero-chip trans"><span class="dot"></span>Mujer trans</span>
+  </div>
+</div>
+```
+
 <!-- ═══════════════════════════════════════════════════════════
      SECCION 1: INTRODUCCION
      ═══════════════════════════════════════════════════════════ -->
@@ -59,6 +76,8 @@ salarios_id  <- salarios |> filter(anio == "2022-2025", tipo == "identidad")
 :::{.cr-section .lila-section layout="sidebar-left"}
 
 :::{focus-on="cr-intro"}
+[01]{.p4-seccion-num}
+
 [*¿Cómo participan las\
 mujeres diversas en\
 el mercado laboral\
@@ -90,6 +109,8 @@ colombiano?*]{.eq-sidebar-titulo}
 :::{.cr-section .lila-section layout="sidebar-left"}
 
 :::{focus-on="cr-panorama"}
+[02]{.p4-seccion-num}
+
 [*¿Cómo se distribuye\
 la identidad de\
 género en Colombia?*]{.eq-sidebar-titulo}
@@ -101,42 +122,74 @@ representan el **52.3%** de la muestra expandida.]{.eq-sidebar-sub}
 
 :::{#cr-panorama}
 ```{r}
-#| fig-width: 5
-#| fig-height: 4
+#| fig-width: 6
+#| fig-height: 5
+#| warning: false
+#| message: false
 
-panorama_plot <- panorama |>
+ICONS_PER_ROW <- 25
+
+pano <- panorama |>
   mutate(
     identidad_label = factor(identidad_label,
       levels = c("Mujer cis", "Hombre cis", "Mujer trans",
                  "Hombre trans", "No binario", "Otra identidad")),
-    color = case_when(
-      identidad_label == "Mujer cis" ~ COLOR_CIS,
+    n_icons = pmax(1L, round(as.numeric(pct_pob))),
+    n_rows  = ceiling(n_icons / ICONS_PER_ROW),
+    color   = case_when(
+      identidad_label == "Mujer cis"   ~ COLOR_CIS,
       identidad_label == "Mujer trans" ~ COLOR_TRANS,
       TRUE ~ COLOR_NEUTRO
     )
+  ) |>
+  arrange(desc(identidad_label)) |>
+  mutate(y_base = cumsum(lag(n_rows, default = 0L) + 1.5))
+
+icons_df <- pano |>
+  rowwise() |>
+  mutate(pos = list(seq_len(n_icons))) |>
+  unnest(pos) |>
+  mutate(
+    x   = ((pos - 1L) %% ICONS_PER_ROW) + 1L,
+    y   = y_base + (pos - 1L) %/% ICONS_PER_ROW,
+    tip = paste0("<b>", identidad_label, "</b><br>",
+                 pct_pob, "% del total expandido<br>",
+                 "Población: ", format(round(poblacion), big.mark = "."),
+                 "<br>Observaciones: ", format(n_obs, big.mark = "."))
   )
 
-p <- ggplot(panorama_plot,
-       aes(x = reorder(identidad_label, -poblacion),
-           y = poblacion / 1e6,
-           fill = color,
-           text = paste0(identidad_label,
-                         "\nPoblación: ", format(round(poblacion), big.mark = "."),
-                         "\nObservaciones: ", format(n_obs, big.mark = "."),
-                         "\n% del total: ", pct_pob, "%"))) +
-  geom_col(width = 0.7) +
-  scale_fill_identity() +
-  scale_y_continuous(labels = label_number(suffix = "M", scale = 1)) +
-  labs(x = NULL, y = "Población expandida (millones)",
-       caption = CAPTION) +
-  theme_minimal(base_family = "Public Sans") +
+labs_df <- pano |>
+  mutate(
+    y_label = y_base + (n_rows - 1) / 2,
+    lbl     = paste0(identidad_label, "  ", pct_pob, "%")
+  )
+
+p_iso <- ggplot() +
+  geom_point(
+    data  = icons_df,
+    aes(x = x, y = y, color = color, text = tip),
+    size  = 3.5, shape = 19
+  ) +
+  geom_text(
+    data  = labs_df,
+    aes(x = 0.2, y = y_label, label = lbl, color = color),
+    hjust = 1, size = 2.8, fontface = "bold"
+  ) +
+  scale_color_identity() +
+  scale_x_continuous(limits = c(-12, 26), expand = c(0, 0)) +
+  theme_void(base_family = "Public Sans") +
   theme(
-    axis.text.x = element_text(angle = 30, hjust = 1, size = 9),
-    plot.caption = element_text(size = 7, color = "#6c757d")
-  )
+    plot.margin  = margin(8, 8, 8, 8),
+    plot.caption = element_text(size = 7, color = "#6c757d", hjust = 0)
+  ) +
+  labs(caption = CAPTION)
 
-ggplotly(p, tooltip = "text") |>
-  layout(showlegend = FALSE)
+ggplotly(p_iso, tooltip = "text") |>
+  layout(
+    showlegend    = FALSE,
+    paper_bgcolor = "rgba(0,0,0,0)",
+    plot_bgcolor  = "rgba(0,0,0,0)"
+  )
 ```
 :::
 
@@ -149,6 +202,8 @@ ggplotly(p, tooltip = "text") |>
 :::{.cr-section .lila-section layout="sidebar-left"}
 
 :::{focus-on="cr-acceso"}
+
+[03]{.p4-seccion-num}
 
 ## Acceso al mercado laboral
 
@@ -227,7 +282,11 @@ p <- ggplot(tasas_plot,
   )
 
 ggplotly(p, tooltip = "text") |>
-  layout(legend = list(orientation = "h", x = 0.2, y = 1.1))
+  layout(
+    legend        = list(orientation = "h", x = 0.2, y = 1.1),
+    paper_bgcolor = "rgba(0,0,0,0)",
+    plot_bgcolor  = "rgba(0,0,0,0)"
+  )
 ```
 :::
 
@@ -240,6 +299,8 @@ ggplotly(p, tooltip = "text") |>
 :::{.cr-section .lila-section layout="sidebar-left"}
 
 :::{focus-on="cr-calidad"}
+
+[04]{.p4-seccion-num}
 
 ## Calidad del empleo
 
@@ -301,7 +362,11 @@ p <- ggplot(pos_plot,
   )
 
 ggplotly(p, tooltip = "text") |>
-  layout(legend = list(orientation = "h", x = 0.2, y = 1.08))
+  layout(
+    legend        = list(orientation = "h", x = 0.2, y = 1.08),
+    paper_bgcolor = "rgba(0,0,0,0)",
+    plot_bgcolor  = "rgba(0,0,0,0)"
+  )
 ```
 :::
 
@@ -314,6 +379,8 @@ ggplotly(p, tooltip = "text") |>
 :::{.cr-section .lila-section layout="sidebar-left"}
 
 :::{focus-on="cr-ingresos"}
+
+[05]{.p4-seccion-num}
 
 ## Ingresos laborales
 
@@ -378,7 +445,11 @@ p <- ggplot(sal_plot,
   )
 
 ggplotly(p, tooltip = "text") |>
-  layout(showlegend = FALSE)
+  layout(
+    showlegend    = FALSE,
+    paper_bgcolor = "rgba(0,0,0,0)",
+    plot_bgcolor  = "rgba(0,0,0,0)"
+  )
 ```
 :::
 
@@ -391,6 +462,8 @@ ggplotly(p, tooltip = "text") |>
 :::{.cr-section .lila-section layout="sidebar-left"}
 
 :::{focus-on="cr-resumen"}
+[06]{.p4-seccion-num}
+
 [*Resumen de\
 indicadores\
 por identidad\
@@ -464,13 +537,15 @@ resumen |>
 :::{.cr-section .lila-section layout="sidebar-left"}
 
 :::{focus-on="cr-metodo"}
+[07]{.p4-seccion-num}
+
 [*Nota\
 metodológica*]{.eq-sidebar-titulo}
 :::
 
 :::{#cr-metodo}
 ```{=html}
-<div class="eq-hicimos-texto">
+<div class="p4-nota-metodologica" style="display:grid; grid-template-columns:1fr 1fr; gap:1rem 1.5rem; font-size:0.88rem; line-height:1.5;">
   <p><strong>Fuente:</strong> DANE, Gran Encuesta Integrada de Hogares (GEIH),
   módulo de identidad de género y orientación sexual. Marco muestral 2018.
   Período: enero 2022 – marzo 2025.</p>
@@ -486,7 +561,7 @@ metodológica*]{.eq-sidebar-titulo}
 
   <p><strong>Confiabilidad:</strong> todas las estimaciones incluyen el
   coeficiente de variación (CV) calculado con <code>survey::svydesign</code>.
-  Estimaciones con CV > 20% se marcan como no confiables y deben
+  Estimaciones con CV &gt; 20% se marcan como no confiables y deben
   interpretarse con cautela.</p>
 
   <p><strong>Limitación principal:</strong> el tamaño muestral de mujeres
