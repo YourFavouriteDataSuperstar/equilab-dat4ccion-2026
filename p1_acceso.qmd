@@ -527,9 +527,9 @@ if (nrow(boy_yun) > 0) {
       )
     ) |>
     group_by(var_grupo) |>
-    summarise(dotacion = sum(abs(dotacion), na.rm = TRUE), .groups = "drop") |>
+    summarise(dotacion = sum(dotacion, na.rm = TRUE), .groups = "drop") |>
     mutate(
-      pp = dotacion * 100,
+      pp = abs(dotacion) * 100,
       pct_total = round(pp / sum(pp) * 100, 1)
     )
 
