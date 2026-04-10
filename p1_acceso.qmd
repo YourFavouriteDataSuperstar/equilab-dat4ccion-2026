@@ -696,19 +696,14 @@ datatable(
 
 ::: {.callout-note appearance="minimal"}
 Estas tablas permiten consultar los datos en detalle. La primera muestra la **calidad estadística
-por departamento** con semáforo de confiabilidad; la segunda consolida la **brecha de género
-histórica** en las tres tasas principales.
+por departamento** con semáforo de confiabilidad (verde = CV ≤7%, preciso; amarillo = CV ≤14%,
+aceptable; rojo = CV >20%, cautela). La segunda consolida la **brecha de género histórica**
+en participación, ocupación y desempleo — úsala para comparar tendencias con hitos de política
+laboral o eventos macro (pandemia 2020, recuperación 2021-2022).
 :::
 
 ## Row
 ### Row {.tabset}
-
-::: {.callout-note appearance="minimal"}
-**¿Puedo confiar en estos datos para mi departamento?**
-El semáforo indica la precisión de cada estimación según su coeficiente de variación (CV).
-Las celdas **verdes** (CV ≤7%) son aptas para diseño de política; las **amarillas** (CV ≤14%)
-son útiles como referencia; las **rojas** (CV >20%) requieren cautela.
-:::
 
 ```{r}
 #| title: "Calidad Departamental — 2025"
@@ -739,13 +734,6 @@ datatable(
     c("Preciso","Aceptable","Regular","No confiable"),
     c("#d4edda","#fff3cd",  "#ffe5d0","#f8d7da")))
 ```
-
-::: {.callout-note appearance="minimal"}
-**La brecha en perspectiva histórica.**
-Esta tabla consolida participación, ocupación y desempleo por sexo y año, con la brecha
-en puntos porcentuales. Úsala para comparar tendencias con hitos de política laboral
-o eventos macro (pandemia 2020, recuperación 2021-2022).
-:::
 
 ```{r}
 #| title: "Brecha de Género por Año"
