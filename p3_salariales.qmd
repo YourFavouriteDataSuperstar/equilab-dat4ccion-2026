@@ -432,7 +432,7 @@ if (nrow(plot_etnia) > 0) {
     geom_hline(yintercept = 0, linetype = "dashed", color = "#adb5bd") +
     geom_vline(xintercept = 2021, linetype = "dotted", color = "#adb5bd") +
     scale_color_manual(
-      values = c("No étnico" = "#6EBED3", "Étnico" = "#F29767"), name = ""
+      values = c("No étnico" = "#CC79A7", "Étnico" = "#009E73"), name = ""
     ) +
     scale_x_continuous(breaks = unique(plot_etnia$anio)) +
     labs(x = NULL, y = "Brecha no explicada (%)", caption = CAPTION) +
