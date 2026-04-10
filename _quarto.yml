@@ -12,7 +12,7 @@ project:
 website:
   title: "Radar de Brechas Laborales de Género"
   navbar:
-    background: "#1a1a2e"
+    background: "#6c757d"
     foreground: "#ffffff"
     left:
       - text: "Inicio"
