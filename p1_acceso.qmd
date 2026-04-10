@@ -488,21 +488,27 @@ plot_boy_linea <- boy_por_anio |>
   mutate(pp = abs(valor * 100))
 
 rango_pp <- range(plot_boy_linea$pp)
-margen <- (rango_pp[2] - rango_pp[1]) * 0.3
+margen <- (rango_pp[2] - rango_pp[1]) * 0.4
 y_min <- max(0, rango_pp[1] - margen)
 y_max <- rango_pp[2] + margen
 
-p_boy <- ggplot(plot_boy_linea, aes(x = anio, y = pp,
-                  text = paste0("Año: ", anio, "\nBrecha: ", round(pp, 1), " pp"))) +
-  geom_line(linewidth = 1.3, color = COLOR_BRECHA) +
-  geom_point(size = 3.5, color = COLOR_BRECHA) +
-  geom_vline(xintercept = 2021, linetype = "dotted", color = "#adb5bd") +
-  scale_x_continuous(breaks = unique(plot_boy_linea$anio)) +
-  scale_y_continuous(limits = c(y_min, y_max)) +
-  labs(x = NULL, y = "Brecha de participación (pp)", caption = CAPTION) +
-  theme_minimal(base_size = 13)
-
-ggplotly(p_boy, tooltip = "text")
+plot_ly(plot_boy_linea, x = ~anio, y = ~pp, type = "scatter",
+        mode = "lines+markers",
+        line = list(color = COLOR_BRECHA, width = 3),
+        marker = list(color = COLOR_BRECHA, size = 9),
+        hovertemplate = "Año: %{x}<br>Brecha: %{y:.1f} pp<extra></extra>") |>
+  layout(
+    xaxis = list(title = "", tickvals = unique(plot_boy_linea$anio), gridcolor = "rgba(0,0,0,0.08)"),
+    yaxis = list(title = "Brecha de participación (pp)", range = c(y_min, y_max), gridcolor = "rgba(0,0,0,0.08)"),
+    shapes = list(list(type = "line", x0 = 2021, x1 = 2021, y0 = y_min, y1 = y_max,
+                        line = list(color = "#adb5bd", width = 1, dash = "dot"))),
+    plot_bgcolor = "white", paper_bgcolor = "white",
+    annotations = list(list(
+      text = CAPTION, xref = "paper", yref = "paper",
+      x = 0, y = -0.15, showarrow = FALSE,
+      font = list(size = 9, color = "gray50"), align = "left"
+    ))
+  )
 ```
 
 
@@ -514,7 +520,6 @@ if (nrow(boy_yun) > 0) {
     mutate(
       var_grupo = case_when(
         grepl("esc_anios", variable)   ~ "Educación",
-        grepl("exp_pot2", variable)    ~ "Experiencia²",
         grepl("exp_pot", variable)     ~ "Experiencia",
         grepl("zona_label", variable)  ~ "Zona (Urb/Rur)",
         grepl("edad_grupo", variable)  ~ "Grupo de edad",
