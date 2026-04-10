@@ -215,7 +215,7 @@ list(value = paste0(tgp_h, "%"), color = COLOR_HOMBRES, icon = "gender-male")
 list(value = paste0(brecha_tgp, " pp"), color = "#004457", icon = "arrow-left-right")
 ```
 
-## Row
+## Row {height="450px"}
 
 ### Filtros {width="20%"}
 
@@ -314,7 +314,7 @@ list(value = paste0(to_h, "%"), color = COLOR_HOMBRES, icon = "gender-male")
 list(value = paste0(brecha_to, " pp"), color = "#004457", icon = "arrow-left-right")
 ```
 
-## Row {height="85%"}
+## Row {height="450px"}
 
 ### Filtros {width="20%"}
 
