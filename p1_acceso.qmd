@@ -139,13 +139,13 @@ tabla_brecha <- tasas_global |>
 ```{r}
 #| content: valuebox
 #| title: "TGP Mujeres — 2025"
-list(value = paste0(tgp_m, "%"), color = COLOR_MUJERES, icon = "person-fill")
+list(value = paste0(tgp_m, "%"), color = COLOR_MUJERES, icon = "gender-female")
 ```
 
 ```{r}
 #| content: valuebox
 #| title: "TGP Hombres — 2025"
-list(value = paste0(tgp_h, "%"), color = COLOR_HOMBRES, icon = "person-fill")
+list(value = paste0(tgp_h, "%"), color = COLOR_HOMBRES, icon = "gender-male")
 ```
 
 ```{r}
@@ -234,13 +234,13 @@ ggplotly(p_tgp, tooltip = "text") |>
 ```{r}
 #| content: valuebox
 #| title: "TO Mujeres — 2025"
-list(value = paste0(to_m, "%"), color = COLOR_MUJERES, icon = "briefcase-fill")
+list(value = paste0(to_m, "%"), color = COLOR_MUJERES, icon = "gender-female")
 ```
 
 ```{r}
 #| content: valuebox
 #| title: "TO Hombres — 2025"
-list(value = paste0(to_h, "%"), color = COLOR_HOMBRES, icon = "briefcase-fill")
+list(value = paste0(to_h, "%"), color = COLOR_HOMBRES, icon = "gender-male")
 ```
 
 ```{r}
