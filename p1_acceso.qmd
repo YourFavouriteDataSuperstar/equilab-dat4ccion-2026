@@ -487,13 +487,18 @@ plot_boy_linea <- boy_por_anio |>
   filter(componente == "Brecha") |>
   mutate(pp = abs(valor * 100))
 
+rango_pp <- range(plot_boy_linea$pp)
+margen <- (rango_pp[2] - rango_pp[1]) * 0.3
+y_min <- max(0, rango_pp[1] - margen)
+y_max <- rango_pp[2] + margen
+
 p_boy <- ggplot(plot_boy_linea, aes(x = anio, y = pp,
                   text = paste0("Año: ", anio, "\nBrecha: ", round(pp, 1), " pp"))) +
-  geom_point(size = 4, color = COLOR_BRECHA) +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "#adb5bd") +
+  geom_line(linewidth = 1.3, color = COLOR_BRECHA) +
+  geom_point(size = 3.5, color = COLOR_BRECHA) +
   geom_vline(xintercept = 2021, linetype = "dotted", color = "#adb5bd") +
   scale_x_continuous(breaks = unique(plot_boy_linea$anio)) +
-  scale_y_continuous(limits = c(0, NA), expand = expansion(mult = c(0, 0.1))) +
+  scale_y_continuous(limits = c(y_min, y_max)) +
   labs(x = NULL, y = "Brecha de participación (pp)", caption = CAPTION) +
   theme_minimal(base_size = 13)
 
