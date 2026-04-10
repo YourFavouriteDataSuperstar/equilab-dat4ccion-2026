@@ -13,9 +13,6 @@ format:
       narrative-border-radius: "5px"
       section-background-color: "#f4f4f4"
 css: styles/equilab.css
-execute:
-  warning: false
-  message: false
 ---
 
 ```{r}
@@ -29,6 +26,7 @@ library(ggplot2)
 library(plotly)
 library(scales)
 library(gt)
+library(htmltools)
 
 # ── Constantes ───────────────────────────────────────────────
 COLOR_CIS   <- "#6b2d50"
@@ -56,19 +54,6 @@ calidad_id   <- calidad |> filter(anio == "2022-2025", tipo == "identidad")
 salarios_id  <- salarios |> filter(anio == "2022-2025", tipo == "identidad")
 ```
 
-```{=html}
-<div class="p4-hero">
-  <span class="p4-hero-badge">Análisis 4 · DAT4CCIÓN 2026</span>
-  <h1>Mujeres diversas<br>en el mercado laboral</h1>
-  <p>Condiciones de acceso, calidad de empleo e ingresos de mujeres
-  cisgénero y mujeres trans en Colombia, 2022–2025.</p>
-  <div class="p4-hero-colores">
-    <span class="p4-hero-chip cis"><span class="dot"></span>Mujer cis</span>
-    <span class="p4-hero-chip trans"><span class="dot"></span>Mujer trans</span>
-  </div>
-</div>
-```
-
 <!-- ═══════════════════════════════════════════════════════════
      SECCION 1: INTRODUCCION
      ═══════════════════════════════════════════════════════════ -->
@@ -76,8 +61,6 @@ salarios_id  <- salarios |> filter(anio == "2022-2025", tipo == "identidad")
 :::{.cr-section .lila-section layout="sidebar-left"}
 
 :::{focus-on="cr-intro"}
-[01]{.p4-seccion-num}
-
 [*¿Cómo participan las\
 mujeres diversas en\
 el mercado laboral\
@@ -108,7 +91,7 @@ colombiano?*]{.eq-sidebar-titulo}
 
 :::{.cr-section .lila-section layout="sidebar-left"}
 
-:::{focus-on="cr-panorama"}
+:::{focus-on="cr-pie1"}
 [02]{.p4-seccion-num}
 
 [*¿Cómo se distribuye\
@@ -120,76 +103,150 @@ al nacer e identidad de género autopercibida. Las mujeres (cis y trans)
 representan el **52.3%** de la muestra expandida.]{.eq-sidebar-sub}
 :::
 
-:::{#cr-panorama}
+:::{focus-on="cr-pie2"}
+[*¿Cómo se distribuyen\
+las identidades\
+no cisgénero?*]{.eq-sidebar-titulo}
+
+[Dentro de las personas con identidades diversas, las mujeres trans
+son el grupo más numeroso, seguido de hombres trans, personas no
+binarias y otras identidades.]{.eq-sidebar-sub}
+:::
+
+:::{focus-on="cr-zoom"}
+[*Un dato\
+que no\
+debe perderse*]{.eq-sidebar-titulo}
+
+[Las mujeres trans son una fracción muy pequeña de la muestra expandida.
+Esto explica por qué muchas estimaciones para este grupo tienen coeficientes
+de variación altos y deben interpretarse con cautela.]{.eq-sidebar-sub}
+:::
+
+:::{#cr-pie1}
 ```{r}
-#| fig-width: 6
-#| fig-height: 5
 #| warning: false
 #| message: false
 
-ICONS_PER_ROW <- 25
+library(htmltools)
 
-pano <- panorama |>
+data1 <- panorama |>
+  mutate(grupo = ifelse(
+    identidad_label %in% c("Mujer cis", "Mujer trans"),
+    "Mujeres (cis y trans)", "Resto de identidades"
+  )) |>
+  group_by(grupo) |>
+  summarise(poblacion = sum(poblacion), .groups = "drop") |>
   mutate(
-    identidad_label = factor(identidad_label,
-      levels = c("Mujer cis", "Hombre cis", "Mujer trans",
-                 "Hombre trans", "No binario", "Otra identidad")),
-    n_icons = pmax(1L, round(as.numeric(pct_pob))),
-    n_rows  = ceiling(n_icons / ICONS_PER_ROW),
-    color   = case_when(
-      identidad_label == "Mujer cis"   ~ COLOR_CIS,
-      identidad_label == "Mujer trans" ~ COLOR_TRANS,
-      TRUE ~ COLOR_NEUTRO
-    )
-  ) |>
-  arrange(desc(identidad_label)) |>
-  mutate(y_base = cumsum(lag(n_rows, default = 0L) + 1.5))
-
-icons_df <- pano |>
-  rowwise() |>
-  mutate(pos = list(seq_len(n_icons))) |>
-  unnest(pos) |>
-  mutate(
-    x   = ((pos - 1L) %% ICONS_PER_ROW) + 1L,
-    y   = y_base + (pos - 1L) %/% ICONS_PER_ROW,
-    tip = paste0("<b>", identidad_label, "</b><br>",
-                 pct_pob, "% del total expandido<br>",
-                 "Población: ", format(round(poblacion), big.mark = "."),
-                 "<br>Observaciones: ", format(n_obs, big.mark = "."))
+    color_g  = ifelse(grupo == "Mujeres (cis y trans)", COLOR_CIS, COLOR_NEUTRO),
+    hover_txt = paste0("<b>", grupo, "</b><br>",
+                       format(round(poblacion), big.mark = "."), " personas")
   )
 
-labs_df <- pano |>
-  mutate(
-    y_label = y_base + (n_rows - 1) / 2,
-    lbl     = paste0(identidad_label, "  ", pct_pob, "%")
-  )
-
-p_iso <- ggplot() +
-  geom_point(
-    data  = icons_df,
-    aes(x = x, y = y, color = color, text = tip),
-    size  = 3.5, shape = 19
-  ) +
-  geom_text(
-    data  = labs_df,
-    aes(x = 0.2, y = y_label, label = lbl, color = color),
-    hjust = 1, size = 2.8, fontface = "bold"
-  ) +
-  scale_color_identity() +
-  scale_x_continuous(limits = c(-12, 26), expand = c(0, 0)) +
-  theme_void(base_family = "Public Sans") +
-  theme(
-    plot.margin  = margin(8, 8, 8, 8),
-    plot.caption = element_text(size = 7, color = "#6c757d", hjust = 0)
-  ) +
-  labs(caption = CAPTION)
-
-ggplotly(p_iso, tooltip = "text") |>
+p1 <- plot_ly(
+  data1,
+  labels     = ~grupo,
+  values     = ~poblacion,
+  text       = ~hover_txt,
+  type       = "pie",
+  marker     = list(colors = ~color_g,
+                    line   = list(color = "#ffffff", width = 2)),
+  textinfo   = "percent",
+  textfont   = list(size = 13, family = "Public Sans"),
+  hoverinfo  = "text",
+  showlegend = FALSE
+) |>
   layout(
-    showlegend    = FALSE,
-    paper_bgcolor = "rgba(0,0,0,0)",
-    plot_bgcolor  = "rgba(0,0,0,0)"
+    title         = list(text = "Distribución: Mujeres y el resto de identidades",
+                         font = list(size = 13, family = "Public Sans", color = "#333333"),
+                         x = 0.5, xanchor = "center"),
+    paper_bgcolor = "#ffffff",
+    plot_bgcolor  = "#ffffff",
+    margin        = list(t = 50, b = 20, l = 20, r = 20)
   )
+
+div(
+  style = "background:#ffffff; border-radius:14px; border:1px solid #d0d0d0; padding:8px; overflow:hidden;",
+  p1
+)
+```
+:::
+
+:::{#cr-pie2}
+```{r}
+#| warning: false
+#| message: false
+
+data2 <- panorama |>
+  filter(identidad_label %in% c("Mujer trans", "Hombre trans",
+                                 "No binario", "Otra identidad")) |>
+  mutate(
+    color_g   = case_when(
+      identidad_label == "Mujer trans"  ~ COLOR_TRANS,
+      identidad_label == "Hombre trans" ~ COLOR_CIS,
+      identidad_label == "No binario"   ~ COLOR_NEUTRO,
+      TRUE                              ~ "#4a6b7a"
+    ),
+    hover_txt = paste0("<b>", identidad_label, "</b><br>",
+                       format(round(poblacion), big.mark = "."), " personas")
+  )
+
+p2 <- plot_ly(
+  data2,
+  labels     = ~identidad_label,
+  values     = ~poblacion,
+  text       = ~hover_txt,
+  type       = "pie",
+  marker     = list(colors = ~color_g,
+                    line   = list(color = "#ffffff", width = 2)),
+  textinfo   = "percent",
+  textfont   = list(size = 13, family = "Public Sans"),
+  hoverinfo  = "text",
+  showlegend = FALSE
+) |>
+  layout(
+    title         = list(text = "Personas con identidad de género diversa",
+                         font = list(size = 13, family = "Public Sans", color = "#333333"),
+                         x = 0.5, xanchor = "center"),
+    paper_bgcolor = "#ffffff",
+    plot_bgcolor  = "#ffffff",
+    margin        = list(t = 50, b = 20, l = 20, r = 20)
+  )
+
+div(
+  style = "background:#ffffff; border-radius:14px; border:1px solid #d0d0d0; padding:8px; overflow:hidden;",
+  p2
+)
+```
+:::
+
+:::{#cr-zoom}
+```{r}
+#| warning: false
+#| message: false
+
+trans_pob <- panorama |> filter(identidad_label == "Mujer trans") |> pull(poblacion)
+trans_pct <- panorama |> filter(identidad_label == "Mujer trans") |> pull(pct_pob)
+
+htmltools::HTML(paste0('
+<div style="display:flex; justify-content:center; align-items:center; height:320px;">
+  <div style="background:#f5f5f5; border-radius:16px; box-shadow:0 0 0 1px #d8d8d8;
+              padding:44px 48px; text-align:center; max-width:340px;">
+    <div style="color:#6c757d; font-size:0.85rem; font-family:Public Sans,sans-serif;
+                margin-bottom:10px; letter-spacing:0.03em;">
+      Mujeres trans en la muestra
+    </div>
+    <div style="color:', COLOR_TRANS, '; font-size:4rem; font-weight:700;
+                font-family:Public Sans,sans-serif; line-height:1;">
+      ', trans_pct, '%
+    </div>
+    <div style="color:#6c757d; font-size:0.78rem; font-family:Public Sans,sans-serif;
+                margin-top:14px;">
+      de la muestra expandida GEIH 2022–2025
+    </div>
+  </div>
+</div>
+'))
 ```
 :::
 
@@ -202,8 +259,6 @@ ggplotly(p_iso, tooltip = "text") |>
 :::{.cr-section .lila-section layout="sidebar-left"}
 
 :::{focus-on="cr-acceso"}
-
-[03]{.p4-seccion-num}
 
 ## Acceso al mercado laboral
 
@@ -266,13 +321,13 @@ p <- ggplot(tasas_plot,
            text = paste0(grupo, "\n", indicador, ": ", valor, "%",
                          "\nCV: ", cv, "% (", cal, ")"))) +
   geom_col(position = position_dodge(width = 0.7), width = 0.6) +
-  geom_text(aes(label = label),
+  geom_text(aes(label = label, y = valor + 2.5),
             position = position_dodge(width = 0.7),
-            vjust = -0.5, size = 3) +
+            vjust = 0, size = 3, color = "#333333") +
   scale_fill_manual(values = c("Mujer cis" = COLOR_CIS,
                                 "Mujer trans" = COLOR_TRANS),
                      name = NULL) +
-  scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.2))) +
   labs(x = NULL, y = "Porcentaje (%)",
        caption = paste0(CAPTION, "\n* CV > 20%: estimación no confiable.")) +
   theme_minimal(base_family = "Public Sans") +
@@ -281,12 +336,16 @@ p <- ggplot(tasas_plot,
     plot.caption = element_text(size = 7, color = "#6c757d")
   )
 
-ggplotly(p, tooltip = "text") |>
-  layout(
-    legend        = list(orientation = "h", x = 0.2, y = 1.1),
-    paper_bgcolor = "rgba(0,0,0,0)",
-    plot_bgcolor  = "rgba(0,0,0,0)"
-  )
+div(
+  style = "background:#ffffff; border-radius:14px; border:1px solid #d0d0d0; padding:8px; overflow:hidden;",
+  ggplotly(p, tooltip = "text") |>
+    layout(
+      legend        = list(orientation = "h", x = 0.2, y = 1.1),
+      paper_bgcolor = "#ffffff",
+      plot_bgcolor  = "#ffffff",
+      margin        = list(t = 40)
+    )
+)
 ```
 :::
 
@@ -299,8 +358,6 @@ ggplotly(p, tooltip = "text") |>
 :::{.cr-section .lila-section layout="sidebar-left"}
 
 :::{focus-on="cr-calidad"}
-
-[04]{.p4-seccion-num}
 
 ## Calidad del empleo
 
@@ -352,21 +409,22 @@ p <- ggplot(pos_plot,
                                 "Mujer trans" = COLOR_TRANS),
                      name = NULL) +
   coord_flip() +
-  labs(x = NULL, y = "Porcentaje (%)",
-       title = "Distribución por posición ocupacional",
-       caption = CAPTION) +
+  labs(x = NULL, y = "Porcentaje (%)", caption = CAPTION) +
   theme_minimal(base_family = "Public Sans") +
   theme(
-    legend.position = "top",
+    legend.position = "bottom",
     plot.caption = element_text(size = 7, color = "#6c757d")
   )
 
-ggplotly(p, tooltip = "text") |>
-  layout(
-    legend        = list(orientation = "h", x = 0.2, y = 1.08),
-    paper_bgcolor = "rgba(0,0,0,0)",
-    plot_bgcolor  = "rgba(0,0,0,0)"
-  )
+div(
+  style = "background:#ffffff; border-radius:14px; border:1px solid #d0d0d0; padding:8px; overflow:hidden;",
+  ggplotly(p, tooltip = "text") |>
+    layout(
+      legend        = list(orientation = "h", x = 0.2, y = -0.12),
+      paper_bgcolor = "#ffffff",
+      plot_bgcolor  = "#ffffff"
+    )
+)
 ```
 :::
 
@@ -380,21 +438,23 @@ ggplotly(p, tooltip = "text") |>
 
 :::{focus-on="cr-ingresos"}
 
-[05]{.p4-seccion-num}
-
 ## Ingresos laborales
 
 ```{r}
 #| output: asis
+#| warning: false
+#| message: false
 med_cis   <- salarios_agg |> filter(grupo == "Mujer cis")  |> pull(mediana_mensual)
 med_trans <- salarios_agg |> filter(grupo == "Mujer trans") |> pull(mediana_mensual)
 cv_trans  <- salarios_agg |> filter(grupo == "Mujer trans") |> pull(cv_ingreso)
 brecha    <- round((med_cis - med_trans) / med_cis * 100, 1)
 
+fmt <- function(x) formatC(x, format = "d", big.mark = ".", decimal.mark = ",")
+
 cat(paste0(
   "La **mediana del ingreso mensual** de las mujeres trans es de **$",
-  format(med_trans, big.mark = "."), "**, frente a $",
-  format(med_cis, big.mark = "."), " de las mujeres cis. ",
+  fmt(med_trans), "**, frente a $",
+  fmt(med_cis), " de las mujeres cis. ",
   "Esto representa una **brecha descriptiva del ", brecha, "%**.\n\n",
   "El CV de la estimación para mujeres trans es del ", cv_trans,
   "%, lo que la ubica como una estimación aceptable.\n\n",
@@ -412,44 +472,59 @@ cat(paste0(
 ```{r}
 #| fig-width: 5
 #| fig-height: 4
+#| warning: false
+#| message: false
 
-sal_plot <- salarios_id |>
+sal_comp <- salarios_agg |>
   mutate(
-    color = case_when(
-      grupo == "Mujer cis" ~ COLOR_CIS,
-      grupo == "Mujer trans" ~ COLOR_TRANS,
-      TRUE ~ COLOR_NEUTRO
-    ),
-    grupo = factor(grupo,
-      levels = c("Mujer cis", "Hombre cis", "Mujer trans",
-                 "Hombre trans", "No binario", "Otra identidad"))
+    color     = ifelse(grupo == "Mujer cis", COLOR_CIS, COLOR_TRANS),
+    label_val = paste0("$", formatC(mediana_mensual, format = "d", big.mark = ".")),
+    tooltip_txt = paste0(
+      "<b>", grupo, "</b>",
+      "<br>Mediana: $", formatC(mediana_mensual, format = "d", big.mark = "."),
+      "<br>CV: ", cv_ingreso, "% (", cal_ingreso, ")",
+      "<br>n = ", n_obs
+    )
   )
 
-p <- ggplot(sal_plot,
-       aes(x = grupo, y = mediana_mensual / 1e6, fill = color,
-           text = paste0(grupo,
-                         "\nMediana: $", format(mediana_mensual, big.mark = "."),
-                         "\nMedia: $", format(media_mensual, big.mark = "."),
-                         "\nCV: ", cv_ingreso, "% (", cal_ingreso, ")",
-                         "\nn = ", n_obs))) +
-  geom_col(width = 0.7) +
-  scale_fill_identity() +
-  scale_y_continuous(labels = label_number(prefix = "$", suffix = "M", scale = 1)) +
-  labs(x = NULL, y = "Mediana ingreso mensual (millones)",
-       title = "Ingreso mensual por identidad de género",
-       caption = CAPTION) +
-  theme_minimal(base_family = "Public Sans") +
-  theme(
-    axis.text.x = element_text(angle = 30, hjust = 1, size = 9),
-    plot.caption = element_text(size = 7, color = "#6c757d")
-  )
+brecha_val <- round((sal_comp |> filter(grupo == "Mujer cis") |> pull(mediana_mensual) -
+                     sal_comp |> filter(grupo == "Mujer trans") |> pull(mediana_mensual)) /
+                    (sal_comp |> filter(grupo == "Mujer cis") |> pull(mediana_mensual)) * 100, 1)
 
-ggplotly(p, tooltip = "text") |>
+fig <- plot_ly(
+  sal_comp,
+  x            = ~grupo,
+  y            = ~mediana_mensual / 1e6,
+  type         = "bar",
+  marker       = list(color = sal_comp$color,
+                      line = list(color = "#ffffff", width = 0)),
+  text         = ~label_val,
+  textposition = "outside",
+  textfont     = list(size = 12, family = "Public Sans", color = sal_comp$color),
+  hovertext    = ~tooltip_txt,
+  hoverinfo    = "text"
+) |>
   layout(
+    annotations = list(list(
+      text      = paste0("Brecha: ", brecha_val, "%"),
+      x         = 0.5, y = 1.08, xref = "paper", yref = "paper",
+      showarrow = FALSE, xanchor = "center",
+      font      = list(size = 11, family = "Public Sans", color = "#6c757d")
+    )),
+    xaxis = list(title = "", tickfont = list(size = 12, family = "Public Sans")),
+    yaxis = list(title = "Mediana ingreso mensual (millones $)",
+                 tickfont = list(size = 10),
+                 range = c(0, max(sal_comp$mediana_mensual / 1e6) * 1.25)),
+    paper_bgcolor = "#ffffff",
+    plot_bgcolor  = "#ffffff",
     showlegend    = FALSE,
-    paper_bgcolor = "rgba(0,0,0,0)",
-    plot_bgcolor  = "rgba(0,0,0,0)"
+    margin        = list(t = 50, b = 20, l = 10, r = 10)
   )
+
+div(
+  style = "background:#ffffff; border-radius:14px; border:1px solid #d0d0d0; padding:8px; overflow:hidden;",
+  fig
+)
 ```
 :::
 
@@ -462,8 +537,6 @@ ggplotly(p, tooltip = "text") |>
 :::{.cr-section .lila-section layout="sidebar-left"}
 
 :::{focus-on="cr-resumen"}
-[06]{.p4-seccion-num}
-
 [*Resumen de\
 indicadores\
 por identidad\
@@ -537,16 +610,17 @@ resumen |>
 :::{.cr-section .lila-section layout="sidebar-left"}
 
 :::{focus-on="cr-metodo"}
-[07]{.p4-seccion-num}
-
 [*Nota\
 metodológica*]{.eq-sidebar-titulo}
 :::
 
+:::{focus-on="cr-metodo"}
+:::
+
 :::{#cr-metodo}
 ```{=html}
-<div class="p4-nota-metodologica" style="font-size:0.85rem; line-height:1.6;">
-  <p><strong>Fuente:</strong> DANE, Gran Encuesta Integrada de Hogares (GEIH), módulo de identidad de género y orientación sexual. Marco muestral 2018. Período: enero 2022 – marzo 2025. <strong>Identidad de género:</strong> se construye cruzando P3271 (sexo al nacer: masculino/femenino) y P3039 (¿usted se reconoce como?: hombre, mujer, persona no binaria, otra identidad); solo aplica a mayores de 18 años. <strong>Mujer trans:</strong> persona que se reconoce como mujer (P3039 = 2) con sexo asignado al nacer masculino (P3271 = 1); total en la muestra: 640 observaciones. <strong>Confiabilidad:</strong> todas las estimaciones incluyen el coeficiente de variación (CV) calculado con <code>survey::svydesign</code>; estimaciones con CV &gt; 20% se marcan como no confiables. <strong>Limitación principal:</strong> el tamaño muestral de mujeres trans es reducido (640 obs. en PET, 393 ocupadas, 173 con ingreso válido), lo que impide desagregaciones por departamento, educación o año individual y descarta modelos como Oaxaca-Blinder. <strong>Proxy de informalidad:</strong> posición ocupacional en categorías 4 (cuenta propia), 6 (trabajador familiar sin pago), 7 y 8 (jornalero/sin remuneración), agrupadas para evitar swap de códigos entre marcos muestrales.</p>
+<div class="eq-hicimos-texto" style="font-size:0.85rem; line-height:1.6;">
+  <p><strong>Fuente:</strong> DANE, Gran Encuesta Integrada de Hogares (GEIH), módulo de identidad de género y orientación sexual. Marco muestral 2018. Período: enero 2022 – marzo 2025. <strong>Identidad de género:</strong> se construye cruzando P3271 (sexo al nacer: masculino/femenino) y P3039 (¿usted se reconoce como?: hombre, mujer, persona no binaria, otra identidad); solo aplica a mayores de 18 años. <strong>Mujer trans:</strong> persona que se reconoce como mujer (P3039 = 2) con sexo asignado al nacer masculino (P3271 = 1); total en la muestra: 640 observaciones. <strong>Confiabilidad:</strong> todas las estimaciones incluyen el coeficiente de variación (CV) calculado con <code>survey::svydesign</code>; estimaciones con CV > 20% se marcan como no confiables. <strong>Limitación principal:</strong> el tamaño muestral de mujeres trans es reducido (640 obs. en PET, 393 ocupadas, 173 con ingreso válido), lo que impide desagregaciones por departamento, educación o año individual y descarta modelos como Oaxaca-Blinder. <strong>Proxy de informalidad:</strong> posición ocupacional en categorías 4 (cuenta propia), 6 (trabajador familiar sin pago), 7 y 8 (jornalero/sin remuneración), agrupadas para evitar swap de códigos entre marcos muestrales.</p>
 </div>
 ```
 :::
