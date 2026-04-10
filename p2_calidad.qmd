@@ -212,8 +212,10 @@ p_heat <- ggplot(
       ))
 ) +
   geom_tile(color = "white", linewidth = 0.8) +
-  geom_text(aes(label = paste0(round(pct, 0), "%")),
-            size = 2.8, color = "white", fontface = "bold") +
+  geom_text(aes(label = paste0(round(pct, 0), "%"),
+                color = ifelse(pct < 30 | pct > 70, "white", "#333333")),
+            size = 2.8, fontface = "bold") +
+  scale_color_identity() +
   scale_fill_gradient2(
     low      = COLOR_HOMBRES,
     mid      = "#f7f7f7",
