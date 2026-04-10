@@ -140,16 +140,16 @@ tabla_brecha <- tasas_global |>
 #| output: asis
 
 htmltools::HTML('
-<div style="max-width: 1100px; margin: 0 auto; padding: 0.3rem 2rem; line-height: 1.5;">
+<div style="max-width: 1100px; margin: 0 auto; padding: 0.3rem 2rem; line-height: 1.7;">
 
-  <h2 style="color: #004457; font-size: 1.4rem; margin-bottom: 0.1rem; font-weight: 700;">
+  <h2 style="color: #004457; font-size: 1.6rem; margin-bottom: 0.2rem; font-weight: 700;">
     ¿Quién puede trabajar en Colombia?
   </h2>
-  <p style="color: #6c757d; font-size: 0.85rem; margin-bottom: 0.8rem; border-bottom: 2px solid #e9ecef; padding-bottom: 0.5rem;">
+  <p style="color: #6c757d; font-size: 0.95rem; margin-bottom: 1rem; border-bottom: 2px solid #e9ecef; padding-bottom: 0.5rem;">
     Acceso laboral con perspectiva de género — Colombia 2019–2025
   </p>
 
-  <p style="font-size: 0.95rem; color: #333; margin-bottom: 0.8rem;">
+  <p style="font-size: 1.05rem; color: #333; margin-bottom: 0.8rem;">
     En 2025, <strong style="color: #5f7300;">81 de cada 100 hombres</strong> en edad de trabajar
     participan en el mercado laboral. Para las mujeres, son solo
     <strong style="color: #6b2d50;">48 de cada 100</strong>. Esta brecha de
@@ -157,31 +157,31 @@ htmltools::HTML('
     desde 2019 y se amplió durante la pandemia.
   </p>
 
-  <h3 style="color: #004457; font-size: 1rem; margin-top: 0.6rem; margin-bottom: 0.5rem;">
+  <h3 style="color: #004457; font-size: 1.15rem; margin-top: 0.8rem; margin-bottom: 0.6rem;">
     ¿Qué vas a encontrar aquí?
   </h3>
 
-  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.8rem; margin-bottom: 0.8rem;">
+  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1rem;">
 
-    <div style="background: #f0f4e8; border-radius: 8px; padding: 0.8rem 1rem; border-left: 4px solid #5f7300;">
+    <div style="background: #f0f4e8; border-radius: 8px; padding: 1rem 1.2rem; border-left: 4px solid #5f7300;">
       <strong style="color: #5f7300; font-size: 0.9rem;">1 · Panorama general</strong><br>
-      <span style="font-size: 0.82rem; color: #555;">Tasas de participación, ocupación y desempleo por sexo (2019–2025)</span>
+      <span style="font-size: 0.9rem; color: #555;">Tasas de participación, ocupación y desempleo por sexo (2019–2025)</span>
     </div>
 
-    <div style="background: #f3eaef; border-radius: 8px; padding: 0.8rem 1rem; border-left: 4px solid #6b2d50;">
+    <div style="background: #f3eaef; border-radius: 8px; padding: 1rem 1.2rem; border-left: 4px solid #6b2d50;">
       <strong style="color: #6b2d50; font-size: 0.9rem;">2 · Descomposición econométrica</strong><br>
-      <span style="font-size: 0.82rem; color: #555;">¿Cuánto de la brecha se explica por educación, experiencia o zona? ¿Cuánto es discriminación estructural?</span>
+      <span style="font-size: 0.9rem; color: #555;">¿Cuánto de la brecha se explica por educación, experiencia o zona? ¿Cuánto es discriminación estructural?</span>
     </div>
 
-    <div style="background: #e8f4f8; border-radius: 8px; padding: 0.8rem 1rem; border-left: 4px solid #004457;">
+    <div style="background: #e8f4f8; border-radius: 8px; padding: 1rem 1.2rem; border-left: 4px solid #004457;">
       <strong style="color: #004457; font-size: 0.9rem;">3 · Calidad de los datos</strong><br>
-      <span style="font-size: 0.82rem; color: #555;">Precisión estadística por departamento para evaluar la confiabilidad de cada estimación</span>
+      <span style="font-size: 0.9rem; color: #555;">Precisión estadística por departamento para evaluar la confiabilidad de cada estimación</span>
     </div>
 
   </div>
 
-  <div style="background: #f8f9fa; border-radius: 8px; padding: 0.6rem 1.2rem; border: 1px solid #dee2e6;">
-    <p style="margin: 0; font-size: 0.85rem; color: #555;">
+  <div style="background: #f8f9fa; border-radius: 8px; padding: 0.8rem 1.2rem; border: 1px solid #dee2e6;">
+    <p style="margin: 0; font-size: 0.95rem; color: #555;">
       <strong style="color: #004457;">Tip:</strong> Usa los <strong>filtros por subgrupo</strong>
       en las pestañas siguientes para explorar cómo cambian las brechas según etnia,
       zona urbana/rural o nivel educativo.
