@@ -528,6 +528,16 @@ if (nrow(ob_detalle) > 0) {
 
 ## Row
 
+::: {.callout-note appearance="minimal"}
+**¿Cómo leer estas gráficas?** El modelo compara hombres y mujeres con las mismas
+características y separa la brecha en dos partes: la **azul** ("por características")
+es la que se explica porque hombres y mujeres tienen perfiles distintos — por ejemplo,
+trabajan en sectores diferentes o tienen distinta experiencia. La **roja** ("no explicada")
+es la que persiste *a iguales condiciones* — no se justifica por el perfil de la persona.
+:::
+
+## Row
+
 ::: {.callout-tip appearance="minimal"}
 **Mensaje clave:** La brecha no explicada — la que persiste después de controlar por
 educación, experiencia, sector y zona — se ha mantenido relativamente estable.
@@ -760,6 +770,19 @@ ggplotly(p_d0)
 
 ## Row
 
+::: {.callout-note appearance="minimal"}
+**¿Qué significan los 4 componentes?** Este método busca para cada mujer un hombre
+con *exactamente* el mismo perfil (educación, edad, empleo, zona). La brecha se
+descompone así: **"No explicada (entre iguales)"** es la diferencia salarial entre
+personas idénticas en papel — la evidencia más directa de desigualdad.
+**"Por características"** refleja que hombres y mujeres se distribuyen en perfiles
+distintos. **"Hombres sin par"** y **"Mujeres sin par"** son personas para las que
+no se encontró un par del otro sexo con el mismo perfil — por ejemplo, mujeres en
+oficios donde casi no hay hombres, o viceversa.
+:::
+
+## Row
+
 ```{r}
 #| output: asis
 cat(paste0(
@@ -773,6 +796,15 @@ cat(paste0(
   ':::'
 ))
 ```
+
+## Row
+
+::: {.callout-tip appearance="minimal"}
+**Mensaje clave:** Incluso comparando personas con exactamente el mismo perfil,
+los hombres ganan `r round(abs(nopo_D0) * 100, 1)`% más que las mujeres. Esta brecha
+no se explica por educación, experiencia ni sector — es la evidencia más robusta de
+que la desigualdad salarial de género en Colombia es real y persistente.
+:::
 
 ## Row
 
