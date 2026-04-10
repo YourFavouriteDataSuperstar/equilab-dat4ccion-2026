@@ -37,16 +37,19 @@ COLOR_DF           <- "#97A360"
 COLOR_NEUTRO       <- "#6c757d"
 CAPTION            <- "Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026."
 
-# ── Tab 1: datos descriptivos ────────────────────────────────
+# ── Tab 1: datos descriptivos (CORREGIDO: usa ing_total mensual) ─
 boxplot_stats <- read_parquet("datos/p3_boxplot_stats.parquet")
 brecha_edu    <- read_parquet("datos/p3_brecha_educacion.parquet")
 
 anio_max <- max(boxplot_stats$anio)
 
-# Value boxes descriptivos
+# Value boxes descriptivos — ahora en ingreso mensual (COP)
 vb_med_h <- boxplot_stats |> filter(anio == anio_max, sexo_label == "Hombres") |> pull(median)
 vb_med_m <- boxplot_stats |> filter(anio == anio_max, sexo_label == "Mujeres") |> pull(median)
+vb_mean_h <- boxplot_stats |> filter(anio == anio_max, sexo_label == "Hombres") |> pull(mean)
+vb_mean_m <- boxplot_stats |> filter(anio == anio_max, sexo_label == "Mujeres") |> pull(mean)
 vb_brecha_desc <- round((vb_med_h - vb_med_m) / vb_med_h * 100, 1)
+vb_brecha_media <- round((vb_mean_h - vb_mean_m) / vb_mean_h * 100, 1)
 
 # ── Tab 2: datos O-B ────────────────────────────────────────
 ob_all     <- read_parquet("datos/p4_ob_resultados.parquet")
@@ -86,17 +89,18 @@ nopo_celdas_total <- nopo_rec |> slice(1) |> pull(n_celdas_total)
 
 ::: {.callout-note appearance="minimal"}
 **¿Cuánto ganan hombres y mujeres en Colombia?**
-A primera vista, las distribuciones salariales de hombres y mujeres son muy similares:
-ambas se concentran alrededor del salario mínimo. Pero cuando desagregamos por nivel
-educativo, la brecha se hace visible. Esta sección muestra el panorama descriptivo
-antes de aplicar los modelos econométricos de las siguientes pestañas.
+Las distribuciones del ingreso laboral mensual muestran que, en agregado, las medianas
+convergen al salario mínimo. Pero las **medias** revelan una brecha importante: los hombres
+promedian más porque acceden a empleos mejor remunerados en la cola superior.
+Al desagregar por nivel educativo, la brecha se amplifica. Esta sección muestra el
+panorama descriptivo antes de aplicar los modelos econométricos de las siguientes pestañas.
 :::
 
 ## Tarjetas {height=8%}
 
 ```{r}
 #| content: valuebox
-#| title: "Salario/hora mediano Mujeres — 2025"
+#| title: "Ingreso mediano Mujeres — 2025"
 list(
   value = paste0("$", format(round(vb_med_m), big.mark = ".")),
   color = COLOR_MUJERES,
@@ -106,7 +110,7 @@ list(
 
 ```{r}
 #| content: valuebox
-#| title: "Salario/hora mediano Hombres — 2025"
+#| title: "Ingreso mediano Hombres — 2025"
 list(
   value = paste0("$", format(round(vb_med_h), big.mark = ".")),
   color = COLOR_HOMBRES,
@@ -124,11 +128,21 @@ list(
 )
 ```
 
+```{r}
+#| content: valuebox
+#| title: "Brecha en medias"
+list(
+  value = paste0(vb_brecha_media, "%"),
+  color = COLOR_BRECHA,
+  icon  = "bar-chart"
+)
+```
+
 ## Row {height=20%}
 ### Row {.tabset}
 
 ```{r}
-#| title: "Distribución del salario por hora — por sexo"
+#| title: "Distribución del ingreso laboral mensual — por sexo"
 
 anios <- sort(unique(boxplot_stats$anio))
 pasos <- list()
@@ -140,14 +154,15 @@ for (i in seq_along(anios)) {
   for (sx in c("Hombres", "Mujeres")) {
     bs  <- boxplot_stats |> filter(anio == yr, sexo_label == sx)
     col <- if (sx == "Hombres") COLOR_HOMBRES else COLOR_MUJERES
+    # Convertir a millones para mejor lectura
     fig_box <- fig_box |> add_trace(
       type        = "box",
       name        = sx,
-      q1          = list(bs$q1),
-      median      = list(bs$median),
-      q3          = list(bs$q3),
-      lowerfence  = list(bs$lower),
-      upperfence  = list(bs$upper),
+      q1          = list(bs$q1 / 1e6),
+      median      = list(bs$median / 1e6),
+      q3          = list(bs$q3 / 1e6),
+      lowerfence  = list(bs$lower / 1e6),
+      upperfence  = list(bs$upper / 1e6),
       x0          = sx,
       marker      = list(color = paste0(col, "99")),
       line        = list(color = col, width = 2),
@@ -170,7 +185,8 @@ for (i in seq_along(anios)) {
 fig_box |>
   layout(
     xaxis = list(title = ""),
-    yaxis = list(title = "Salario por hora (COP)", tickprefix = "$",
+    yaxis = list(title = "Ingreso mensual (millones COP)", tickprefix = "$",
+                 ticksuffix = "M",
                  zeroline = FALSE, gridcolor = "rgba(0,0,0,0.08)"),
     legend  = list(orientation = "h", y = 1.08, x = 0.3),
     boxmode = "group",
@@ -208,8 +224,8 @@ p_edu <- ggplot(plot_edu, aes(x = anio, y = brecha_pct,
     "<b>", niv_edu_label, "</b><br>",
     "Año: ", anio, "<br>",
     "Brecha: ", brecha_pct, "%<br>",
-    "Mediana H: $", format(mediana_h, big.mark = "."), "/hora<br>",
-    "Mediana M: $", format(mediana_m, big.mark = "."), "/hora"
+    "Mediana H: $", format(mediana_h, big.mark = "."), "/mes<br>",
+    "Mediana M: $", format(mediana_m, big.mark = "."), "/mes"
   ))) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "#adb5bd") +
   geom_vline(xintercept = 2021, linetype = "dotted", color = "#adb5bd") +
@@ -227,10 +243,11 @@ ggplotly(p_edu, tooltip = "text") |>
 ## Row
 
 ::: {.callout-warning appearance="minimal"}
-**¿Por qué la brecha bruta parece pequeña?**
-Las medianas generales de hombres y mujeres convergen al salario mínimo a partir de 2022.
-Esto no significa que no exista brecha: la brecha se esconde *dentro* de cada nivel educativo
-y sector. Por eso necesitamos los modelos econométricos de las siguientes pestañas, que comparan
+**¿Por qué la brecha en medianas parece pequeña?**
+Las medianas generales de hombres y mujeres convergen al salario mínimo a partir de 2022,
+pero la brecha en **medias** (`r vb_brecha_media`%) revela la asimetría en la cola superior
+de la distribución. La brecha real se esconde *dentro* de cada nivel educativo y sector.
+Por eso necesitamos los modelos econométricos de las siguientes pestañas, que comparan
 personas con las mismas características.
 :::
 
@@ -248,8 +265,8 @@ datatable(
   rownames   = FALSE,
   filter     = "top",
   extensions = "Buttons",
-  colnames   = c("Año", "Nivel educativo", "Mediana H ($/hora)",
-                  "Mediana M ($/hora)", "Brecha (%)",
+  colnames   = c("Año", "Nivel educativo", "Mediana H ($/mes)",
+                  "Mediana M ($/mes)", "Brecha (%)",
                   "N Hombres", "N Mujeres"),
   options    = list(
     pageLength = 10, scrollX = TRUE,

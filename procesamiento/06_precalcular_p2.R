@@ -27,13 +27,15 @@ posicion_labels <- c(
   "9" = "Otro"
 )
 
+# CORRECCIÓN 2026-04-09: niv_edu_armon solo tiene códigos 1–6 y 9.
+# La armonización colapsa todos los niveles superiores (6–11 de niv_edu_orig)
+# en un solo código 6. Mapeo anterior metía código 6 en "Básica y media".
 edu_grupo <- function(niv) {
   dplyr::case_when(
-    niv %in% c(1, 2)           ~ "Sin educación formal",
-    niv %in% c(3, 4, 5, 6, 7) ~ "Básica y media",
-    niv %in% c(8, 9)           ~ "Técnica / Tecnológica",
-    niv %in% c(10, 11)         ~ "Universitaria y más",
-    TRUE                       ~ NA_character_
+    niv %in% c(1, 2)   ~ "Sin educación formal",
+    niv %in% c(3, 4, 5) ~ "Básica y media",
+    niv == 6             ~ "Superior",
+    TRUE                 ~ NA_character_
   )
 }
 
