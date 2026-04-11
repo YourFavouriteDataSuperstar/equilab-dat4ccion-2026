@@ -123,7 +123,7 @@ css: styles/equilab.css
 
 ```{=html}
 <div class="eq-hero-minimal">
-  <span class="eq-hero-minimal-badge">Ficha Metodológica</span>
+  <span class="eq-hero-minimal-badge">Guía Metodológica</span>
   <h1 class="eq-hero-minimal-titulo">¿Cómo se construyó este análisis?</h1>
   <p class="eq-hero-minimal-sub">
     Decisiones de diseño, fuentes de datos, filtros aplicados,
@@ -1063,6 +1063,8 @@ puedan individualizar a personas de una población vulnerable.
 
 :::
 
+
+---
 
 ## Paquetes y herramientas
 
