@@ -401,27 +401,4 @@ panorama_pob <- gen |>
 write_parquet(panorama_pob, "datos/p4d_panorama_poblacion.parquet")
 cat("Guardado: p4d_panorama_poblacion.parquet (", nrow(panorama_pob), "filas)\n")
 
-# Orientacion sexual por tipo_mujer
-orient_mujer <- gen |>
-  filter(!is.na(identidad_genero), !is.na(sexo_nacer)) |>
-  etiquetar_identidad() |>
-  filter(!is.na(tipo_mujer), !is.na(orientacion_sex)) |>
-  mutate(
-    orientacion_label = case_when(
-      orientacion_sex == 1 ~ "Hombres",
-      orientacion_sex == 2 ~ "Mujeres",
-      orientacion_sex == 3 ~ "Ambos sexos",
-      orientacion_sex == 4 ~ "Otro",
-      TRUE ~ NA_character_
-    )
-  ) |>
-  group_by(tipo_mujer, orientacion_label) |>
-  summarise(n_obs = n(), poblacion = sum(fex), .groups = "drop") |>
-  group_by(tipo_mujer) |>
-  mutate(pct = round(poblacion / sum(poblacion) * 100, 1)) |>
-  ungroup()
-
-write_parquet(orient_mujer, "datos/p4d_orientacion_mujer.parquet")
-cat("Guardado: p4d_orientacion_mujer.parquet (", nrow(orient_mujer), "filas)\n")
-
 cat("\n=== Precalculo p4 completado ===\n")

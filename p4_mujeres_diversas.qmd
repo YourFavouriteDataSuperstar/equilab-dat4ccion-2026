@@ -41,7 +41,6 @@ calidad   <- read_parquet("datos/p4d_calidad.parquet")
 salarios  <- read_parquet("datos/p4d_salarios.parquet")
 panorama  <- read_parquet("datos/p4d_panorama_poblacion.parquet")
 posicion  <- read_parquet("datos/p4d_posicion_ocupacional.parquet")
-orientacion <- read_parquet("datos/p4d_orientacion_mujer.parquet")
 
 # ── Subconjuntos frecuentes ──────────────────────────────────
 tasas_agg    <- tasas |> filter(anio == "2022-2025", tipo == "tipo_mujer")

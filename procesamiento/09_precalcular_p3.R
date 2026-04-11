@@ -7,13 +7,12 @@
 # CORRECCIÓN 2026-04-09:
 #   - Se cambia ing_mes (cobertura ~57%) por ing_total (cobertura ~98%)
 #   - Se genera boxplot en ingreso MENSUAL (no salario/hora)
-#   - Se mantiene sal_hora como archivo adicional para referencia
 #   - Se excluyen códigos 98/99 de ing_total (no sabe/no responde)
 #
 # Genera:
 #   datos/p3_boxplot_stats.parquet      → cuartiles ponderados por año y sexo (mensual)
+#   datos/p3_boxplot_edu.parquet        → cuartiles por educación y sexo (mensual)
 #   datos/p3_brecha_educacion.parquet   → brecha salarial por educación (serie)
-#   datos/p3_boxplot_hora.parquet       → cuartiles sal/hora (referencia adicional)
 #
 # Ejecutar desde la raíz del proyecto:
 #   Rscript procesamiento/09_precalcular_p3.R
@@ -109,7 +108,7 @@ for (sx in c("Hombres", "Mujeres")) {
 # 2b. BOXPLOT STATS POR EDUCACIÓN — cuartiles ponderados por año × edu × sexo
 # ════════════════════════════════════════════════════════════════════════════
 
-cat("[3b/6] Calculando boxplot por nivel educativo agrupado...\n")
+cat("[3b/5] Calculando boxplot por nivel educativo agrupado...\n")
 
 # Agrupar en 4 categorías para visualización
 df <- df |>
@@ -144,7 +143,7 @@ cat("      ", nrow(boxplot_edu), "filas (", length(unique(boxplot_edu$anio)),
 # 3. BRECHA POR EDUCACIÓN — serie temporal (ingreso mensual)
 # ════════════════════════════════════════════════════════════════════════════
 
-cat("[4/6] Calculando brecha salarial por nivel educativo...\n")
+cat("[4/5] Calculando brecha salarial por nivel educativo...\n")
 
 mediana_edu <- df |>
   filter(!niv_edu_label %in% c("Sin educación / Preescolar")) |>
@@ -182,42 +181,18 @@ if (n_iguales > 0) {
 cat("      ", nrow(brecha_edu), "filas\n")
 
 # ════════════════════════════════════════════════════════════════════════════
-# 4. BOXPLOT SAL/HORA (archivo adicional de referencia)
+# 4. GUARDAR
 # ════════════════════════════════════════════════════════════════════════════
 
-cat("[5/6] Calculando estadísticos de salario/hora (referencia)...\n")
-
-df_hora <- df |>
-  filter(!is.na(horas_sem), horas_sem > 0) |>
-  mutate(sal_hora = ing_total / (horas_sem * 4.33))
-
-boxplot_hora <- df_hora |>
-  group_by(anio, sexo_label) |>
-  summarise(
-    n_obs  = n(),
-    q1     = as.numeric(wtd.quantile(sal_hora, weights = fex, probs = 0.25, na.rm = TRUE)),
-    median = as.numeric(wtd.quantile(sal_hora, weights = fex, probs = 0.50, na.rm = TRUE)),
-    q3     = as.numeric(wtd.quantile(sal_hora, weights = fex, probs = 0.75, na.rm = TRUE)),
-    lower  = as.numeric(wtd.quantile(sal_hora, weights = fex, probs = 0.05, na.rm = TRUE)),
-    upper  = as.numeric(wtd.quantile(sal_hora, weights = fex, probs = 0.95, na.rm = TRUE)),
-    .groups = "drop"
-  )
-
-# ════════════════════════════════════════════════════════════════════════════
-# 5. GUARDAR
-# ════════════════════════════════════════════════════════════════════════════
-
-cat("[6/6] Guardando archivos...\n")
+cat("[5/5] Guardando archivos...\n")
 
 write_parquet(boxplot_stats, "datos/p3_boxplot_stats.parquet")
 write_parquet(boxplot_edu,   "datos/p3_boxplot_edu.parquet")
 write_parquet(brecha_edu,    "datos/p3_brecha_educacion.parquet")
-write_parquet(boxplot_hora,  "datos/p3_boxplot_hora.parquet")
 
 cat("\n✓ Archivos generados:\n")
 cat("  datos/p3_boxplot_stats.parquet      (", nrow(boxplot_stats), "filas) ← INGRESO MENSUAL\n")
 cat("  datos/p3_boxplot_edu.parquet        (", nrow(boxplot_edu), "filas) ← POR EDUCACIÓN\n")
 cat("  datos/p3_brecha_educacion.parquet   (", nrow(brecha_edu), "filas) ← INGRESO MENSUAL\n")
-cat("  datos/p3_boxplot_hora.parquet       (", nrow(boxplot_hora), "filas) ← SAL/HORA referencia\n")
 cat("\n══════════════════════════════════════════════════════════\n")
 cat("  Pre-cálculo P3 completado (CORREGIDO con ing_total)\n")

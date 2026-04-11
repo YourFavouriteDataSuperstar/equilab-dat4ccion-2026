@@ -74,22 +74,10 @@ equilab-dat4ccion-2026/
 │   └── p4d_*.parquet                     # Precalculados P4 (mujeres diversas)
 │
 ├── docs/
-│   ├── guia_metodologica_dashboard.qmd   # Marco metodologico del equipo
-│   └── reporte_problemas_datos.txt       # Documentacion de problemas encontrados
+│   └── guia_metodologica_dashboard.qmd   # Marco metodologico del equipo
 │
-├── _site/                    # Salida HTML renderizada (no se commitea)
-└── tablero_radar.zip         # ZIP para compartir el tablero sin servidor
+└── _site/                    # Salida HTML renderizada (no se commitea)
 ```
-
----
-
-## Como ver el tablero (sin R ni Quarto)
-
-Si solo quieres **navegar el tablero** sin instalar nada:
-
-1. Descarga `tablero_radar.zip` del repositorio
-2. Descomprime la carpeta
-3. Abre `index.html` en tu navegador
 
 ---
 
@@ -104,24 +92,13 @@ cd equilab-dat4ccion-2026
 
 ### Paso 2 — Obtener los datos
 
-Los parquets procesados estan en Zenodo (DOI: **pendiente de publicacion**).
+Todos los parquets (bases + precalculados) estan en Zenodo (DOI: **pendiente de publicacion**).
 
-Descarga los archivos base y colocalos en `datos/`:
+Descarga los 25 archivos y colocalos en `datos/`. Con ellos puedes renderizar directamente con `quarto render` sin ejecutar ningun script R.
 
-| Archivo | Tamano | Descripcion |
-|---------|--------|-------------|
-| `geih_ocupados_2019_2025.parquet` | 48 MB | Panel de ocupados 2019-2025 |
-| `geih_pet_2019_2025.parquet` | 46 MB | Panel PET completo 2019-2025 |
-| `geih_genero_2022_2025.parquet` | ~15 MB | Variables identidad de genero 2022-2025 |
+Ver `datos/README.md` para el inventario completo de archivos.
 
-Los parquets precalculados (`tasas_p1_*`, `p1_boy_*`, `calidad_p2_*`, `p3_*`, `p3_ob_*`, `p3_nopo_*`, `p4d_*`) se generan con los scripts de `procesamiento/` (pasos 06-11).
-
-Si prefieres reproducir desde los microdatos originales del DANE (~50 GB, varias horas):
-
-```bash
-python procesamiento/01_descarga_geih.py
-# Ver procesamiento/README.md para el pipeline completo
-```
+Si prefieres reproducir desde los microdatos originales del DANE (~50 GB, varias horas), ver `procesamiento/README.md`.
 
 ### Paso 3 — Instalar dependencias en R
 
@@ -146,9 +123,9 @@ Tambien necesitas la extension Quarto [closeread](https://closeread.netlify.app/
 quarto add qmd-lab/closeread
 ```
 
-### Paso 4 — Precalcular datos
+### Paso 4 — Precalcular datos (opcional si descargaste de Zenodo)
 
-Los `.qmd` del tablero leen parquets precalculados (no los microdatos directamente). Si no los descargaste de Zenodo, ejecutalos en orden:
+Los `.qmd` del tablero leen parquets precalculados (no los microdatos directamente). Si descargaste todos los archivos de Zenodo, salta al paso 5. Si solo descargaste los 3 parquets base, ejecuta en orden:
 
 ```r
 source("procesamiento/06_precalcular_p1.R")
