@@ -4,7 +4,7 @@
     {
       "name": "Quarto Website (sitio completo)",
       "runtimeExecutable": "cmd",
-      "runtimeArgs": ["/c", "C:\\Program Files\\RStudio\\resources\\app\\bin\\quarto\\bin\\quarto.cmd", "preview", "--port", "4848", "--no-browser"],
+      "runtimeArgs": ["/c", "quarto", "preview", "--port", "4848", "--no-browser"],
       "port": 4848
     },
     {

@@ -92,6 +92,52 @@ h1, h2, h3, h4 {
   background-color: rgba(255,255,255,0.12);
 }
 
+/* ── Hero minimalista (metodología, etc.) ──────────────────── */
+.eq-hero-minimal {
+  background-color: #f0f0f0;
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  box-sizing: border-box;
+  padding: 5rem 2rem 4rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.eq-hero-minimal-badge {
+  display: inline-block;
+  font-family: var(--fuente-cuerpo);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #6c757d;
+  border: 1px solid #ced4da;
+  border-radius: 2rem;
+  padding: 0.25rem 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.eq-hero-minimal-titulo {
+  font-family: var(--fuente-titulo);
+  font-weight: 900;
+  font-size: clamp(2rem, 4.5vw, 3.2rem);
+  color: #212529;
+  line-height: 1.1;
+  margin: 0 0 1rem;
+  max-width: 650px;
+}
+
+.eq-hero-minimal-sub {
+  font-family: var(--fuente-cuerpo);
+  font-size: 1rem;
+  color: #6c757d;
+  max-width: 550px;
+  line-height: 1.6;
+  margin: 0;
+}
+
 /* ── Footer ─────────────────────────────────────────────────── */
 .page-footer {
   background-color: var(--color-fondo) !important;
@@ -748,14 +794,100 @@ h1, h2, h3, h4 {
 .eq-creadoras-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2.5rem 3rem;
-  max-width: 380px;
+  gap: 2rem 2.5rem;
+  max-width: 520px;
   margin: auto;
   text-align: center;
 }
 
+.eq-creadora-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+
 .eq-creadora-nombre {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: #004457;
+}
+
+.eq-creadora-bio {
   font-family: 'Public Sans', sans-serif;
-  font-size: 1rem;
+  font-size: 0.72rem;
+  color: #495057;
+  line-height: 1.45;
+  margin: 0;
+  max-width: 220px;
+}
+
+.eq-creadora-links {
+  display: flex;
+  gap: 0.7rem;
+  margin-top: 0.3rem;
+}
+
+.eq-creadora-links a {
+  color: #6c757d;
+  transition: color 0.2s ease, transform 0.2s ease;
+  display: inline-flex;
+}
+
+.eq-creadora-links a:hover {
+  color: #0086ab;
+  transform: scale(1.15);
+}
+
+.eq-icon {
+  width: 18px;
+  height: 18px;
+}
+
+/* ── Sección de cierre ────────────────────────────────────── */
+.eq-cierre-wrap {
+  background-color: #efe5f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  padding: 4rem 2rem;
+  text-align: center;
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  box-sizing: border-box;
+}
+
+.eq-cierre-frase {
+  font-family: 'Public Sans', sans-serif;
+  font-weight: 400;
+  font-style: italic;
+  font-size: clamp(1.4rem, 3vw, 2.2rem);
   color: #212529;
+  line-height: 1.45;
+  max-width: 650px;
+  margin: 0 auto;
+}
+
+/* ── Footer del sitio ─────────────────────────────────────── */
+.eq-footer {
+  text-align: center;
+  padding: 1.2rem 1rem;
+  font-family: 'Public Sans', sans-serif;
+  font-size: 0.78rem;
+  color: #6c757d;
+  letter-spacing: 0.04em;
+  border-top: 1px solid #dee2e6;
+  background-color: #f4f4f4;
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .eq-creadoras-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
 }
