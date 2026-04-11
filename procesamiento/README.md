@@ -120,7 +120,7 @@ Salida: `datos/geih_genero_2022_2025.parquet` (~3.3M filas, 2022-2025).
 
 Si no quieres reproducir el pipeline, descarga todos los parquets (bases + precalculados) directamente desde Zenodo:
 
-**DOI: pendiente de publicación**
+**DOI: [10.5281/zenodo.19504291](https://doi.org/10.5281/zenodo.19504291)**
 
 Coloca los 25 archivos en `datos/` y listo. Ver `datos/README.md` para el inventario completo.
 

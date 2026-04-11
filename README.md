@@ -3,7 +3,7 @@
 **EQUILAB - DAT4CCION 2026 - ONU Mujeres / CEPAL / CEEG**
 
 [![Dashboard](https://img.shields.io/badge/Dashboard-Ver%20en%20Quarto%20Pub-blue)](PENDIENTE)
-[![Datos](https://img.shields.io/badge/Datos-Zenodo%20DOI-green)](PENDIENTE)
+[![Datos](https://img.shields.io/badge/Datos-Zenodo%20DOI-green)](https://doi.org/10.5281/zenodo.19504291)
 
 ---
 
@@ -92,7 +92,7 @@ cd equilab-dat4ccion-2026
 
 ### Paso 2 — Obtener los datos
 
-Todos los parquets (bases + precalculados) estan en Zenodo (DOI: **pendiente de publicacion**).
+Todos los parquets (bases + precalculados) estan en Zenodo (DOI: [10.5281/zenodo.19504291](https://doi.org/10.5281/zenodo.19504291)).
 
 Descarga los 25 archivos y colocalos en `datos/`. Con ellos puedes renderizar directamente con `quarto render` sin ejecutar ningun script R.
 

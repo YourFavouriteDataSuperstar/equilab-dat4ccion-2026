@@ -8,7 +8,7 @@ Los archivos de datos **no estan en este repositorio** porque pesan ~151 MB comb
 
 Todos los parquets (bases + precalculados) estan disponibles con DOI permanente en Zenodo:
 
-**DOI: pendiente de publicacion**
+**DOI: [10.5281/zenodo.19504291](https://doi.org/10.5281/zenodo.19504291)**
 
 Descarga los 25 archivos y colocalos en esta carpeta (`datos/`). Con ellos puedes renderizar el dashboard directamente con `quarto render` sin ejecutar ningun script de procesamiento.
 
