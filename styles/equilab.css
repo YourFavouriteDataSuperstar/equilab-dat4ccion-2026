@@ -533,12 +533,23 @@ h1, h2, h3, h4 {
 }
 
 /* ── Grid de momentos de analisis ──────────────────────────── */
+
+/* Permitir overflow en la sección de momentos para que el zoom no se corte */
+.momentos-section .sticky-col-stack {
+  overflow: visible !important;
+}
+.momentos-section .sticky-col-stack .sticky {
+  overflow: visible !important;
+}
+
 .eq-momentos-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1.2rem;
   max-width: 420px;
   margin: auto;
+  /* La transición se aplica vía JS; aquí definimos el will-change para rendimiento */
+  will-change: transform;
 }
 
 .eq-momento-card {
@@ -561,6 +572,18 @@ h1, h2, h3, h4 {
 .eq-momento-card.salariales   { background-color: #e6d1c6; border: 1.5px solid #c4ab9e; }
 .eq-momento-card.diversidades { background-color: #d1e4e9; border: 1.5px solid #a8c5cc; }
 .eq-momento-card.placeholder  { visibility: hidden; }
+
+/* Estado zoom: card activo visible, los demás invisibles */
+.eq-momento-card {
+  transition: opacity 0.4s ease;
+}
+.eq-momento-card.eq-card-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+.eq-momento-card.eq-card-active {
+  opacity: 1;
+}
 
 /* ============================================================
    PÁGINA 4 — Mujeres diversas (estilos específicos)
@@ -660,10 +683,8 @@ h1, h2, h3, h4 {
   line-height: 1.8;
   color: #212529;
   padding: 2.5rem 2rem;
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.4);
   border-radius: 0.75rem;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-  border-left: 4px solid #0086ab;
   text-align: left;
 }
 
