@@ -2,7 +2,7 @@
 
 **EQUILAB - DAT4CCION 2026 - ONU Mujeres / CEPAL / CEEG**
 
-[![Dashboard](https://img.shields.io/badge/Dashboard-Ver%20en%20Quarto%20Pub-blue)](PENDIENTE)
+[![Dashboard](https://img.shields.io/badge/Dashboard-Ver%20en%20GitHub%20Pages-blue)](https://yourfavouritedatasuperstar.github.io/equilab-dat4ccion-2026/)
 [![Datos](https://img.shields.io/badge/Datos-Zenodo%20DOI-green)](https://doi.org/10.5281/zenodo.19504291)
 
 ---
