@@ -16,10 +16,10 @@ El tablero es un sitio web interactivo con 6 paginas construido en Quarto, con u
 | Pagina | Contenido |
 |--------|-----------|
 | **Inicio** | Portada scrollytelling — contexto, metodologia y navegacion |
-| **P1 — Acceso laboral** | TGP, TO, TD por sexo, etnia, zona y departamento (2019-2025) |
+| **P1 — Acceso laboral** | TGP, TO, TD por sexo, etnia, zona y departamento (2019-2025) + descomposicion BOY |
 | **P2 — Calidad del empleo** | Informalidad, posicion ocupacional, horas y segregacion |
-| **P3 — Brechas salariales** | Distribuciones salariales, brechas por educacion, boxplots comparativos |
-| **P4 — Mujeres diversas** | Oaxaca-Blinder, Nopo, Blinder-Oaxaca-Yun + analisis de diversidades de genero |
+| **P3 — Brechas salariales** | Distribuciones salariales, brechas por educacion + descomposicion Oaxaca-Blinder y Nopo |
+| **P4 — Mujeres diversas** | Analisis descriptivo del mercado laboral para mujeres trans y cis (identidad de genero, 2022-2025) |
 | **Metodologia** | Guia metodologica, fuentes y limitaciones |
 
 El diseno metodologico es modular y replicable en cualquier pais de America Latina con encuestas de hogares similares (ENIGH, CASEN, ECH, etc.).
@@ -53,24 +53,25 @@ equilab-dat4ccion-2026/
 │   ├── 03_crear_parquet_ocupados.py  # Armoniza panel de ocupados
 │   ├── 04_crear_parquet_pet.py       # Armoniza panel PET
 │   ├── 05_crear_parquet_genero.py    # Extrae identidad de genero
-│   ├── 05_precalcular_p1.R   # Precalcula tasas para Pagina 1
-│   ├── 06_precalcular_p2.R   # Precalcula indicadores Pagina 2
-│   ├── 07_precalcular_p4.R   # Precalcula descomposiciones Pagina 4
-│   ├── 07b_precalcular_p3.R  # Precalcula brechas Pagina 3
-│   └── 08_precalcular_p4_diversidad.R  # Precalcula analisis diversidades
+│   ├── 06_precalcular_p1.R           # P1: tasas TGP, TO, TD
+│   ├── 07_precalcular_p1_boy.R       # P1: modelo BOY (participacion)
+│   ├── 08_precalcular_p2.R           # P2: calidad del empleo
+│   ├── 09_precalcular_p3.R           # P3: brechas salariales descriptivas
+│   ├── 10_precalcular_p3_ob_nopo.R   # P3: modelos O-B y Nopo
+│   └── 11_precalcular_p4.R           # P4: mujeres diversas
 │
 ├── datos/
 │   ├── README.md             # Instrucciones para obtener los datos
 │   ├── geih_ocupados_2019_2025.parquet   # Panel de ocupados (base)
 │   ├── geih_pet_2019_2025.parquet        # Panel PET (base)
 │   ├── geih_genero_2022_2025.parquet     # Variables de genero diverso
-│   ├── tasas_p1_*.parquet                # Precalculados Pagina 1
-│   ├── calidad_p2_*.parquet              # Precalculados Pagina 2
-│   ├── p3_*.parquet                      # Precalculados Pagina 3
-│   ├── p4_ob_*.parquet                   # Precalculados Pagina 4 (O-B)
-│   ├── p4_nopo_*.parquet                 # Precalculados Pagina 4 (Nopo)
-│   ├── p4_boy_*.parquet                  # Precalculados Pagina 4 (B-O-Yun)
-│   └── p4d_*.parquet                     # Precalculados diversidades
+│   ├── tasas_p1_*.parquet                # Precalculados P1 (tasas)
+│   ├── p1_boy_*.parquet                  # Precalculados P1 (modelo BOY)
+│   ├── calidad_p2_*.parquet              # Precalculados P2 (calidad empleo)
+│   ├── p3_*.parquet                      # Precalculados P3 (brechas descriptivas)
+│   ├── p3_ob_*.parquet                   # Precalculados P3 (Oaxaca-Blinder)
+│   ├── p3_nopo_*.parquet                 # Precalculados P3 (Nopo matching)
+│   └── p4d_*.parquet                     # Precalculados P4 (mujeres diversas)
 │
 ├── docs/
 │   ├── guia_metodologica_dashboard.qmd   # Marco metodologico del equipo
@@ -113,7 +114,7 @@ Descarga los archivos base y colocalos en `datos/`:
 | `geih_pet_2019_2025.parquet` | 46 MB | Panel PET completo 2019-2025 |
 | `geih_genero_2022_2025.parquet` | ~15 MB | Variables identidad de genero 2022-2025 |
 
-Los parquets precalculados (`tasas_p1_*`, `calidad_p2_*`, `p3_*`, `p4_*`, `p4d_*`) se generan con los scripts de `procesamiento/` (pasos 05-08).
+Los parquets precalculados (`tasas_p1_*`, `p1_boy_*`, `calidad_p2_*`, `p3_*`, `p3_ob_*`, `p3_nopo_*`, `p4d_*`) se generan con los scripts de `procesamiento/` (pasos 06-11).
 
 Si prefieres reproducir desde los microdatos originales del DANE (~50 GB, varias horas):
 
@@ -150,11 +151,12 @@ quarto add qmd-lab/closeread
 Los `.qmd` del tablero leen parquets precalculados (no los microdatos directamente). Si no los descargaste de Zenodo, ejecutalos en orden:
 
 ```r
-source("procesamiento/05_precalcular_p1.R")
-source("procesamiento/06_precalcular_p2.R")
-source("procesamiento/07b_precalcular_p3.R")
-source("procesamiento/07_precalcular_p4.R")
-source("procesamiento/08_precalcular_p4_diversidad.R")
+source("procesamiento/06_precalcular_p1.R")
+source("procesamiento/07_precalcular_p1_boy.R")
+source("procesamiento/08_precalcular_p2.R")
+source("procesamiento/09_precalcular_p3.R")
+source("procesamiento/10_precalcular_p3_ob_nopo.R")
+source("procesamiento/11_precalcular_p4.R")
 ```
 
 ### Paso 5 — Renderizar el sitio
@@ -191,10 +193,10 @@ Universidad EAN - ODEM / Ean Inspira - DAT4CCION 2026
 
 | Integrante | Rol en el proyecto |
 |------------|--------------------|
-| Alejandra Otero | Lider tecnica, arquitectura, integracion, analisis Oaxaca-Blinder |
-| Jeidy Alzate | Analisis y desarrollo |
+| Alejandra Otero | Lider tecnica, arquitectura, integracion, modelos econometricos |
 | Sofia Lamprea | Analisis y desarrollo |
-| Juliana Pemberthy | Analisis y desarrollo |
+| Juliana Pamberty | Analisis y desarrollo |
+| Jeidy Alzate | Analisis y desarrollo |
 
 ---
 

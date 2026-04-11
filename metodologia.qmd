@@ -5,7 +5,7 @@ format:
     remove-header-space: true
     debug-mode: false
     cr-style:
-      narrative-background-color-sidebar: "#f4f4f4"
+      narrative-background-color-sidebar: "#f0f4e8"
       narrative-text-color-sidebar: "#212529"
       narrative-font-family: "'Public Sans', 'Segoe UI', system-ui, sans-serif"
       narrative-font-size: "1.1rem"
@@ -16,160 +16,1049 @@ css: styles/equilab.css
 ---
 
 ```{=html}
-<div class="eq-hero">
+<style>
+/* ── Metodología: sidebar verde lima ──────────────────────── */
+.metodo-section .narrative-col {
+  background-color: #f0f4e8 !important;
+}
+.metodo-section .narrative-col > *:first-child {
+  padding-block-start: 45svh !important;
+}
+
+/* ── Sticky cards con borde verde ─────────────────────────── */
+.metodo-sticky {
+  background: #ffffff;
+  border-radius: 0.75rem;
+  padding: 2rem 2rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  border-left: 4px solid #5f7300;
+  max-width: 520px;
+  font-family: 'Public Sans', sans-serif;
+  font-size: 0.92rem;
+  line-height: 1.7;
+  color: #212529;
+}
+.metodo-sticky strong { color: #5f7300; }
+.metodo-sticky code {
+  background: #f0f4e8;
+  padding: 0.1em 0.4em;
+  border-radius: 3px;
+  font-size: 0.85em;
+  color: #3d4a00;
+}
+.metodo-sticky hr {
+  border: none;
+  border-top: 1px solid #dee2e6;
+  margin: 0.8rem 0;
+}
+
+/* ── Sticky cards variantes ───────────────────────────────── */
+.metodo-sticky.acento {
+  border-left-color: #004457;
+}
+.metodo-sticky.acento strong { color: #004457; }
+
+.metodo-sticky.alerta {
+  border-left-color: #ffc107;
+  background: #fffdf5;
+}
+.metodo-sticky.alerta strong { color: #856404; }
+
+.metodo-sticky.mujeres {
+  border-left-color: #6b2d50;
+}
+.metodo-sticky.mujeres strong { color: #6b2d50; }
+
+/* ── Tabla dentro de sticky ───────────────────────────────── */
+.metodo-tabla {
+  width: 100%;
+  font-size: 0.82rem;
+  border-collapse: collapse;
+  margin-top: 0.6rem;
+}
+.metodo-tabla th {
+  background: #5f7300;
+  color: #fff;
+  padding: 0.4rem 0.6rem;
+  text-align: left;
+  font-weight: 600;
+}
+.metodo-tabla td {
+  padding: 0.35rem 0.6rem;
+  border-bottom: 1px solid #e9ecef;
+}
+.metodo-tabla tr:last-child td { border-bottom: none; }
+
+/* ── Semáforo CV ──────────────────────────────────────────── */
+.cv-row { display: flex; align-items: center; gap: 0.5rem; margin: 0.3rem 0; }
+.cv-dot {
+  width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0;
+}
+.cv-verde { background: #28a745; }
+.cv-amarillo { background: #ffc107; }
+.cv-naranja { background: #fd7e14; }
+.cv-rojo { background: #dc3545; }
+
+/* ── Pipeline diagram ─────────────────────────────────────── */
+.pipeline-step {
+  display: flex; align-items: center; gap: 0.8rem;
+  padding: 0.5rem 0; font-size: 0.82rem;
+}
+.pipeline-num {
+  background: #5f7300; color: #fff; width: 24px; height: 24px;
+  border-radius: 50%; display: flex; align-items: center;
+  justify-content: center; font-weight: 700; font-size: 0.7rem;
+  flex-shrink: 0;
+}
+.pipeline-arrow {
+  color: #adb5bd; font-size: 0.7rem; padding-left: 2rem;
+}
+</style>
+```
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     HERO — Entrada de la ficha metodológica
+     ═══════════════════════════════════════════════════════════ -->
+
+```{=html}
+<div class="eq-hero" style="background: linear-gradient(135deg, #5f7300 0%, #004457 100%);">
   <span class="eq-hero-badge">Ficha Metodológica</span>
   <h1>¿Cómo se construyó este análisis?</h1>
   <p>
-    Decisiones de diseño, fuentes de datos, filtros aplicados y limitaciones
-    del estudio.
+    Decisiones de diseño, fuentes de datos, filtros aplicados,
+    modelos econométricos y limitaciones del estudio.
   </p>
 </div>
 ```
 
----
 
-:::{.cr-section}
+<!-- ═══════════════════════════════════════════════════════════
+     SECCION 1: FUENTE DE DATOS
+     ═══════════════════════════════════════════════════════════ -->
+
+:::{.cr-section .metodo-section layout="sidebar-left"}
 
 :::{focus-on="cr-fuente"}
-## Fuente de datos
+[*La fuente\
+de los datos...*]{.eq-sidebar-titulo style="color: #3d4a00;"}
 
-Los análisis usan microdatos de la **Gran Encuesta Integrada de Hogares (GEIH)**
-del DANE para el período 2019–2025. La GEIH es la principal encuesta de mercado
-laboral de Colombia, con cobertura nacional y representatividad a nivel de
-cabecera municipal y resto rural.
-
-Se utilizan los módulos de **características generales**, **ocupados** y
-**desocupados e inactivos** para cada período trimestral / anual según la
-dimensión analizada.
+[*Todo parte de los microdatos de la encuesta de hogares más importante de Colombia.*]{.eq-sidebar-sub}
 :::
 
-:::{focus-on="cr-filtros"}
-## Filtros aplicados
+:::{focus-on="cr-fuente"}
+Los análisis del Radar de Brechas Laborales de Género se construyen a partir
+de los microdatos de la **Gran Encuesta Integrada de Hogares (GEIH)** del
+Departamento Administrativo Nacional de Estadística (DANE), para el período
+**2019 a 2025**.
 
-La muestra analítica aplica los siguientes criterios en todos los cálculos:
-
-- **Edad:** población en edad de trabajar, 15 a 99 años
-- **Condición de actividad:** `condicion_activ == 1` (activos)
-- **Sexo:** variable dicotómica: 1 = Hombre, 2 = Mujer
-- **Factor de expansión:** todas las estimaciones usan `fex` para ser
-  representativas de la población colombiana
-
-Para los indicadores de ingresos se excluyen observaciones con ingreso cero
-o negativo en las estimaciones de promedio.
+La GEIH es la principal encuesta de fuerza de trabajo de Colombia. Se aplica
+de forma **continua** (los 12 meses del año) y tiene **cobertura nacional**
+con representatividad a nivel de cabecera municipal y resto rural. Mide
+mensualmente las condiciones de empleo, desempleo, ingresos laborales y
+posición ocupacional de la población colombiana.
 :::
 
-:::{focus-on="cr-marco"}
-## Cambio de marco muestral 2021
+:::{focus-on="cr-fuente-modulos"}
+Del universo de módulos de la GEIH, el proyecto utiliza tres:
 
-En 2021, el DANE realizó una **renovación del marco muestral** de la GEIH. Esto
-genera una discontinuidad estadística en las series de tiempo: los cambios
-observados entre 2020 y 2021 no son completamente atribuibles a variaciones del
-mercado laboral.
+- **Características generales:** sexo, edad, educación, etnia, zona
+- **Ocupados:** ingreso laboral, horas trabajadas, posición ocupacional, rama de actividad
+- **Fuerza de trabajo:** condición de actividad (ocupado, desocupado, inactivo)
 
-Por esta razón, todas las gráficas de series temporales incluyen una **línea
-punteada en 2021** que señala este punto de quiebre. Las comparaciones entre
-períodos antes y después de 2021 deben interpretarse con cautela.
-:::
-
-:::{focus-on="cr-indicadores"}
-## Indicadores calculados
-
-Los indicadores principales del estudio son:
-
-**Módulo 1 — Acceso laboral**
-- Tasa global de participación (TGP)
-- Tasa de ocupación (TO)
-- Tasa de desempleo (TD)
-- Tasa de inactividad
-
-**Módulo 2 — Calidad del empleo**
-- Tasa de formalidad (cotizante a pensión)
-- Afiliación a salud y pensiones
-- Promedio de horas semanales trabajadas
-- Subempleo por horas insuficientes
-
-**Módulo 3 — Brechas salariales**
-- Ingreso laboral promedio y mediano
-- Brecha salarial no ajustada (%)
-- Ratio de ingresos M/H
-- Brecha por sector, educación y posición ocupacional
-:::
-
-:::{focus-on="cr-etica"}
-## Consideraciones éticas y limitaciones
-
-**Limitaciones del enfoque:**
-
-- La GEIH usa una variable de sexo binaria (hombre/mujer). El análisis no puede
-  capturar experiencias de personas no binarias o trans.
-- Las brechas reportadas son **descriptivas**, no causales. No controlamos por
-  todas las variables que podrían explicarlas.
-- Los datos de ingresos en encuestas de hogares tienden a subreportar ingresos
-  altos, lo que puede afectar las estimaciones en los extremos de la distribución.
-
-**Uso ético:**
-Los resultados deben usarse para informar políticas de reducción de brechas, no
-para justificarlas o naturalizarlas.
+Estos módulos se armonizaron en **dos archivos Parquet** que alimentan
+todo el dashboard.
 :::
 
 :::{#cr-fuente .sticky}
-<div class="eq-sticky-card">
-  <span class="eq-sticky-stat">GEIH</span>
-  <span class="eq-sticky-label">Gran Encuesta Integrada de Hogares</span>
+```{=html}
+<div class="metodo-sticky">
+  <span style="font-size: 2.5rem; font-weight: 700; color: #5f7300; display: block; line-height: 1;">GEIH</span>
+  <span style="font-size: 0.85rem; color: #6c757d;">Gran Encuesta Integrada de Hogares</span>
   <hr>
-  <ul style="font-size:0.85rem; color:#6c757d; margin:0; padding-left:1.2rem;">
-    <li>DANE — Colombia</li>
-    <li>Período: 2019–2025</li>
-    <li>Cobertura nacional</li>
+  <ul style="font-size: 0.85rem; color: #555; margin: 0; padding-left: 1.2rem;">
+    <li><strong>Productor:</strong> DANE — Colombia</li>
+    <li><strong>Período:</strong> 2019–2025 (7 años)</li>
+    <li><strong>Frecuencia:</strong> mensual, continua</li>
+    <li><strong>Cobertura:</strong> nacional, departamental</li>
+    <li><strong>Acceso:</strong> microdatos públicos y gratuitos</li>
   </ul>
 </div>
+```
 :::
 
-:::{#cr-filtros .sticky}
-<div class="eq-sticky-card">
-  <span class="eq-sticky-label" style="font-size:0.8rem; text-transform:uppercase; letter-spacing:0.05em;">Filtros aplicados</span>
+:::{#cr-fuente-modulos .sticky}
+```{=html}
+<div class="metodo-sticky">
+  <strong style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">
+    Dos bases de datos
+  </strong>
   <hr>
-  <ul style="font-size:0.85rem; color:#6c757d; margin:0; padding-left:1.2rem;">
-    <li>Edad: 15–99 años</li>
-    <li><code>condicion_activ == 1</code></li>
-    <li>Sexo: 1 (H) o 2 (M)</li>
-    <li>Ponderado por <code>fex</code></li>
-  </ul>
+  <table class="metodo-tabla">
+    <tr>
+      <th>Base</th>
+      <th>Filas</th>
+      <th>Páginas</th>
+    </tr>
+    <tr>
+      <td><code>geih_pet</code></td>
+      <td>4.9M</td>
+      <td>P1 (tasas TGP, TO, TD)</td>
+    </tr>
+    <tr>
+      <td><code>geih_ocupados</code></td>
+      <td>2.6M</td>
+      <td>P2 y P3 (calidad e ingresos)</td>
+    </tr>
+  </table>
+  <p style="font-size: 0.78rem; color: #6c757d; margin-top: 0.6rem; margin-bottom: 0;">
+    La base PET incluye toda la población en edad de trabajar (≥15 años).
+    La base de ocupados solo incluye personas con trabajo.
+  </p>
 </div>
+```
+:::
+
+:::
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECCION 2: DISEÑO MUESTRAL
+     ═══════════════════════════════════════════════════════════ -->
+
+:::{.cr-section .metodo-section layout="sidebar-left"}
+
+:::{focus-on="cr-disenio"}
+[*El diseño\
+muestral...*]{.eq-sidebar-titulo style="color: #3d4a00;"}
+
+[*La GEIH no es una encuesta aleatoria simple. Su estructura compleja tiene consecuencias para el análisis.*]{.eq-sidebar-sub}
+:::
+
+:::{focus-on="cr-disenio"}
+## Muestra compleja estratificada
+
+La GEIH usa un diseño **bietápico**: primero selecciona Unidades Primarias de
+Muestreo (segmentos cartográficos) y luego viviendas dentro de cada segmento.
+Esto implica que:
+
+- La **estratificación** por departamento y zona reduce el error estándar
+- La **conglomeración** de hogares dentro de segmentos lo aumenta, porque
+  personas del mismo segmento se parecen más entre sí
+
+El efecto neto se captura con el **Efecto de Diseño (DEFF)**, que en la GEIH
+para indicadores nacionales suele estar entre 1.5 y 2.5.
+:::
+
+:::{focus-on="cr-fex"}
+## Factor de expansión
+
+Cada persona encuestada tiene asignado un **factor de expansión** (`fex`) que
+indica cuántas personas reales representa. Esto permite pasar de una muestra
+de ~40.000 hogares/mes a estimaciones para toda Colombia.
+
+**Todas** las estimaciones del dashboard usan `fex` para ser representativas.
+Los cálculos se realizan con el paquete `survey` de R, que respeta la
+estructura del diseño complejo para producir errores estándar correctos.
+:::
+
+:::{#cr-disenio .sticky}
+```{=html}
+<div class="metodo-sticky acento">
+  <strong style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">
+    Diseño muestral
+  </strong>
+  <hr>
+  <p style="margin: 0.5rem 0; font-size: 0.85rem;">
+    <strong>Tipo:</strong> bietápico, estratificado por departamento y zona<br>
+    <strong>UPM:</strong> segmentos cartográficos<br>
+    <strong>Unidad final:</strong> viviendas → hogares → personas<br>
+    <strong>Tamaño:</strong> ~40.000 hogares/mes
+  </p>
+  <hr>
+  <p style="font-size: 0.78rem; color: #6c757d; margin: 0;">
+    Los errores estándar calculados sin considerar el diseño complejo
+    son sistemáticamente subestimados. Usamos <code>survey::svydesign()</code>
+    para corregir esto.
+  </p>
+</div>
+```
+:::
+
+:::{#cr-fex .sticky}
+```{=html}
+<div class="metodo-sticky">
+  <strong style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">
+    Factor de expansión (fex)
+  </strong>
+  <hr>
+  <table class="metodo-tabla">
+    <tr><th>Años</th><th>Factor</th><th>Base censal</th></tr>
+    <tr><td>2019–2020</td><td><code>fex_c_2011</code></td><td>Censo 2005</td></tr>
+    <tr><td>2021–2025</td><td><code>FEX_C18</code></td><td>Censo 2018</td></tr>
+  </table>
+  <p style="font-size: 0.78rem; color: #6c757d; margin-top: 0.6rem; margin-bottom: 0;">
+    En el parquet la columna <code>fex</code> ya contiene el factor correcto
+    para cada año. No es necesario seleccionar manualmente.
+  </p>
+</div>
+```
+:::
+
+:::
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECCION 3: CAMBIO DE MARCO Y COVID
+     ═══════════════════════════════════════════════════════════ -->
+
+:::{.cr-section .metodo-section layout="sidebar-left"}
+
+:::{focus-on="cr-marco"}
+[*Las rupturas\
+en la serie...*]{.eq-sidebar-titulo style="color: #3d4a00;"}
+
+[*Dos eventos afectan la comparabilidad temporal: el cambio de marco muestral en 2021 y la pandemia en 2020.*]{.eq-sidebar-sub}
+:::
+
+:::{focus-on="cr-marco"}
+## Cambio de marco muestral en 2021
+
+En 2021, el DANE renovó el marco muestral de la GEIH pasando del
+**Censo 2005** al **Censo 2018**. El Censo 2018 encontró que las proyecciones
+anteriores habían sobreestimado la población colombiana, lo que cambió los
+factores de expansión.
+
+**Consecuencia práctica:** los **totales de población** (suma de `fex`)
+no son directamente comparables entre 2019–2020 y 2021–2025. Sin embargo,
+las **tasas, proporciones y brechas relativas** sí lo son, porque
+numerador y denominador se escalan con el mismo factor.
+
+Por esta razón, todas las gráficas de series temporales incluyen una
+**línea punteada en 2021** que señala el punto de quiebre.
+:::
+
+:::{focus-on="cr-covid"}
+## COVID-19 y el año 2020
+
+La pandemia afectó la recolección de la GEIH en 2020:
+
+- **Marzo–julio 2020:** recolección exclusivamente telefónica
+- **Módulos suspendidos:** migración y algunos módulos temáticos
+- **Cobertura reducida:** sexo = 85.6%, educación = 82%, etnia = 82%
+
+Los meses con mayor afectación son abril–junio 2020. Para el análisis
+descriptivo, se mantiene el año completo con advertencia. Para los modelos
+econométricos (Oaxaca-Blinder), no se incluye 2020 por la menor cobertura
+de variables clave.
 :::
 
 :::{#cr-marco .sticky}
-<div class="eq-sticky-card mujeres" style="border-top-color:#ffc107;">
-  <span class="eq-sticky-stat" style="color:#856404;">2021</span>
-  <span class="eq-sticky-label">Cambio de marco muestral</span>
+```{=html}
+<div class="metodo-sticky alerta">
+  <span style="font-size: 2.5rem; font-weight: 700; color: #856404; display: block; line-height: 1;">2021</span>
+  <span style="font-size: 0.85rem; color: #856404;">Cambio de marco muestral</span>
   <hr>
-  <p style="font-size:0.82rem; color:#6c757d; margin:0;">
-    Discontinuidad estadística en todas las series. Ver línea punteada en gráficos.
+  <p style="font-size: 0.82rem; color: #555; margin: 0.5rem 0;">
+    ✅ <strong>Sí comparables:</strong> TGP, TO, TD, brechas %, composición porcentual
+  </p>
+  <p style="font-size: 0.82rem; color: #555; margin: 0;">
+    ❌ <strong>No comparables:</strong> totales de población (millones de personas)
+  </p>
+  <hr>
+  <p style="font-size: 0.78rem; color: #6c757d; margin: 0;">
+    Todas las gráficas de serie temporal marcan este quiebre con una línea punteada.
   </p>
 </div>
+```
 :::
 
-:::{#cr-indicadores .sticky}
-<div class="eq-sticky-card">
-  <span class="eq-sticky-label" style="font-size:0.8rem; text-transform:uppercase; letter-spacing:0.05em;">3 módulos de análisis</span>
+:::{#cr-covid .sticky}
+```{=html}
+<div class="metodo-sticky alerta">
+  <span style="font-size: 2.5rem; font-weight: 700; color: #856404; display: block; line-height: 1;">2020</span>
+  <span style="font-size: 0.85rem; color: #856404;">Pandemia COVID-19</span>
   <hr>
-  <ul style="font-size:0.85rem; color:#6c757d; margin:0; padding-left:1.2rem;">
-    <li>Acceso laboral</li>
-    <li>Calidad del empleo</li>
-    <li>Brechas salariales</li>
+  <table class="metodo-tabla" style="font-size: 0.78rem;">
+    <tr><th>Variable</th><th>Cobertura 2020</th></tr>
+    <tr><td>Sexo</td><td>85.6%</td></tr>
+    <tr><td>Educación</td><td>82%</td></tr>
+    <tr><td>Etnia</td><td>82%</td></tr>
+  </table>
+  <p style="font-size: 0.78rem; color: #6c757d; margin-top: 0.6rem; margin-bottom: 0;">
+    Recolección telefónica marzo–julio.
+    Meses más afectados: abril–junio.
+  </p>
+</div>
+```
+:::
+
+:::
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECCION 4: FILTROS Y VARIABLES
+     ═══════════════════════════════════════════════════════════ -->
+
+:::{.cr-section .metodo-section layout="sidebar-left"}
+
+:::{focus-on="cr-filtros"}
+[*Los filtros\
+que aplicamos...*]{.eq-sidebar-titulo style="color: #3d4a00;"}
+
+[*Criterios de inclusión y exclusión aplicados antes de cualquier cálculo.*]{.eq-sidebar-sub}
+:::
+
+:::{focus-on="cr-filtros"}
+## Criterios de la muestra analítica
+
+Antes de cualquier cálculo, se aplican filtros de limpieza que son comunes
+a todas las páginas del dashboard:
+
+- **Edad:** población en edad de trabajar, **15 a 99 años**
+- **Sexo válido:** `sexo %in% c(1, 2)` — se excluyen registros sin dato
+- **Factor de expansión:** `fex` no nulo
+
+Para los indicadores de **ingreso** (Página 3) se excluyen adicionalmente:
+- Observaciones con ingreso cero, `NA`, o códigos especiales (`98` = no sabe, `99` = no informa)
+- Salarios horarios por debajo del percentil 1 y por encima del percentil 99
+  (para reducir el efecto de valores extremos en los modelos)
+:::
+
+:::{focus-on="cr-variables"}
+## Dimensiones de interseccionalidad
+
+Todas las páginas permiten desagregar por estas dimensiones, lo que hace
+visible cómo las brechas se amplían o reducen según el contexto:
+
+- **Sexo:** hombre (1) / mujer (2)
+- **Año:** 2019 a 2025
+- **Pertenencia étnica:** autoidentificación con grupo étnico (sí/no)
+- **Zona:** cabecera municipal / resto rural
+- **Nivel educativo:** armonizado entre marcos muestrales para comparabilidad
+:::
+
+:::{#cr-filtros .sticky}
+```{=html}
+<div class="metodo-sticky">
+  <strong style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">
+    Filtros aplicados
+  </strong>
+  <hr>
+  <ul style="font-size: 0.85rem; color: #555; margin: 0; padding-left: 1.2rem;">
+    <li>Edad: <strong>15–99 años</strong></li>
+    <li>Sexo: <code>1</code> (H) o <code>2</code> (M)</li>
+    <li>Ponderado por <code>fex</code></li>
+    <li>Ingresos: excluir <code>0</code>, <code>98</code>, <code>99</code>, <code>NA</code></li>
+    <li>Winsorización: percentiles 1–99 del salario/hora</li>
+  </ul>
+  <hr>
+  <p style="font-size: 0.78rem; color: #6c757d; margin: 0;">
+    Los filtros son consistentes en todas las páginas del dashboard.
+  </p>
+</div>
+```
+:::
+
+:::{#cr-variables .sticky}
+```{=html}
+<div class="metodo-sticky">
+  <strong style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">
+    Interseccionalidad
+  </strong>
+  <hr>
+  <table class="metodo-tabla">
+    <tr><th>Dimensión</th><th>Variable</th></tr>
+    <tr><td>Sexo</td><td><code>sexo</code></td></tr>
+    <tr><td>Año</td><td><code>anio</code> (2019–2025)</td></tr>
+    <tr><td>Etnia</td><td><code>etnia_bin</code> (0/1)</td></tr>
+    <tr><td>Zona</td><td><code>clase_zona</code> (1/2)</td></tr>
+    <tr><td>Educación</td><td><code>niv_edu_armon</code></td></tr>
+  </table>
+  <p style="font-size: 0.78rem; color: #6c757d; margin-top: 0.6rem; margin-bottom: 0;">
+    <code>etnia_bin</code> es binaria: indica si la persona se autoidentifica
+    con algún grupo étnico, pero no distingue cuál.
+  </p>
+</div>
+```
+:::
+
+:::
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECCION 5: INDICADORES DESCRIPTIVOS
+     ═══════════════════════════════════════════════════════════ -->
+
+:::{.cr-section .metodo-section layout="sidebar-left"}
+
+:::{focus-on="cr-indicadores-p1"}
+[*Los indicadores\
+que medimos...*]{.eq-sidebar-titulo style="color: #3d4a00;"}
+
+[*Cuatro módulos de análisis, cada uno con sus propios indicadores y definiciones.*]{.eq-sidebar-sub}
+:::
+
+:::{focus-on="cr-indicadores-p1"}
+## Página 1 — Acceso laboral
+
+Los tres indicadores centrales de acceso al mercado laboral se calculan
+directamente desde los microdatos del parquet PET:
+
+- **TGP (Tasa Global de Participación):** proporción de la PET que está
+  económicamente activa (ocupados + desocupados abiertos)
+- **TO (Tasa de Ocupación):** proporción de la PET que tiene trabajo
+- **TD (Tasa de Desempleo):** proporción de la PEA que busca trabajo
+  activamente sin encontrarlo
+
+Las definiciones siguen el estándar DANE:
+Ocupados = `condicion_activ %in% c(1, 2)`,
+Desocupados = `condicion_activ == 3`,
+PEA = ocupados + desocupados.
+:::
+
+:::{focus-on="cr-indicadores-p2"}
+## Página 2 — Calidad del empleo
+
+La calidad del empleo se operacionaliza en cuatro dimensiones:
+
+- **Tipo de vinculación:** distribución por posición ocupacional
+  (asalariado, cuenta propia, empleo doméstico, familiar no remunerado)
+- **Intensidad horaria:** promedio de horas semanales trabajadas y
+  distribución por bandas (<20h, 20-39h, 40-48h, >48h)
+- **Segregación sectorial:** Índice de Duncan, que mide cuánto difieren
+  las distribuciones sectoriales de hombres y mujeres
+- **Informalidad (proxy):** porcentaje en posiciones asociadas con alta
+  informalidad (`posicion_ocup %in% c(4, 6, 7, 8)`)
+:::
+
+:::{focus-on="cr-indicadores-p3"}
+## Página 3 — Brechas salariales
+
+La **brecha salarial bruta** compara los ingresos medianos de hombres y
+mujeres sin controlar por ningún otro factor. Se usa `ing_total` (ingreso
+laboral total mensual, 90.5% de cobertura) como variable principal:
+
+$$\text{Brecha bruta (\%)} = \frac{Mediana_H - Mediana_M}{Mediana_H} \times 100$$
+
+Una brecha positiva indica que los hombres ganan más en mediana.
+Se calcula por año, nivel educativo, sector y zona, siempre con
+su coeficiente de variación asociado.
+:::
+
+:::{#cr-indicadores-p1 .sticky}
+```{=html}
+<div class="metodo-sticky">
+  <strong style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">
+    P1 · Acceso laboral
+  </strong>
+  <hr>
+  <p style="font-size: 0.85rem; margin: 0.5rem 0;">
+    <strong>TGP</strong> = PEA / PET × 100<br>
+    <strong>TO</strong> = Ocupados / PET × 100<br>
+    <strong>TD</strong> = Desocupados / PEA × 100
+  </p>
+  <hr>
+  <p style="font-size: 0.78rem; color: #6c757d; margin: 0;">
+    Base: <code>geih_pet_2019_2025.parquet</code><br>
+    Precalculado: <code>06_precalcular_p1.R</code>
+  </p>
+</div>
+```
+:::
+
+:::{#cr-indicadores-p2 .sticky}
+```{=html}
+<div class="metodo-sticky">
+  <strong style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">
+    P2 · Calidad del empleo
+  </strong>
+  <hr>
+  <ul style="font-size: 0.82rem; color: #555; margin: 0; padding-left: 1.2rem;">
+    <li>Distribución por posición ocupacional</li>
+    <li>Promedio de horas semanales por sexo</li>
+    <li>Índice de Duncan (segregación)</li>
+    <li>Proxy de informalidad</li>
+  </ul>
+  <hr>
+  <p style="font-size: 0.78rem; color: #6c757d; margin: 0;">
+    Base: <code>geih_ocupados_2019_2025.parquet</code><br>
+    Filtro: <code>condicion_activ == 1</code><br>
+    Precalculado: <code>08_precalcular_p2.R</code>
+  </p>
+</div>
+```
+:::
+
+:::{#cr-indicadores-p3 .sticky}
+```{=html}
+<div class="metodo-sticky">
+  <strong style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">
+    P3 · Brechas salariales
+  </strong>
+  <hr>
+  <p style="font-size: 0.85rem; margin: 0.5rem 0;">
+    <strong>Brecha bruta</strong> = (Med<sub>H</sub> − Med<sub>M</sub>) / Med<sub>H</sub> × 100
+  </p>
+  <p style="font-size: 0.82rem; color: #555; margin: 0;">
+    Variable: <code>ing_total</code> (INGLABO)<br>
+    Cobertura: 90.5% de los ocupados
+  </p>
+  <hr>
+  <p style="font-size: 0.78rem; color: #6c757d; margin: 0;">
+    Precalculado: <code>09_precalcular_p3.R</code>
+  </p>
+</div>
+```
+:::
+
+:::
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECCION 6: MODELOS ECONOMÉTRICOS
+     ═══════════════════════════════════════════════════════════ -->
+
+:::{.cr-section .metodo-section layout="sidebar-left"}
+
+:::{focus-on="cr-boy"}
+[*Los modelos\
+econométricos...*]{.eq-sidebar-titulo style="color: #3d4a00;"}
+
+[*Tres métodos de descomposición para separar lo que explican las características observables de lo que no.*]{.eq-sidebar-sub}
+:::
+
+:::{focus-on="cr-boy"}
+## Blinder-Oaxaca-Yun (BOY) — Página 1
+
+El modelo BOY descompone la **brecha de participación laboral** entre hombres
+y mujeres. A diferencia del O-B clásico (que aplica sobre salarios), el BOY
+usa un **modelo logit no lineal** porque la variable dependiente es binaria:
+participa o no participa en el mercado laboral.
+
+La brecha se separa en:
+
+- **Dotaciones:** diferencias en educación, experiencia y zona que explicarían
+  que las mujeres participen menos
+- **Coeficientes:** diferencias en cómo el mercado *valora* esas mismas
+  características — el componente asociado con discriminación estructural
+- **Residuo:** interacción entre ambos
+
+Adicionalmente, se aplica la **descomposición de Yun** para cuantificar la
+contribución individual de cada variable a la brecha.
+:::
+
+:::{focus-on="cr-ob"}
+## Oaxaca-Blinder clásico — Página 3
+
+El modelo **Oaxaca-Blinder twofold** (Blinder, 1973; Oaxaca, 1973) descompone
+la **brecha salarial** en dos componentes:
+
+- **Componente explicado:** la parte de la brecha atribuible a diferencias
+  en características observables (educación, experiencia, sector, zona)
+- **Componente no explicado:** la parte que no se explica por esas diferencias
+  — refleja discriminación y factores no observados
+
+El modelo estima ecuaciones de Mincer separadas para hombres y mujeres,
+usando el log del salario por hora como variable dependiente. Se incluyen:
+años de escolaridad, experiencia potencial y su cuadrado, posición ocupacional,
+rama de actividad y zona.
+:::
+
+:::{focus-on="cr-nopo"}
+## Matching de Ñopo — Página 3
+
+El método de **Ñopo (2008)** complementa al O-B usando **matching exacto**
+en lugar de supuestos paramétricos. Compara únicamente personas con el
+**mismo perfil observable** (educación, edad, ocupación, zona) y mide
+la brecha entre pares comparables.
+
+La brecha total se descompone en cuatro partes:
+
+- **D₀:** brecha entre hombres y mujeres *con las mismas características* — el componente de discriminación
+- **D_X:** diferencias en la distribución de características
+- **D_M / D_F:** efecto de hombres y mujeres sin par comparable
+
+Este método es robusto a problemas de especificación funcional y sirve
+como **validación no paramétrica** del O-B.
+:::
+
+:::{#cr-boy .sticky}
+```{=html}
+<div class="metodo-sticky">
+  <strong style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">
+    BOY · Participación laboral
+  </strong>
+  <hr>
+  <p style="font-size: 0.82rem; color: #555; margin: 0.4rem 0;">
+    <strong>Variable dependiente:</strong> participa (1) o no (0)<br>
+    <strong>Método:</strong> logit no lineal + descomposición de Yun<br>
+    <strong>Controles:</strong> escolaridad, experiencia potencial, zona, grupo de edad
+  </p>
+  <hr>
+  <p style="font-size: 0.78rem; color: #6c757d; margin: 0;">
+    Base: <code>geih_pet_2019_2025.parquet</code><br>
+    Aparece en: <strong>Página 1 (Acceso laboral)</strong><br>
+    Script: <code>07_precalcular_p1_boy.R</code>
+  </p>
+</div>
+```
+:::
+
+:::{#cr-ob .sticky}
+```{=html}
+<div class="metodo-sticky acento">
+  <strong style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">
+    O-B · Brecha salarial
+  </strong>
+  <hr>
+  <p style="font-size: 0.82rem; color: #555; margin: 0.4rem 0;">
+    <strong>Variable dependiente:</strong> log(salario/hora)<br>
+    <strong>Método:</strong> Oaxaca-Blinder twofold (paquete <code>oaxaca</code>)<br>
+    <strong>Controles:</strong> escolaridad, experiencia, posición ocupacional, rama, zona
+  </p>
+  <hr>
+  <p style="font-size: 0.78rem; color: #6c757d; margin: 0;">
+    Base: <code>geih_ocupados_2019_2025.parquet</code><br>
+    Aparece en: <strong>Página 3 (Brechas salariales)</strong><br>
+    Script: <code>10_precalcular_p3_ob_nopo.R</code>
+  </p>
+</div>
+```
+:::
+
+:::{#cr-nopo .sticky}
+```{=html}
+<div class="metodo-sticky acento">
+  <strong style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">
+    Ñopo · Matching exacto
+  </strong>
+  <hr>
+  <p style="font-size: 0.82rem; color: #555; margin: 0.4rem 0;">
+    <strong>Celdas de matching:</strong> educación × edad × ocupación × zona<br>
+    <strong>Descomposición:</strong> D₀ + D_X + D_M + D_F = Brecha total
+  </p>
+  <p style="font-size: 0.82rem; color: #555; margin: 0;">
+    D₀ = brecha entre iguales (discriminación)<br>
+    D_X = diferencias de composición
+  </p>
+  <hr>
+  <p style="font-size: 0.78rem; color: #6c757d; margin: 0;">
+    Validación no paramétrica del O-B.<br>
+    Script: <code>10_precalcular_p3_ob_nopo.R</code>
+  </p>
+</div>
+```
+:::
+
+:::
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECCION 7: MUJERES DIVERSAS (P4)
+     ═══════════════════════════════════════════════════════════ -->
+
+:::{.cr-section .metodo-section layout="sidebar-left"}
+
+:::{focus-on="cr-p4"}
+[*Mujeres diversas\
+en los datos...*]{.eq-sidebar-titulo style="color: #3d4a00;"}
+
+[*La Página 4 analiza a las mujeres trans en el mercado laboral colombiano — una población históricamente invisible en las estadísticas oficiales.*]{.eq-sidebar-sub}
+:::
+
+:::{focus-on="cr-p4"}
+## Página 4 — Mujeres diversas
+
+Desde 2022, la GEIH incluye una pregunta sobre **identidad de género**
+(módulo de características generales), lo que permite identificar a
+**mujeres trans** en los microdatos: personas que nacieron con sexo
+masculino (`sexo_nacer == 1`) pero se identifican como mujeres
+(`identidad_genero == 2`).
+
+Este análisis utiliza únicamente datos del **Marco 2018 (2022–2025)**
+porque la variable de identidad de género no existía antes.
+:::
+
+:::{focus-on="cr-p4-limites"}
+## Limitaciones de la subpoblación
+
+La muestra de mujeres trans en la PET es de aproximadamente **640
+observaciones** en el período 2022–2025 acumulado. Esto implica:
+
+- Los indicadores se calculan de forma **agregada** (2022–2025) en
+  lugar de año por año, para maximizar el tamaño muestral
+- **No se aplican modelos de descomposición** (Oaxaca-Blinder o Ñopo)
+  porque la muestra es insuficiente para estimar coeficientes estables
+- Los resultados son **descriptivos** y deben interpretarse como
+  indicativos de tendencias, no como estimaciones puntuales precisas
+- Se comparan las condiciones laborales de mujeres cis y mujeres trans
+  en acceso, calidad del empleo, posición ocupacional e ingresos
+:::
+
+:::{#cr-p4 .sticky}
+```{=html}
+<div class="metodo-sticky mujeres">
+  <strong style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">
+    P4 · Mujeres diversas
+  </strong>
+  <hr>
+  <p style="font-size: 0.85rem; margin: 0.4rem 0;">
+    <strong>Definición:</strong><br>
+    Mujer trans = <code>sexo_nacer == 1</code> + <code>identidad_genero == 2</code>
+  </p>
+  <p style="font-size: 0.85rem; margin: 0.4rem 0;">
+    <strong>Período:</strong> solo Marco 2018 (2022–2025)
+  </p>
+  <hr>
+  <p style="font-size: 0.78rem; color: #6c757d; margin: 0;">
+    Base: <code>geih_genero_2022_2025.parquet</code><br>
+    Precalculado: <code>11_precalcular_p4.R</code>
+  </p>
+</div>
+```
+:::
+
+:::{#cr-p4-limites .sticky}
+```{=html}
+<div class="metodo-sticky alerta">
+  <span style="font-size: 2.5rem; font-weight: 700; color: #856404; display: block; line-height: 1;">~640</span>
+  <span style="font-size: 0.85rem; color: #856404;">observaciones de mujeres trans en PET</span>
+  <hr>
+  <ul style="font-size: 0.82rem; color: #555; margin: 0; padding-left: 1.2rem;">
+    <li>Datos agregados 2022–2025</li>
+    <li>Sin modelos econométricos</li>
+    <li>Análisis descriptivo comparativo</li>
+    <li>Interpretar como tendencias indicativas</li>
   </ul>
 </div>
+```
+:::
+
+:::
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECCION 8: COEFICIENTE DE VARIACIÓN
+     ═══════════════════════════════════════════════════════════ -->
+
+:::{.cr-section .metodo-section layout="sidebar-left"}
+
+:::{focus-on="cr-cv"}
+[*La precisión\
+estadística...*]{.eq-sidebar-titulo style="color: #3d4a00;"}
+
+[*No basta con calcular un número — hay que saber si es confiable.*]{.eq-sidebar-sub}
+:::
+
+:::{focus-on="cr-cv"}
+## Coeficiente de Variación (CV)
+
+El CV mide la **precisión relativa** de una estimación. Una cifra con CV
+alto (>20%) tiene tanta incertidumbre que no puede reportarse como dato
+confiable. Esto es especialmente relevante cuando se desagrega en subgrupos
+pequeños: la brecha salarial nacional tiene un CV bajo, pero la brecha
+en un departamento pequeño para un grupo étnico minoritario puede ser
+estadísticamente no publicable.
+
+El dashboard implementa un **sistema de semáforo** basado en los umbrales
+oficiales del DANE para clasificar la calidad de cada estimación.
+Toda cifra que se presenta incluye su CV calculado con `survey`.
+:::
+
+:::{focus-on="cr-cv-desag"}
+## El efecto de la desagregación
+
+A medida que se desagrega (nacional → departamento → municipio, o se cruza
+con etnia, zona y educación), la muestra efectiva disminuye y el CV aumenta.
+Esto no es un error — es la limitación estadística natural de la encuesta
+para estimaciones muy desagregadas.
+
+**Cómo lo manejamos:** las cifras con CV > 20% no se muestran como estimaciones
+puntuales. En su lugar, se indica "muestra insuficiente" o se usan rangos
+intercuartílicos. El tamaño muestral (`n_obs`) se muestra en las tooltips
+de los gráficos interactivos.
+:::
+
+:::{#cr-cv .sticky}
+```{=html}
+<div class="metodo-sticky">
+  <strong style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">
+    Semáforo de precisión (CV)
+  </strong>
+  <hr>
+  <div class="cv-row"><span class="cv-dot cv-verde"></span> <strong>≤ 7%</strong> — Preciso: reportar sin advertencia</div>
+  <div class="cv-row"><span class="cv-dot cv-amarillo"></span> <strong>8–14%</strong> — Aceptable: reportar con nota</div>
+  <div class="cv-row"><span class="cv-dot cv-naranja"></span> <strong>15–20%</strong> — Regular: reportar con advertencia visible</div>
+  <div class="cv-row"><span class="cv-dot cv-rojo"></span> <strong>> 20%</strong> — No confiable: no mostrar cifra puntual</div>
+  <hr>
+  <p style="font-size: 0.78rem; color: #6c757d; margin: 0;">
+    Umbrales oficiales del DANE para publicación de estadísticas.
+  </p>
+</div>
+```
+:::
+
+:::{#cr-cv-desag .sticky}
+```{=html}
+<div class="metodo-sticky acento">
+  <strong style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">
+    Efecto de Diseño (DEFF)
+  </strong>
+  <hr>
+  <p style="font-size: 0.82rem; color: #555; margin: 0.4rem 0;">
+    DEFF = Var<sub>diseño</sub> / Var<sub>MAS</sub>
+  </p>
+  <p style="font-size: 0.82rem; color: #555; margin: 0;">
+    En la GEIH, el DEFF típico para indicadores nacionales es <strong>1.5–2.5</strong>.
+    Esto significa que la encuesta es menos precisa que una muestra aleatoria
+    simple del mismo tamaño.
+  </p>
+  <hr>
+  <p style="font-size: 0.78rem; color: #6c757d; margin: 0;">
+    Calculado con <code>survey::svydesign()</code> respetando estratos y conglomerados.
+  </p>
+</div>
+```
+:::
+
+:::
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECCION 9: PIPELINE DE DATOS
+     ═══════════════════════════════════════════════════════════ -->
+
+:::{.cr-section .metodo-section layout="sidebar-left"}
+
+:::{focus-on="cr-pipeline"}
+[*El pipeline\
+de datos...*]{.eq-sidebar-titulo style="color: #3d4a00;"}
+
+[*Desde los microdatos crudos del DANE hasta los gráficos interactivos del dashboard: cada paso es reproducible.*]{.eq-sidebar-sub}
+:::
+
+:::{focus-on="cr-pipeline"}
+## Reproducibilidad completa
+
+El pipeline de datos está diseñado para que cualquier persona pueda
+**reproducir el análisis desde cero**. Consta de dos fases:
+
+**Fase 1 — Python:** descarga los microdatos del DANE (~50 GB), extrae
+los módulos relevantes y armoniza las variables entre marcos muestrales
+en dos archivos Parquet base.
+
+**Fase 2 — R:** precalcula los indicadores, modelos y estadísticos que
+el dashboard necesita. Cada página lee sus propios Parquets precalculados,
+lo que permite renderizar el sitio sin procesar los microdatos originales.
+
+Los Parquets precalculados están disponibles en **Zenodo** para quienes
+quieran explorar el dashboard sin ejecutar el pipeline completo.
+:::
+
+:::{#cr-pipeline .sticky}
+```{=html}
+<div class="metodo-sticky">
+  <strong style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">
+    Pipeline de procesamiento
+  </strong>
+  <hr>
+  <p style="font-size: 0.72rem; color: #6c757d; margin-bottom: 0.3rem;"><strong>Fase 1 · Python (bases)</strong></p>
+  <div class="pipeline-step"><span class="pipeline-num">01</span> Descarga microdatos DANE</div>
+  <div class="pipeline-step"><span class="pipeline-num">02</span> Extracción de CSVs</div>
+  <div class="pipeline-step"><span class="pipeline-num">03</span> Parquet de ocupados</div>
+  <div class="pipeline-step"><span class="pipeline-num">04</span> Parquet PET</div>
+  <div class="pipeline-step"><span class="pipeline-num">05</span> Parquet identidad de género</div>
+  <p class="pipeline-arrow">↓</p>
+  <p style="font-size: 0.72rem; color: #6c757d; margin-bottom: 0.3rem;"><strong>Fase 2 · R (precálculos)</strong></p>
+  <div class="pipeline-step"><span class="pipeline-num">06</span> P1 — tasas descriptivas</div>
+  <div class="pipeline-step"><span class="pipeline-num">07</span> P1 — modelo BOY</div>
+  <div class="pipeline-step"><span class="pipeline-num">08</span> P2 — calidad del empleo</div>
+  <div class="pipeline-step"><span class="pipeline-num">09</span> P3 — brechas descriptivas</div>
+  <div class="pipeline-step"><span class="pipeline-num">10</span> P3 — modelos O-B y Ñopo</div>
+  <div class="pipeline-step"><span class="pipeline-num">11</span> P4 — mujeres diversas</div>
+</div>
+```
+:::
+
+:::
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECCION 10: CONSIDERACIONES ÉTICAS
+     ═══════════════════════════════════════════════════════════ -->
+
+:::{.cr-section .metodo-section layout="sidebar-left"}
+
+:::{focus-on="cr-etica"}
+[*Consideraciones\
+éticas...*]{.eq-sidebar-titulo style="color: #3d4a00;"}
+
+[*Lo que los datos pueden y no pueden decir sobre las brechas de género.*]{.eq-sidebar-sub}
+:::
+
+:::{focus-on="cr-etica"}
+## Limitaciones del enfoque
+
+- La GEIH usa una variable de **sexo binaria** (hombre/mujer) en su diseño
+  principal. La variable de identidad de género solo está disponible desde
+  2022, con muestra limitada.
+- Las brechas reportadas en las páginas descriptivas son **correlaciones**,
+  no relaciones causales. Los modelos de descomposición (O-B, Ñopo) aíslan
+  parcialmente los factores observables, pero no eliminan toda la endogeneidad.
+- Los datos de **ingresos en encuestas de hogares** tienden a subreportar
+  los ingresos altos, lo que puede afectar las estimaciones en los extremos
+  de la distribución.
+- Las muestras departamentales pequeñas pueden producir estimaciones
+  **estadísticamente inestables** — siempre verificar el semáforo de CV.
+:::
+
+:::{focus-on="cr-uso"}
+## Uso ético de los resultados
+
+Los resultados de este análisis deben usarse para **informar políticas de
+reducción de brechas**, no para justificarlas o naturalizarlas. Las brechas
+salariales y de participación reflejan estructuras históricas de desigualdad
+que son modificables con política pública.
+
+El tratamiento de la categoría de mujeres trans respeta el principio de
+**no hacer daño**: se reportan tendencias agregadas sin exponer datos que
+puedan individualizar a personas de una población vulnerable.
 :::
 
 :::{#cr-etica .sticky}
-<div class="eq-sticky-card" style="border-top-color:#6c757d;">
-  <span class="eq-sticky-label" style="font-size:0.8rem; text-transform:uppercase; letter-spacing:0.05em;">Nota ética</span>
+```{=html}
+<div class="metodo-sticky" style="border-left-color: #6c757d;">
+  <strong style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: #6c757d;">
+    Limitaciones clave
+  </strong>
   <hr>
-  <p style="font-size:0.82rem; color:#6c757d; margin:0;">
-    Los resultados describen brechas existentes. Su uso debe orientarse a
-    reducirlas, no a justificarlas.
-  </p>
+  <ul style="font-size: 0.82rem; color: #555; margin: 0; padding-left: 1.2rem;">
+    <li>Sexo binario en diseño principal</li>
+    <li>Identidad de género solo desde 2022</li>
+    <li>Brechas descriptivas ≠ causales</li>
+    <li>Subreporte de ingresos altos</li>
+    <li>CV alto en desagregaciones finas</li>
+  </ul>
 </div>
+```
+:::
+
+:::{#cr-uso .sticky}
+```{=html}
+<div class="metodo-sticky" style="border-left-color: #6c757d;">
+  <strong style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: #6c757d;">
+    Principios éticos
+  </strong>
+  <hr>
+  <ul style="font-size: 0.82rem; color: #555; margin: 0; padding-left: 1.2rem;">
+    <li>Informar política, no justificar brechas</li>
+    <li>No individualizar datos de personas trans</li>
+    <li>Transparencia sobre limitaciones</li>
+    <li>Reportar con honestidad estadística</li>
+  </ul>
+</div>
+```
 :::
 
 :::
@@ -178,20 +1067,20 @@ para justificarlas o naturalizarlas.
 
 ## Paquetes y herramientas
 
-| Herramienta | Versión mínima | Uso |
-|-------------|---------------|-----|
-| Quarto      | 1.4           | Renderizado del sitio |
-| R           | 4.2           | Análisis estadístico |
-| `arrow`     | —             | Lectura de Parquets GEIH |
-| `dplyr`     | —             | Manipulación de datos |
-| `ggplot2`   | —             | Visualizaciones estáticas |
-| `plotly`    | —             | Interactividad en gráficos |
-| `crosstalk` | —             | Filtros del lado del cliente |
-| `survey`    | —             | Estimaciones con diseño muestral |
-| `Hmisc`     | —             | Estadísticas ponderadas |
-| `gt`        | —             | Tablas de resultados |
+| Herramienta | Uso |
+|-------------|-----|
+| Quarto + closeread | Renderizado del sitio y narrativa scrollytelling |
+| R (≥ 4.2) | Análisis estadístico y precálculos |
+| Python (≥ 3.9) | Pipeline de descarga y armonización de microdatos |
+| `arrow` | Lectura y escritura de archivos Parquet |
+| `dplyr` / `tidyr` | Manipulación y transformación de datos |
+| `ggplot2` / `plotly` | Visualizaciones estáticas e interactivas |
+| `survey` | Estimaciones con diseño muestral complejo y CVs |
+| `oaxaca` | Descomposición Oaxaca-Blinder |
+| `crosstalk` | Filtros interactivos del lado del cliente |
+| `gt` / `DT` | Tablas formateadas e interactivas |
 
-<p class="eq-fuente" style="margin-top:2rem;">
+<p class="eq-fuente" style="margin-top: 2rem;">
   Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026.
   Estimaciones ponderadas con factor de expansión (fex).
 </p>

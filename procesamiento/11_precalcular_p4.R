@@ -1,5 +1,5 @@
 # ============================================================
-# 08_precalcular_p4_diversidad.R
+# 11_precalcular_p4.R
 # Pre-calcula indicadores laborales para mujeres cis vs trans
 # Usa survey::svydesign para CV y estimaciones ponderadas
 # Periodo: 2022-2025 (marco muestral 2018 — modulo de genero)
@@ -81,9 +81,9 @@ pet_gen <- pet |>
   ) |>
   etiquetar_identidad() |>
   mutate(
-    es_pea = condicion_activ %in% c(1, 2),
-    es_ocupado = condicion_activ == 1,
-    es_desocupado = condicion_activ == 2
+    es_pea = condicion_activ %in% c(1, 2, 3),
+    es_ocupado = condicion_activ %in% c(1, 2),
+    es_desocupado = condicion_activ == 3
   )
 
 cat("PET con genero:", nrow(pet_gen), "filas\n")

@@ -17,6 +17,8 @@ website:
     left:
       - text: "Inicio"
         href: index.qmd
+      - text: "Metodología"
+        href: metodologia.qmd
       - text: "Acceso Laboral"
         href: p1_acceso.qmd
       - text: "Calidad del Empleo"
@@ -25,5 +27,3 @@ website:
         href: p3_salariales.qmd
       - text: "Mujeres Diversas"
         href: p4_mujeres_diversas.qmd
-      - text: "Metodología"
-        href: metodologia.qmd

@@ -31,7 +31,7 @@ COLOR_MUJERES <- "#6b2d50"
 CAPTION       <- "Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026."
 
 # ── Carga de datos PRE-CALCULADOS ────────────────────────────
-# Generados por: source("procesamiento/06_precalcular_p2.R")
+# Generados por: source("procesamiento/08_precalcular_p2.R")
 vb               <- read_parquet("datos/calidad_p2_vboxes.parquet")
 posicion_hist    <- read_parquet("datos/calidad_p2_posicion_hist.parquet")
 segregacion_nac  <- read_parquet("datos/calidad_p2_segregacion.parquet")

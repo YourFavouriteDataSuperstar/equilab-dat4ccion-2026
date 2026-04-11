@@ -36,15 +36,15 @@ COLOR_EXPLICADO    <- "#4DBBD5"
 COLOR_NO_EXPLICADO <- "#E64B35"
 
 # ── Carga de datos PRE-CALCULADOS ────────────────────────────
-# Generados por: source("procesamiento/05_precalcular_p1.R")
+# Generados por: source("procesamiento/06_precalcular_p1.R")
 tasas_raw      <- read_parquet("datos/tasas_p1_completo.parquet")
 tabla_dpto_raw <- read_parquet("datos/tasas_p1_departamental.parquet")
 tasas_global   <- read_parquet("datos/tasas_p1_global.parquet")
 
 # ── Carga datos BOY (Descomposición de participación) ────────
-# Generados por: source("procesamiento/07_precalcular_p4.R")
-boy_all  <- read_parquet("datos/p4_boy_resultados.parquet")
-boy_yun  <- read_parquet("datos/p4_boy_yun.parquet")
+# Generados por: source("procesamiento/07_precalcular_p1_boy.R")
+boy_all  <- read_parquet("datos/p1_boy_resultados.parquet")
+boy_yun  <- read_parquet("datos/p1_boy_yun.parquet")
 
 boy_por_anio  <- boy_all |> filter(corte == "Nacional")
 boy_por_zona  <- boy_all |> filter(corte == "Zona")

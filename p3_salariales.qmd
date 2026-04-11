@@ -53,8 +53,8 @@ vb_brecha_desc <- round((vb_med_h - vb_med_m) / vb_med_h * 100, 1)
 vb_brecha_media <- round((vb_mean_h - vb_mean_m) / vb_mean_h * 100, 1)
 
 # ── Tab 2: datos O-B ────────────────────────────────────────
-ob_all     <- read_parquet("datos/p4_ob_resultados.parquet")
-ob_detalle <- read_parquet("datos/p4_ob_detalle_vars.parquet")
+ob_all     <- read_parquet("datos/p3_ob_resultados.parquet")
+ob_detalle <- read_parquet("datos/p3_ob_detalle_vars.parquet")
 
 ob_por_anio  <- ob_all |> filter(corte == "Nacional")
 ob_por_zona  <- ob_all |> filter(corte == "Zona")
@@ -72,7 +72,7 @@ lp_explicado    <- round(comp_explicado * 100, 1)
 lp_no_explicado <- round(comp_no_explicado * 100, 1)
 
 # ── Tab 3: datos Ñopo ───────────────────────────────────────
-nopo_por_anio <- read_parquet("datos/p4_nopo_resultados.parquet")
+nopo_por_anio <- read_parquet("datos/p3_nopo_resultados.parquet")
 
 nopo_rec <- nopo_por_anio |> filter(anio == anio_reciente)
 nopo_D0          <- nopo_rec |> filter(componente == "D_0") |> pull(valor)

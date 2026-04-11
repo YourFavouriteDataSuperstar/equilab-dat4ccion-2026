@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
 # ══════════════════════════════════════════════════════════════
-# 07b_precalcular_p3.R
+# 09_precalcular_p3.R
 # Pre-calcula datos para Página 3 — Brechas Salariales (descriptivos)
 # Fuente: datos/geih_ocupados_2019_2025.parquet
 #
@@ -16,8 +16,8 @@
 #   datos/p3_boxplot_hora.parquet       → cuartiles sal/hora (referencia adicional)
 #
 # Ejecutar desde la raíz del proyecto:
-#   Rscript procesamiento/07b_precalcular_p3.R
-#   O en RStudio: source("procesamiento/07b_precalcular_p3.R")
+#   Rscript procesamiento/09_precalcular_p3.R
+#   O en RStudio: source("procesamiento/09_precalcular_p3.R")
 # ══════════════════════════════════════════════════════════════
 
 library(arrow)

@@ -1,11 +1,11 @@
 # ══════════════════════════════════════════════════════════════
-# 05_precalcular_p1.R
+# 06_precalcular_p1.R
 # Pre-calcula TODAS las tasas con CV para la Página 1 (Acceso)
 # Resultado: datos/tasas_p1.parquet (~630 filas, <1 MB)
 #
 # Ejecutar UNA VEZ o cada vez que cambien los datos fuente.
 # Desde RStudio:
-#   source("procesamiento/05_precalcular_p1.R")
+#   source("procesamiento/06_precalcular_p1.R")
 # ══════════════════════════════════════════════════════════════
 
 cat("── Inicio del pre-cálculo para Página 1 ──\n")

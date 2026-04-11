@@ -1,10 +1,10 @@
 # ══════════════════════════════════════════════════════════════
-# 06_precalcular_p2.R
+# 08_precalcular_p2.R
 # Pre-calcula datos para Página 2 — Calidad del Empleo
 # Fuente: datos/geih_ocupados_2019_2025.parquet
 #
 # Ejecutar UNA VEZ o cuando cambien los datos fuente.
-# Desde RStudio:  source("procesamiento/06_precalcular_p2.R")
+# Desde RStudio:  source("procesamiento/08_precalcular_p2.R")
 # ══════════════════════════════════════════════════════════════
 
 cat("── Inicio pre-cálculo Página 2 (Calidad del Empleo) ──\n")

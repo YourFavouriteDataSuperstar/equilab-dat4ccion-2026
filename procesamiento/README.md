@@ -8,10 +8,12 @@ Este directorio contiene los scripts para reproducir los parquets que usa el das
 
 ## Visión general
 
-El pipeline tiene 4 pasos secuenciales. Los pasos 1–4 son **opcionales** para quien clone el repositorio: los parquets ya procesados están disponibles en Zenodo.
+El pipeline tiene dos fases: creación de parquets base (01-05, Python) y pre-cálculo de modelos (06-11, R). Los pasos 01-05 son **opcionales** para quien clone el repositorio: los parquets ya procesados están disponibles en Zenodo.
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
+│  FASE 1: Parquets base (Python)                                 │
+│                                                                 │
 │  01_descarga_geih.py     Descarga ZIPs del portal DANE          │
 │          ↓               datos_crudos/{anio}/*.zip              │
 │  02_extraer_geih.py      Extrae CSVs de los ZIPs               │
@@ -23,6 +25,15 @@ El pipeline tiene 4 pasos secuenciales. Los pasos 1–4 son **opcionales** para 
 │  datos/geih_ocupados_2019_2025.parquet  (Páginas 2, 3 y O-B)   │
 │  datos/geih_pet_2019_2025.parquet       (Página 1: TGP/TO/TD)  │
 │  datos/geih_genero_2022_2025.parquet    (Análisis género diverso)│
+│                                                                 │
+│  FASE 2: Pre-cálculo de modelos (R)                             │
+│                                                                 │
+│  06_precalcular_p1.R            → Indicadores P1                │
+│  07_precalcular_p1_boy.R        → BOY participación (P1)        │
+│  08_precalcular_p2.R            → Indicadores P2                │
+│  09_precalcular_p3.R            → Indicadores P3                │
+│  10_precalcular_p3_ob_nopo.R    → O-B + Ñopo (P3)              │
+│  11_precalcular_p4.R            → Diversidad de género (P4)     │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
