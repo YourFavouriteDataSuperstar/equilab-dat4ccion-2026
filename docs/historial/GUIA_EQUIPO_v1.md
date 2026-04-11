@@ -14,7 +14,7 @@ Cada persona construye una página. Al final Alejandra las integra en el product
 
 | Persona | Archivo de trabajo | Tema |
 |----|----|----|
-| **Pablo** | `analisis/p1_acceso.qmd` | Acceso al mercado laboral (TGP, TO, TD) |
+| **Alejandra** | `analisis/p1_acceso.qmd` | Acceso al mercado laboral (TGP, TO, TD) |
 | **Jeidy** | `analisis/p2_calidad.qmd` | Calidad del empleo y segregación sectorial |
 | **Sofía** | `analisis/p3_salariales.qmd` | Brechas salariales |
 
