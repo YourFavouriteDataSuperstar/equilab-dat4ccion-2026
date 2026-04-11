@@ -277,7 +277,7 @@ creadoras...*]{.eq-sidebar-titulo}
   </div>
 
   <div class="eq-creadora-card">
-    <div class="eq-creadora-nombre">Juliana Pemberthy</div>
+    <div class="eq-creadora-nombre">Juliana Pemberty</div>
     <p class="eq-creadora-bio">Estudiante de mercadeo enfocada en el análisis de datos para comprender al consumidor y transformar la información en decisiones con impacto.</p>
     <div class="eq-creadora-links">
       <a href="https://www.linkedin.com/in/juliana-pemberty-rojas-43445b353" target="_blank" rel="noopener" title="LinkedIn de Juliana">
@@ -301,7 +301,7 @@ creadoras...*]{.eq-sidebar-titulo}
 
 ```{=html}
 <div class="eq-cierre-wrap">
-  <p class="eq-cierre-frase">Desde Equilab tenemos una profunda convicción de que podemos cambiar el mundo con las matemáticas</p>
+  <p class="eq-cierre-frase">"Desde Equilab tenemos la profunda convicción de que podemos cambiar el mundo con las matemáticas"</p>
 </div>
 <div class="eq-footer">
   EQUILAB · Dat4cción 2026
