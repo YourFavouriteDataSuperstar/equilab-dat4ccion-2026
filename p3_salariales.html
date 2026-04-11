@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Brechas Salariales – Radar de Brechas Laborales de Género</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-f418161beb48e0141c760e455f12af2c.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-b406689d3af1c8aac48d8b9ceec5186b.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-b406689d3af1c8aac48d8b9ceec5186b.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-b406689d3af1c8aac48d8b9ceec5186b.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script src="site_libs/quarto-dashboard/quarto-dashboard.js"></script>
+<script src="site_libs/quarto-dashboard/stickythead.js"></script>
+
+
+
+<script src="site_libs/quarto-dashboard/web-components.js" type="module"></script>
+<script src="site_libs/quarto-dashboard/components.js"></script>
+
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<link href="site_libs/htmltools-fill-0.5.9/fill.css" rel="stylesheet">
+
+<script src="site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+
+<script src="site_libs/plotly-binding-4.12.0/plotly.js"></script>
+
+<script src="site_libs/typedarray-0.1/typedarray.min.js"></script>
+
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+
+<link href="site_libs/crosstalk-1.2.2/css/crosstalk.min.css" rel="stylesheet">
+
+<script src="site_libs/crosstalk-1.2.2/js/crosstalk.min.js"></script>
+
+<link href="site_libs/plotly-htmlwidgets-css-2.25.2/plotly-htmlwidgets.css" rel="stylesheet">
+
+<script src="site_libs/plotly-main-2.25.2/plotly-latest.min.js"></script>
+
+<link href="site_libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet">
+
+<script src="site_libs/datatables-binding-0.34.0/datatables.js"></script>
+
+<link href="site_libs/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
+
+<link href="site_libs/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet">
+
+<script src="site_libs/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+
+<script src="site_libs/jszip-1.13.6/jszip.min.js"></script>
+
+<link href="site_libs/dt-ext-buttons-1.13.6/css/buttons.dataTables.min.css" rel="stylesheet">
+
+<script src="site_libs/dt-ext-buttons-1.13.6/js/dataTables.buttons.min.js"></script>
+
+<script src="site_libs/dt-ext-buttons-1.13.6/js/buttons.html5.min.js"></script>
+
+<script src="site_libs/dt-ext-buttons-1.13.6/js/buttons.colVis.min.js"></script>
+
+<script src="site_libs/dt-ext-buttons-1.13.6/js/buttons.print.min.js"></script>
+
+<link href="site_libs/nouislider-7.0.10/jquery.nouislider.min.css" rel="stylesheet">
+
+<script src="site_libs/nouislider-7.0.10/jquery.nouislider.min.js"></script>
+
+<link href="site_libs/selectize-0.12.0/selectize.bootstrap3.css" rel="stylesheet">
+
+<script src="site_libs/selectize-0.12.0/selectize.min.js"></script>
+
+
+
+<link rel="stylesheet" href="styles/equilab.css">
+</head>
+
+<body class="quarto-dashboard nav-fixed fullcontent quarto-light">
+
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Radar de Brechas Laborales de Género</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html"> 
+<span class="menu-text">Inicio</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./metodologia.html"> 
+<span class="menu-text">Metodología</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./p1_acceso.html"> 
+<span class="menu-text">Acceso Laboral</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./p2_calidad.html"> 
+<span class="menu-text">Calidad del Empleo</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="./p3_salariales.html" aria-current="page"> 
+<span class="menu-text">Brechas Salariales</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./p4_mujeres_diversas.html"> 
+<span class="menu-text">Mujeres Diversas</span></a>
+  </li>  
+</ul>
+          <div class="quarto-dashboard-links"><a class="quarto-dashboard-link" href="index.qmd"><i class="bi bi-house"></i></a><a class="quarto-dashboard-link" href="https://github.com/equilab-ean/equilab-dat4ccion-2026"><i class="bi bi-github"></i></a></div></div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+<header id="quarto-dashboard-header">
+<nav class="navbar navbar-expand-md slim" data-bs-theme="dark">
+  <div class="navbar-container container-fluid">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" aria-controls="dashboard-collapse" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>    
+
+
+    <div class="navbar-brand-container">
+
+
+      <div class="navbar-title">
+        <div class="navbar-title-text"><a href="#">Brechas Salariales</a></div>
+        
+        
+      </div>
+    </div>
+<div id="dashboard-collapse" class="navbar-collapse collapse"><ul class="navbar-nav navbar-nav-scroll me-auto" role="tablist"><li class="nav-item" role="presentation"><a id="tab-panorama-general" class="nav-link active" data-bs-toggle="tab" role="tab" data-bs-target="#panorama-general" data-scrolling="true" href="#panorama-general" aria-controls="panorama-general" aria-selected="true"><span class="nav-link-text">Panorama General</span></a></li><li class="nav-item" role="presentation"><a id="tab-cuánto-ganan" class="nav-link" data-bs-toggle="tab" role="tab" data-bs-target="#cuánto-ganan" data-scrolling="true" href="#cuánto-ganan" aria-controls="cuánto-ganan" aria-selected="false"><span class="nav-link-text">¿Cuánto ganan?</span></a></li><li class="nav-item" role="presentation"><a id="tab-por-qué-les-pagan-menos" class="nav-link" data-bs-toggle="tab" role="tab" data-bs-target="#por-qué-les-pagan-menos" data-scrolling="true" href="#por-qué-les-pagan-menos" aria-controls="por-qué-les-pagan-menos" aria-selected="false"><span class="nav-link-text">¿Por qué les pagan menos?</span></a></li><li class="nav-item" role="presentation"><a id="tab-es-real-la-brecha" class="nav-link" data-bs-toggle="tab" role="tab" data-bs-target="#es-real-la-brecha" data-scrolling="true" href="#es-real-la-brecha" aria-controls="es-real-la-brecha" aria-selected="false"><span class="nav-link-text">¿Es real la brecha?</span></a></li></ul></div></div>
+</nav>
+</header></header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-layout-custom page-navbar quarto-dashboard-content bslib-gap-spacing html-fill-container dashboard-scrolling quarto-dashboard-pages">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+<!-- main -->
+
+<div class="bslib-grid-item html-fill-item tab-content bslib-grid" data-layout="flow" style="display: grid; grid-template-rows: minmax(3em, 1fr); grid-auto-columns: minmax(0, 1fr);">
+<div id="panorama-general" class="dashboard-page tab-pane show active html-fill-item html-fill-container" data-orientation="rows" aria-labelledby="tab-panorama-general">
+<div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-rows: minmax(3em, max-content); grid-auto-columns: minmax(0, 1fr);">
+<div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-columns: minmax(3em, 1fr);
+grid-auto-rows: minmax(0, 1fr);">
+
+<div style="max-width: 1100px; margin: 0 auto; padding: 0.3rem 2rem; line-height: 1.7;" class="html-fill-item html-fill-container">
+
+  <h2 style="color: #004457; font-size: 1.6rem; margin-bottom: 0.2rem; font-weight: 700;">
+    ¿Cuánto menos ganan las mujeres en Colombia?
+  </h2>
+  <p style="color: #6c757d; font-size: 0.95rem; margin-bottom: 1rem; border-bottom: 2px solid #e9ecef; padding-bottom: 0.5rem;">
+    Brechas salariales con perspectiva de género — Colombia 2019–2025
+  </p>
+
+  <p style="font-size: 1.05rem; color: #333; margin-bottom: 0.8rem;">
+    Las páginas anteriores mostraron que las mujeres
+    <a href="./p1_acceso.html" style="color: #004457; font-weight: 600;">participan menos</a>
+    en el mercado laboral y que quienes participan enfrentan
+    <a href="./p2_calidad.html" style="color: #004457; font-weight: 600;">condiciones más precarias</a>.
+    Ahora la pregunta clave: <strong>¿les pagan igual?</strong>
+  </p>
+
+  <p style="font-size: 1.05rem; color: #333; margin-bottom: 1rem;">
+    La respuesta corta es no. Pero esta sección va más allá del dato: usa <strong>tres métodos
+    complementarios</strong> para entender no solo <em>cuánto</em> es la brecha, sino
+    <em>por qué</em> existe y si es <em>real</em>.
+  </p>
+
+  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1rem;" class="html-fill-item html-fill-container">
+
+    <div style="background: #f3eaef; border-radius: 8px; padding: 1rem 1.2rem; border-left: 4px solid #6b2d50;" class="html-fill-item html-fill-container">
+      <strong style="color: #6b2d50; font-size: 0.9rem;">1 · Panorama descriptivo</strong><br>
+      <span style="font-size: 0.9rem; color: #555;">¿Cuánto ganan hombres y mujeres? ¿Cómo varía la brecha por nivel educativo?</span>
+    </div>
+
+    <div style="background: #f0f4e8; border-radius: 8px; padding: 1rem 1.2rem; border-left: 4px solid #5f7300;" class="html-fill-item html-fill-container">
+      <strong style="color: #5f7300; font-size: 0.9rem;">2 · Descomposición (O-B)</strong><br>
+      <span style="font-size: 0.9rem; color: #555;">¿Cuánto de la brecha se explica por educación, sector y experiencia? ¿Cuánto es discriminación?</span>
+    </div>
+
+    <div style="background: #e8f4f8; border-radius: 8px; padding: 1rem 1.2rem; border-left: 4px solid #004457;" class="html-fill-item html-fill-container">
+      <strong style="color: #004457; font-size: 0.9rem;">3 · Validación (Ñopo)</strong><br>
+      <span style="font-size: 0.9rem; color: #555;">¿Se confirma la brecha cuando comparamos personas con exactamente el mismo perfil?</span>
+    </div>
+
+  </div>
+
+  <div style="background: #f8f9fa; border-radius: 8px; padding: 0.8rem 1.2rem; border: 1px solid #dee2e6;" class="html-fill-item html-fill-container">
+    <p style="margin: 0; font-size: 0.95rem; color: #555;">
+      <strong style="color: #004457;">Nota:</strong> Los ingresos se miden como ingreso laboral
+      mensual total (INGLABO). Los modelos econométricos comparan personas con las mismas
+      características para aislar la brecha <em>a iguales condiciones</em>.
+    </p>
+  </div>
+
+</div>
+
+</div>
+</div>
+</div>
+<div id="cuánto-ganan" class="dashboard-page tab-pane grid-skip html-fill-item html-fill-container" data-orientation="rows" aria-labelledby="tab-cuánto-ganan">
+<div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-rows: minmax(3em, max-content) 150px minmax(3em, 25fr) minmax(3em, max-content) minmax(3em, max-content) minmax(3em, 20fr); grid-auto-columns: minmax(0, 1fr);">
+<div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-columns: minmax(3em, 1fr);
+grid-auto-rows: minmax(0, 1fr);">
+<div class="card html-fill-item html-fill-container bslib-card" data-fill="false" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
+<div class="card-body html-fill-item html-fill-container">
+<div class="callout callout-style-simple callout-note no-icon">
+<div class="callout-body d-flex html-fill-item html-fill-container">
+<div class="callout-icon-container html-fill-item html-fill-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-body-container html-fill-item html-fill-container">
+<p><strong>¿Cuánto ganan hombres y mujeres en Colombia?</strong> Las distribuciones del ingreso laboral mensual muestran que, en agregado, las medianas convergen al salario mínimo. Pero las <strong>medias</strong> revelan una brecha importante: los hombres promedian más porque acceden a empleos mejor remunerados en la cola superior. Al desagregar por nivel educativo, la brecha se amplifica. Esta sección muestra el panorama descriptivo antes de aplicar los modelos econométricos de las siguientes pestañas.</p>
+</div>
+</div>
+</div>
+</div>
+<bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
+    <template>Expand</template>
+    <span class="bslib-full-screen-enter badge rounded-pill">
+        <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" style="height:1em;width:1em;" aria-hidden="true" role="img"><path d="M20 5C20 4.4 19.6 4 19 4H13C12.4 4 12 3.6 12 3C12 2.4 12.4 2 13 2H21C21.6 2 22 2.4 22 3V11C22 11.6 21.6 12 21 12C20.4 12 20 11.6 20 11V5ZM4 19C4 19.6 4.4 20 5 20H11C11.6 20 12 20.4 12 21C12 21.6 11.6 22 11 22H3C2.4 22 2 21.6 2 21V13C2 12.4 2.4 12 3 12C3.6 12 4 12.4 4 13V19Z"></path></svg>
+    </span>
+</bslib-tooltip><script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div>
+</div>
+<div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-columns: minmax(3em, 1fr) minmax(3em, 1fr) minmax(3em, 1fr);
+grid-auto-rows: minmax(0, 1fr);">
+<div class="card valuebox cell html-fill-item html-fill-container bslib-card bslib-value-box showcase-left-center" data-bslib-card-init="" data-require-bs-caller="card()" style=" background: #6b2d50;">
+<div class="card-body html-fill-item html-fill-container">
+<div data-icon="cash-stack" class="html-fill-item html-fill-container value-box-grid">
+<div class="value-box-showcase html-fill-item html-fill-container">
+
+<i class="bi bi-cash-stack"></i></div>
+<div class="value-box-area">
+<p class="value-box-title">
+Promedio salarial Mujeres — 2025
+</p>
+<p class="value-box-value">
+$2.071.022
+</p>
+</div>
+</div>
+</div>
+<script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div><div class="card valuebox cell html-fill-item html-fill-container bslib-card bslib-value-box showcase-left-center" data-bslib-card-init="" data-require-bs-caller="card()" style=" background: #5f7300;">
+<div class="card-body html-fill-item html-fill-container">
+<div data-icon="cash-stack" class="html-fill-item html-fill-container value-box-grid">
+<div class="value-box-showcase html-fill-item html-fill-container">
+
+<i class="bi bi-cash-stack"></i></div>
+<div class="value-box-area">
+<p class="value-box-title">
+Promedio salarial Hombres — 2025
+</p>
+<p class="value-box-value">
+$2.016.130
+</p>
+</div>
+</div>
+</div>
+<script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div><div class="card valuebox cell html-fill-item html-fill-container bslib-card bslib-value-box showcase-left-center" data-bslib-card-init="" data-require-bs-caller="card()" style=" background: #004457;">
+<div class="card-body html-fill-item html-fill-container">
+<div data-icon="bar-chart" class="html-fill-item html-fill-container value-box-grid">
+<div class="value-box-showcase html-fill-item html-fill-container">
+
+<i class="bi bi-bar-chart"></i></div>
+<div class="value-box-area">
+<p class="value-box-title">
+Brecha en el promedio
+</p>
+<p class="value-box-value">
+-2.7%
+</p>
+</div>
+</div>
+</div>
+<script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div>
+</div>
+<div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-columns: minmax(3em, 1fr);
+grid-auto-rows: minmax(0, 1fr);">
+<div class="card tabset html-fill-item html-fill-container bslib-card" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
+<div class="card-header dashboard-card-no-title bslib-navs-card-title">
+
+<ul class="nav nav-tabs card-header-tabs" role="tablist" data-tabsetid="card-tabset-5"><li class="nav-item" role="presentation"><a href="#card-tabset-5-1" role="tab" data-toggle="tab" data-bs-toggle="tab" data-value="Distribución del ingreso laboral mensual — por sexo y nivel educativo" aria-selected="true" class="nav-link active">Distribución del ingreso laboral mensual — por sexo y nivel educativo</a></li><li class="nav-item" role="presentation"><a href="#card-tabset-5-2" role="tab" data-toggle="tab" data-bs-toggle="tab" data-value="Brecha salarial por nivel educativo (serie temporal)" aria-selected="false" class="nav-link">Brecha salarial por nivel educativo (serie temporal)</a></li></ul></div>
+
+
+<div class="tab-content html-fill-item html-fill-container" data-tabset-id="card-tabset-5"><div class="tab-pane active show html-fill-item html-fill-container" role="tabpanel" id="card-tabset-5-1"><div class="card-body html-fill-item html-fill-container" data-title="Distribución del ingreso laboral mensual — por sexo y nivel educativo">
+<div class="cell-output-display html-fill-item html-fill-container">
+<div class="plotly html-widget html-fill-item html-fill-container" id="htmlwidget-8822ea273e288ed49d22" style="width:100%;height:406px;"></div>
+<script type="application/json" data-for="htmlwidget-8822ea273e288ed49d22">{"x":{"visdat":{"5bd417ac3975":["function () ","plotlyVisDat"]},"cur_data":"5bd417ac3975","attrs":{"5bd417ac3975":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"box","name":"Hombres","x":["Básica","Media","Superior","Posgrado"],"q1":[500000,800000,900000,700000],"median":[800000,900000,1476000,828116],"q3":[1000000,1200000,2500000,828116],"lowerfence":[200000,300000,548000,300000],"upperfence":[1500000,2000000,6500000,2000000],"offsetgroup":"Hombres","alignmentgroup":"True","marker":{"color":"#5f730099","size":3},"line":{"color":"#5f7300","width":2},"fillcolor":"#5f730044","visible":false,"showlegend":false,"legendgroup":"Hombres","hovertemplate":"<b>Hombres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","inherit":true},"5bd417ac3975.1":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"box","name":"Mujeres","x":["Básica","Media","Superior","Posgrado"],"q1":[350000,600000,828116,200000],"median":[620000,828116,1200000,240000],"q3":[840000,960000,2200000,500000],"lowerfence":[100000,200000,414000,200000],"upperfence":[1250000,1500000,5000000,500000],"offsetgroup":"Mujeres","alignmentgroup":"True","marker":{"color":"#6b2d5099","size":3},"line":{"color":"#6b2d50","width":2},"fillcolor":"#6b2d5044","visible":false,"showlegend":false,"legendgroup":"Mujeres","hovertemplate":"<b>Mujeres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","inherit":true},"5bd417ac3975.2":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"box","name":"Hombres","x":["Básica","Media","Superior","Posgrado"],"q1":[400000,600000,878000,500000],"median":[700000,877803,1400000,760000],"q3":[900000,1100000,2500000,760000],"lowerfence":[180000,200000,400000,60000],"upperfence":[1450000,1870000,6000000,760000],"offsetgroup":"Hombres","alignmentgroup":"True","marker":{"color":"#5f730099","size":3},"line":{"color":"#5f7300","width":2},"fillcolor":"#5f730044","visible":false,"showlegend":false,"legendgroup":"Hombres","hovertemplate":"<b>Hombres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","inherit":true},"5bd417ac3975.3":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"box","name":"Mujeres","x":["Básica","Media","Superior","Posgrado"],"q1":[300000,470000,877803,150000],"median":[500000,877000,1300000,150000],"q3":[877800,940000,2300000,150000],"lowerfence":[100000,150000,400000,150000],"upperfence":[1200000,1500000,5000000,150000],"offsetgroup":"Mujeres","alignmentgroup":"True","marker":{"color":"#6b2d5099","size":3},"line":{"color":"#6b2d50","width":2},"fillcolor":"#6b2d5044","visible":false,"showlegend":false,"legendgroup":"Mujeres","hovertemplate":"<b>Mujeres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","inherit":true},"5bd417ac3975.4":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"box","name":"Hombres","x":["Básica","Media","Superior","Posgrado"],"q1":[420000,640000,900000,1100000],"median":[750000,908526,1000000,2000000],"q3":[950000,1200000,1500000,3300000],"lowerfence":[180000,250000,350000,550000],"upperfence":[1500000,2000000,2700000,8000000],"offsetgroup":"Hombres","alignmentgroup":"True","marker":{"color":"#5f730099","size":3},"line":{"color":"#5f7300","width":2},"fillcolor":"#5f730044","visible":false,"showlegend":false,"legendgroup":"Hombres","hovertemplate":"<b>Hombres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","inherit":true},"5bd417ac3975.5":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"box","name":"Mujeres","x":["Básica","Media","Superior","Posgrado"],"q1":[300000,500000,800000,1000000],"median":[500000,900000,950000,1700000],"q3":[901500,1000000,1200000,3000000],"lowerfence":[100000,150000,240000,500000],"upperfence":[1200000,1500000,2000000,6000000],"offsetgroup":"Mujeres","alignmentgroup":"True","marker":{"color":"#6b2d5099","size":3},"line":{"color":"#6b2d50","width":2},"fillcolor":"#6b2d5044","visible":false,"showlegend":false,"legendgroup":"Mujeres","hovertemplate":"<b>Mujeres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","inherit":true},"5bd417ac3975.6":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"box","name":"Hombres","x":["Básica","Media","Superior","Posgrado"],"q1":[500000,750000,1000000,1200000],"median":[800000,1000000,1150000,2000000],"q3":[1000000,1200000,1600000,3500000],"lowerfence":[200000,300000,400000,650000],"upperfence":[1800000,2000000,3000000,8000000],"offsetgroup":"Hombres","alignmentgroup":"True","marker":{"color":"#5f730099","size":3},"line":{"color":"#5f7300","width":2},"fillcolor":"#5f730044","visible":false,"showlegend":false,"legendgroup":"Hombres","hovertemplate":"<b>Hombres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","inherit":true},"5bd417ac3975.7":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"box","name":"Mujeres","x":["Básica","Media","Superior","Posgrado"],"q1":[308000,540000,860000,1100000],"median":[600000,1000000,1000000,1870000],"q3":[1000000,1050000,1300000,3000000],"lowerfence":[100000,200000,250000,500000],"upperfence":[1350000,1688676,2100000,6200000],"offsetgroup":"Mujeres","alignmentgroup":"True","marker":{"color":"#6b2d5099","size":3},"line":{"color":"#6b2d50","width":2},"fillcolor":"#6b2d5044","visible":false,"showlegend":false,"legendgroup":"Mujeres","hovertemplate":"<b>Mujeres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","inherit":true},"5bd417ac3975.8":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"box","name":"Hombres","x":["Básica","Media","Superior","Posgrado"],"q1":[600000,840000,1160000,1400000],"median":[900000,1160000,1300000,2200000],"q3":[1200000,1400000,1800000,3950000],"lowerfence":[240000,350000,500000,800000],"upperfence":[2000000,2500000,3200000,9000000],"offsetgroup":"Hombres","alignmentgroup":"True","marker":{"color":"#5f730099","size":3},"line":{"color":"#5f7300","width":2},"fillcolor":"#5f730044","visible":false,"showlegend":false,"legendgroup":"Hombres","hovertemplate":"<b>Hombres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","inherit":true},"5bd417ac3975.9":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"box","name":"Mujeres","x":["Básica","Media","Superior","Posgrado"],"q1":[400000,600000,1000000,1300000],"median":[700000,1160000,1160000,2000000],"q3":[1160000,1200000,1500000,3462249],"lowerfence":[150000,200000,300000,660000],"upperfence":[1600000,1900000,2500000,7000000],"offsetgroup":"Mujeres","alignmentgroup":"True","marker":{"color":"#6b2d5099","size":3},"line":{"color":"#6b2d50","width":2},"fillcolor":"#6b2d5044","visible":false,"showlegend":false,"legendgroup":"Mujeres","hovertemplate":"<b>Mujeres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","inherit":true},"5bd417ac3975.10":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"box","name":"Hombres","x":["Básica","Media","Superior","Posgrado"],"q1":[600000,960000,1300000,1500000],"median":[1000000,1300000,1400000,2500000],"q3":[1300000,1500000,2000000,4000000],"lowerfence":[250000,400000,500000,840000],"upperfence":[2000000,2600000,3600000,10000000],"offsetgroup":"Hombres","alignmentgroup":"True","marker":{"color":"#5f730099","size":3},"line":{"color":"#5f7300","width":2},"fillcolor":"#5f730044","visible":false,"showlegend":false,"legendgroup":"Hombres","hovertemplate":"<b>Hombres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","inherit":true},"5bd417ac3975.11":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"box","name":"Mujeres","x":["Básica","Media","Superior","Posgrado"],"q1":[450000,720000,1163000,1450000],"median":[800000,1300000,1300000,2200000],"q3":[1300000,1350000,1600000,3700000],"lowerfence":[150000,250000,392000,800000],"upperfence":[1750000,2000000,2600000,7600000],"offsetgroup":"Mujeres","alignmentgroup":"True","marker":{"color":"#6b2d5099","size":3},"line":{"color":"#6b2d50","width":2},"fillcolor":"#6b2d5044","visible":false,"showlegend":false,"legendgroup":"Mujeres","hovertemplate":"<b>Mujeres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","inherit":true},"5bd417ac3975.12":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"box","name":"Hombres","x":["Básica","Media","Superior","Posgrado"],"q1":[750000,1000000,1420000,1600000],"median":[1200000,1423500,1600000,2600000],"q3":[1500000,1800000,2000000,4200000],"lowerfence":[300000,480000,600000,1000000],"upperfence":[2400000,3000000,4000000,10000000],"offsetgroup":"Hombres","alignmentgroup":"True","marker":{"color":"#5f730099","size":3},"line":{"color":"#5f7300","width":2},"fillcolor":"#5f730044","visible":true,"showlegend":true,"legendgroup":"Hombres","hovertemplate":"<b>Hombres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","inherit":true},"5bd417ac3975.13":{"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"box","name":"Mujeres","x":["Básica","Media","Superior","Posgrado"],"q1":[500000,800000,1300000,1500000],"median":[900000,1423000,1423500,2500000],"q3":[1423500,1543500,1800000,4000000],"lowerfence":[200000,300000,400000,800000],"upperfence":[1923500,2300000,3000000,8000000],"offsetgroup":"Mujeres","alignmentgroup":"True","marker":{"color":"#6b2d5099","size":3},"line":{"color":"#6b2d50","width":2},"fillcolor":"#6b2d5044","visible":true,"showlegend":true,"legendgroup":"Mujeres","hovertemplate":"<b>Mujeres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","inherit":true}},"layout":{"margin":{"b":80,"l":100,"t":80,"r":30},"xaxis":{"domain":[0,1],"automargin":true,"title":"","categoryorder":"array","categoryarray":["Básica","Media","Superior","Posgrado"],"type":"category"},"yaxis":{"domain":[0,1],"automargin":true,"title":"Ingreso mensual (COP)","tickprefix":"$","tickformat":",.0f","zeroline":false,"gridcolor":"rgba(0,0,0,0.08)"},"legend":{"orientation":"h","y":1.0800000000000001,"x":0.34999999999999998},"boxmode":"group","plot_bgcolor":"white","paper_bgcolor":"white","sliders":[{"active":6,"currentvalue":{"prefix":"Año: ","font":{"size":13}},"steps":[{"method":"update","label":"2019","args":[{"visible":[true,true,false,false,false,false,false,false,false,false,false,false,false,false]}]},{"method":"update","label":"2020","args":[{"visible":[false,false,true,true,false,false,false,false,false,false,false,false,false,false]}]},{"method":"update","label":"2021","args":[{"visible":[false,false,false,false,true,true,false,false,false,false,false,false,false,false]}]},{"method":"update","label":"2022","args":[{"visible":[false,false,false,false,false,false,true,true,false,false,false,false,false,false]}]},{"method":"update","label":"2023","args":[{"visible":[false,false,false,false,false,false,false,false,true,true,false,false,false,false]}]},{"method":"update","label":"2024","args":[{"visible":[false,false,false,false,false,false,false,false,false,false,true,true,false,false]}]},{"method":"update","label":"2025","args":[{"visible":[false,false,false,false,false,false,false,false,false,false,false,false,true,true]}]}],"pad":{"t":40}}],"annotations":[{"text":"Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026.","xref":"paper","yref":"paper","x":0,"y":-0.17999999999999999,"showarrow":false,"font":{"size":9,"color":"gray50"},"align":"left"}],"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"fillcolor":"#5f730044","type":"box","name":"Hombres","x":["Básica","Media","Superior","Posgrado"],"q1":[500000,800000,900000,700000],"median":[800000,900000,1476000,828116],"q3":[1000000,1200000,2500000,828116],"lowerfence":[200000,300000,548000,300000],"upperfence":[1500000,2000000,6500000,2000000],"offsetgroup":"Hombres","alignmentgroup":"True","marker":{"color":"#5f730099","size":3,"line":{"color":"rgba(31,119,180,1)"}},"line":{"color":"#5f7300","width":2},"visible":false,"showlegend":false,"legendgroup":"Hombres","hovertemplate":["<b>Hombres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","<b>Hombres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","<b>Hombres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","<b>Hombres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>"],"xaxis":"x","yaxis":"y","frame":null},{"fillcolor":"#6b2d5044","type":"box","name":"Mujeres","x":["Básica","Media","Superior","Posgrado"],"q1":[350000,600000,828116,200000],"median":[620000,828116,1200000,240000],"q3":[840000,960000,2200000,500000],"lowerfence":[100000,200000,414000,200000],"upperfence":[1250000,1500000,5000000,500000],"offsetgroup":"Mujeres","alignmentgroup":"True","marker":{"color":"#6b2d5099","size":3,"line":{"color":"rgba(255,127,14,1)"}},"line":{"color":"#6b2d50","width":2},"visible":false,"showlegend":false,"legendgroup":"Mujeres","hovertemplate":["<b>Mujeres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","<b>Mujeres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","<b>Mujeres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","<b>Mujeres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>"],"xaxis":"x","yaxis":"y","frame":null},{"fillcolor":"#5f730044","type":"box","name":"Hombres","x":["Básica","Media","Superior","Posgrado"],"q1":[400000,600000,878000,500000],"median":[700000,877803,1400000,760000],"q3":[900000,1100000,2500000,760000],"lowerfence":[180000,200000,400000,60000],"upperfence":[1450000,1870000,6000000,760000],"offsetgroup":"Hombres","alignmentgroup":"True","marker":{"color":"#5f730099","size":3,"line":{"color":"rgba(44,160,44,1)"}},"line":{"color":"#5f7300","width":2},"visible":false,"showlegend":false,"legendgroup":"Hombres","hovertemplate":["<b>Hombres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","<b>Hombres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","<b>Hombres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","<b>Hombres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>"],"xaxis":"x","yaxis":"y","frame":null},{"fillcolor":"#6b2d5044","type":"box","name":"Mujeres","x":["Básica","Media","Superior","Posgrado"],"q1":[300000,470000,877803,150000],"median":[500000,877000,1300000,150000],"q3":[877800,940000,2300000,150000],"lowerfence":[100000,150000,400000,150000],"upperfence":[1200000,1500000,5000000,150000],"offsetgroup":"Mujeres","alignmentgroup":"True","marker":{"color":"#6b2d5099","size":3,"line":{"color":"rgba(214,39,40,1)"}},"line":{"color":"#6b2d50","width":2},"visible":false,"showlegend":false,"legendgroup":"Mujeres","hovertemplate":["<b>Mujeres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","<b>Mujeres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","<b>Mujeres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","<b>Mujeres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>"],"xaxis":"x","yaxis":"y","frame":null},{"fillcolor":"#5f730044","type":"box","name":"Hombres","x":["Básica","Media","Superior","Posgrado"],"q1":[420000,640000,900000,1100000],"median":[750000,908526,1000000,2000000],"q3":[950000,1200000,1500000,3300000],"lowerfence":[180000,250000,350000,550000],"upperfence":[1500000,2000000,2700000,8000000],"offsetgroup":"Hombres","alignmentgroup":"True","marker":{"color":"#5f730099","size":3,"line":{"color":"rgba(148,103,189,1)"}},"line":{"color":"#5f7300","width":2},"visible":false,"showlegend":false,"legendgroup":"Hombres","hovertemplate":["<b>Hombres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","<b>Hombres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","<b>Hombres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","<b>Hombres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>"],"xaxis":"x","yaxis":"y","frame":null},{"fillcolor":"#6b2d5044","type":"box","name":"Mujeres","x":["Básica","Media","Superior","Posgrado"],"q1":[300000,500000,800000,1000000],"median":[500000,900000,950000,1700000],"q3":[901500,1000000,1200000,3000000],"lowerfence":[100000,150000,240000,500000],"upperfence":[1200000,1500000,2000000,6000000],"offsetgroup":"Mujeres","alignmentgroup":"True","marker":{"color":"#6b2d5099","size":3,"line":{"color":"rgba(140,86,75,1)"}},"line":{"color":"#6b2d50","width":2},"visible":false,"showlegend":false,"legendgroup":"Mujeres","hovertemplate":["<b>Mujeres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","<b>Mujeres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","<b>Mujeres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","<b>Mujeres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>"],"xaxis":"x","yaxis":"y","frame":null},{"fillcolor":"#5f730044","type":"box","name":"Hombres","x":["Básica","Media","Superior","Posgrado"],"q1":[500000,750000,1000000,1200000],"median":[800000,1000000,1150000,2000000],"q3":[1000000,1200000,1600000,3500000],"lowerfence":[200000,300000,400000,650000],"upperfence":[1800000,2000000,3000000,8000000],"offsetgroup":"Hombres","alignmentgroup":"True","marker":{"color":"#5f730099","size":3,"line":{"color":"rgba(227,119,194,1)"}},"line":{"color":"#5f7300","width":2},"visible":false,"showlegend":false,"legendgroup":"Hombres","hovertemplate":["<b>Hombres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","<b>Hombres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","<b>Hombres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","<b>Hombres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>"],"xaxis":"x","yaxis":"y","frame":null},{"fillcolor":"#6b2d5044","type":"box","name":"Mujeres","x":["Básica","Media","Superior","Posgrado"],"q1":[308000,540000,860000,1100000],"median":[600000,1000000,1000000,1870000],"q3":[1000000,1050000,1300000,3000000],"lowerfence":[100000,200000,250000,500000],"upperfence":[1350000,1688676,2100000,6200000],"offsetgroup":"Mujeres","alignmentgroup":"True","marker":{"color":"#6b2d5099","size":3,"line":{"color":"rgba(127,127,127,1)"}},"line":{"color":"#6b2d50","width":2},"visible":false,"showlegend":false,"legendgroup":"Mujeres","hovertemplate":["<b>Mujeres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","<b>Mujeres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","<b>Mujeres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","<b>Mujeres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>"],"xaxis":"x","yaxis":"y","frame":null},{"fillcolor":"#5f730044","type":"box","name":"Hombres","x":["Básica","Media","Superior","Posgrado"],"q1":[600000,840000,1160000,1400000],"median":[900000,1160000,1300000,2200000],"q3":[1200000,1400000,1800000,3950000],"lowerfence":[240000,350000,500000,800000],"upperfence":[2000000,2500000,3200000,9000000],"offsetgroup":"Hombres","alignmentgroup":"True","marker":{"color":"#5f730099","size":3,"line":{"color":"rgba(188,189,34,1)"}},"line":{"color":"#5f7300","width":2},"visible":false,"showlegend":false,"legendgroup":"Hombres","hovertemplate":["<b>Hombres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","<b>Hombres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","<b>Hombres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","<b>Hombres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>"],"xaxis":"x","yaxis":"y","frame":null},{"fillcolor":"#6b2d5044","type":"box","name":"Mujeres","x":["Básica","Media","Superior","Posgrado"],"q1":[400000,600000,1000000,1300000],"median":[700000,1160000,1160000,2000000],"q3":[1160000,1200000,1500000,3462249],"lowerfence":[150000,200000,300000,660000],"upperfence":[1600000,1900000,2500000,7000000],"offsetgroup":"Mujeres","alignmentgroup":"True","marker":{"color":"#6b2d5099","size":3,"line":{"color":"rgba(23,190,207,1)"}},"line":{"color":"#6b2d50","width":2},"visible":false,"showlegend":false,"legendgroup":"Mujeres","hovertemplate":["<b>Mujeres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","<b>Mujeres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","<b>Mujeres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","<b>Mujeres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>"],"xaxis":"x","yaxis":"y","frame":null},{"fillcolor":"#5f730044","type":"box","name":"Hombres","x":["Básica","Media","Superior","Posgrado"],"q1":[600000,960000,1300000,1500000],"median":[1000000,1300000,1400000,2500000],"q3":[1300000,1500000,2000000,4000000],"lowerfence":[250000,400000,500000,840000],"upperfence":[2000000,2600000,3600000,10000000],"offsetgroup":"Hombres","alignmentgroup":"True","marker":{"color":"#5f730099","size":3,"line":{"color":"rgba(31,119,180,1)"}},"line":{"color":"#5f7300","width":2},"visible":false,"showlegend":false,"legendgroup":"Hombres","hovertemplate":["<b>Hombres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","<b>Hombres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","<b>Hombres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","<b>Hombres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>"],"xaxis":"x","yaxis":"y","frame":null},{"fillcolor":"#6b2d5044","type":"box","name":"Mujeres","x":["Básica","Media","Superior","Posgrado"],"q1":[450000,720000,1163000,1450000],"median":[800000,1300000,1300000,2200000],"q3":[1300000,1350000,1600000,3700000],"lowerfence":[150000,250000,392000,800000],"upperfence":[1750000,2000000,2600000,7600000],"offsetgroup":"Mujeres","alignmentgroup":"True","marker":{"color":"#6b2d5099","size":3,"line":{"color":"rgba(255,127,14,1)"}},"line":{"color":"#6b2d50","width":2},"visible":false,"showlegend":false,"legendgroup":"Mujeres","hovertemplate":["<b>Mujeres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","<b>Mujeres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","<b>Mujeres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","<b>Mujeres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>"],"xaxis":"x","yaxis":"y","frame":null},{"fillcolor":"#5f730044","type":"box","name":"Hombres","x":["Básica","Media","Superior","Posgrado"],"q1":[750000,1000000,1420000,1600000],"median":[1200000,1423500,1600000,2600000],"q3":[1500000,1800000,2000000,4200000],"lowerfence":[300000,480000,600000,1000000],"upperfence":[2400000,3000000,4000000,10000000],"offsetgroup":"Hombres","alignmentgroup":"True","marker":{"color":"#5f730099","size":3,"line":{"color":"rgba(44,160,44,1)"}},"line":{"color":"#5f7300","width":2},"visible":true,"showlegend":true,"legendgroup":"Hombres","hovertemplate":["<b>Hombres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","<b>Hombres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","<b>Hombres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","<b>Hombres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>"],"xaxis":"x","yaxis":"y","frame":null},{"fillcolor":"#6b2d5044","type":"box","name":"Mujeres","x":["Básica","Media","Superior","Posgrado"],"q1":[500000,800000,1300000,1500000],"median":[900000,1423000,1423500,2500000],"q3":[1423500,1543500,1800000,4000000],"lowerfence":[200000,300000,400000,800000],"upperfence":[1923500,2300000,3000000,8000000],"offsetgroup":"Mujeres","alignmentgroup":"True","marker":{"color":"#6b2d5099","size":3,"line":{"color":"rgba(214,39,40,1)"}},"line":{"color":"#6b2d50","width":2},"visible":true,"showlegend":true,"legendgroup":"Mujeres","hovertemplate":["<b>Mujeres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","<b>Mujeres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","<b>Mujeres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>","<b>Mujeres — %{x}<\/b><br>Mediana: $%{median:,.0f}<br>Q1: $%{q1:,.0f}<br>Q3: $%{q3:,.0f}<br><extra><\/extra>"],"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div></div><div class="tab-pane html-fill-item html-fill-container" role="tabpanel" id="card-tabset-5-2"><div class="card-body html-fill-item html-fill-container" data-title="Brecha salarial por nivel educativo (serie temporal)">
+<div class="cell-output-display html-fill-item html-fill-container">
+<div class="plotly html-widget html-fill-item html-fill-container" id="htmlwidget-56f344788d6d65cca2fb" style="width:100%;height:406px;"></div>
+<script type="application/json" data-for="htmlwidget-56f344788d6d65cca2fb">{"x":{"data":[{"x":[2019,2020,2021,2022,2023,2024,2025],"y":[25,21.879999999999999,28.57,30.629999999999999,30,25,27.27],"text":"","type":"scatter","mode":"lines","line":{"width":3.7795275590551185,"color":"rgba(102,194,165,1)","dash":"solid"},"hoveron":"points","name":"Primaria","legendgroup":"Primaria","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[2019,2020,2021,2022,2023,2024,2025],"y":[13.06,23.079999999999998,25,27.780000000000001,23.800000000000001,22.41,16.670000000000002],"text":"","type":"scatter","mode":"lines","line":{"width":3.7795275590551185,"color":"rgba(252,141,98,1)","dash":"solid"},"hoveron":"points","name":"Secundaria","legendgroup":"Secundaria","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[2019,2020,2021,2022,2023,2024,2025],"y":[7.9900000000000002,0.089999999999999997,0.93999999999999995,0,0,0,0.040000000000000001],"text":"","type":"scatter","mode":"lines","line":{"width":3.7795275590551185,"color":"rgba(141,160,203,1)","dash":"solid"},"hoveron":"points","name":"Media","legendgroup":"Media","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[2021,2022,2023,2024,2025],"y":[0.059999999999999998,0,3.3300000000000001,0,2.6299999999999999],"text":"","type":"scatter","mode":"lines","line":{"width":3.7795275590551185,"color":"rgba(231,138,195,1)","dash":"solid"},"hoveron":"points","name":"Técnico / Tecnológico","legendgroup":"Técnico / Tecnológico","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[2019,2020,2021,2022,2023,2024,2025],"y":[18.699999999999999,7.1399999999999997,9.0899999999999999,16.670000000000002,10.77,13.33,11.029999999999999],"text":"","type":"scatter","mode":"lines","line":{"width":3.7795275590551185,"color":"rgba(166,216,84,1)","dash":"solid"},"hoveron":"points","name":"Universitario","legendgroup":"Universitario","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[2021,2022,2023,2024,2025],"y":[15,6.5,9.0899999999999999,12,3.8500000000000001],"text":"","type":"scatter","mode":"lines","line":{"width":3.7795275590551185,"color":"rgba(255,217,47,1)","dash":"solid"},"hoveron":"points","name":"Posgrado","legendgroup":"Posgrado","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[2019,2020,2021,2022,2023,2024,2025],"y":[25,21.879999999999999,28.57,30.629999999999999,30,25,27.27],"text":["<b>Primaria<\/b><br>Año: 2019<br>Brecha: 25%<br>Mediana H: $  800.000/mes<br>Mediana M: $  600.000/mes","<b>Primaria<\/b><br>Año: 2020<br>Brecha: 21.88%<br>Mediana H: $  640.000/mes<br>Mediana M: $  500.000/mes","<b>Primaria<\/b><br>Año: 2021<br>Brecha: 28.57%<br>Mediana H: $  700.000/mes<br>Mediana M: $  500.000/mes","<b>Primaria<\/b><br>Año: 2022<br>Brecha: 30.63%<br>Mediana H: $  800.000/mes<br>Mediana M: $  555.000/mes","<b>Primaria<\/b><br>Año: 2023<br>Brecha: 30%<br>Mediana H: $  900.000/mes<br>Mediana M: $  630.000/mes","<b>Primaria<\/b><br>Año: 2024<br>Brecha: 25%<br>Mediana H: $1.000.000/mes<br>Mediana M: $  750.000/mes","<b>Primaria<\/b><br>Año: 2025<br>Brecha: 27.27%<br>Mediana H: $1.100.000/mes<br>Mediana M: $  800.000/mes"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(102,194,165,1)","opacity":1,"size":9.4488188976377963,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(102,194,165,1)"}},"hoveron":"points","name":"Primaria","legendgroup":"Primaria","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[2019,2020,2021,2022,2023,2024,2025],"y":[13.06,23.079999999999998,25,27.780000000000001,23.800000000000001,22.41,16.670000000000002],"text":["<b>Secundaria<\/b><br>Año: 2019<br>Brecha: 13.06%<br>Mediana H: $  828.116/mes<br>Mediana M: $  720.000/mes","<b>Secundaria<\/b><br>Año: 2020<br>Brecha: 23.08%<br>Mediana H: $  780.000/mes<br>Mediana M: $  600.000/mes","<b>Secundaria<\/b><br>Año: 2021<br>Brecha: 25%<br>Mediana H: $  800.000/mes<br>Mediana M: $  600.000/mes","<b>Secundaria<\/b><br>Año: 2022<br>Brecha: 27.78%<br>Mediana H: $  900.000/mes<br>Mediana M: $  650.000/mes","<b>Secundaria<\/b><br>Año: 2023<br>Brecha: 23.8%<br>Mediana H: $1.000.000/mes<br>Mediana M: $  762.000/mes","<b>Secundaria<\/b><br>Año: 2024<br>Brecha: 22.41%<br>Mediana H: $1.160.000/mes<br>Mediana M: $  900.000/mes","<b>Secundaria<\/b><br>Año: 2025<br>Brecha: 16.67%<br>Mediana H: $1.200.000/mes<br>Mediana M: $1.000.000/mes"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(252,141,98,1)","opacity":1,"size":9.4488188976377963,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(252,141,98,1)"}},"hoveron":"points","name":"Secundaria","legendgroup":"Secundaria","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[2019,2020,2021,2022,2023,2024,2025],"y":[7.9900000000000002,0.089999999999999997,0.93999999999999995,0,0,0,0.040000000000000001],"text":["<b>Media<\/b><br>Año: 2019<br>Brecha: 7.99%<br>Mediana H: $  900.000/mes<br>Mediana M: $  828.116/mes","<b>Media<\/b><br>Año: 2020<br>Brecha: 0.09%<br>Mediana H: $  877.803/mes<br>Mediana M: $  877.000/mes","<b>Media<\/b><br>Año: 2021<br>Brecha: 0.94%<br>Mediana H: $  908.526/mes<br>Mediana M: $  900.000/mes","<b>Media<\/b><br>Año: 2022<br>Brecha: 0%<br>Mediana H: $1.000.000/mes<br>Mediana M: $1.000.000/mes","<b>Media<\/b><br>Año: 2023<br>Brecha: 0%<br>Mediana H: $1.160.000/mes<br>Mediana M: $1.160.000/mes","<b>Media<\/b><br>Año: 2024<br>Brecha: 0%<br>Mediana H: $1.300.000/mes<br>Mediana M: $1.300.000/mes","<b>Media<\/b><br>Año: 2025<br>Brecha: 0.04%<br>Mediana H: $1.423.500/mes<br>Mediana M: $1.423.000/mes"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(141,160,203,1)","opacity":1,"size":9.4488188976377963,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(141,160,203,1)"}},"hoveron":"points","name":"Media","legendgroup":"Media","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[2021,2022,2023,2024,2025],"y":[0.059999999999999998,0,3.3300000000000001,0,2.6299999999999999],"text":["<b>Técnico / Tecnológico<\/b><br>Año: 2021<br>Brecha: 0.06%<br>Mediana H: $  908.526/mes<br>Mediana M: $  908.000/mes","<b>Técnico / Tecnológico<\/b><br>Año: 2022<br>Brecha: 0%<br>Mediana H: $1.000.000/mes<br>Mediana M: $1.000.000/mes","<b>Técnico / Tecnológico<\/b><br>Año: 2023<br>Brecha: 3.33%<br>Mediana H: $1.200.000/mes<br>Mediana M: $1.160.000/mes","<b>Técnico / Tecnológico<\/b><br>Año: 2024<br>Brecha: 0%<br>Mediana H: $1.300.000/mes<br>Mediana M: $1.300.000/mes","<b>Técnico / Tecnológico<\/b><br>Año: 2025<br>Brecha: 2.63%<br>Mediana H: $1.462.000/mes<br>Mediana M: $1.423.500/mes"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(231,138,195,1)","opacity":1,"size":9.4488188976377963,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(231,138,195,1)"}},"hoveron":"points","name":"Técnico / Tecnológico","legendgroup":"Técnico / Tecnológico","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[2019,2020,2021,2022,2023,2024,2025],"y":[18.699999999999999,7.1399999999999997,9.0899999999999999,16.670000000000002,10.77,13.33,11.029999999999999],"text":["<b>Universitario<\/b><br>Año: 2019<br>Brecha: 18.7%<br>Mediana H: $1.476.000/mes<br>Mediana M: $1.200.000/mes","<b>Universitario<\/b><br>Año: 2020<br>Brecha: 7.14%<br>Mediana H: $1.400.000/mes<br>Mediana M: $1.300.000/mes","<b>Universitario<\/b><br>Año: 2021<br>Brecha: 9.09%<br>Mediana H: $1.100.000/mes<br>Mediana M: $1.000.000/mes","<b>Universitario<\/b><br>Año: 2022<br>Brecha: 16.67%<br>Mediana H: $1.200.000/mes<br>Mediana M: $1.000.000/mes","<b>Universitario<\/b><br>Año: 2023<br>Brecha: 10.77%<br>Mediana H: $1.300.000/mes<br>Mediana M: $1.160.000/mes","<b>Universitario<\/b><br>Año: 2024<br>Brecha: 13.33%<br>Mediana H: $1.500.000/mes<br>Mediana M: $1.300.000/mes","<b>Universitario<\/b><br>Año: 2025<br>Brecha: 11.03%<br>Mediana H: $1.600.000/mes<br>Mediana M: $1.423.500/mes"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(166,216,84,1)","opacity":1,"size":9.4488188976377963,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(166,216,84,1)"}},"hoveron":"points","name":"Universitario","legendgroup":"Universitario","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[2021,2022,2023,2024,2025],"y":[15,6.5,9.0899999999999999,12,3.8500000000000001],"text":["<b>Posgrado<\/b><br>Año: 2021<br>Brecha: 15%<br>Mediana H: $2.000.000/mes<br>Mediana M: $1.700.000/mes","<b>Posgrado<\/b><br>Año: 2022<br>Brecha: 6.5%<br>Mediana H: $2.000.000/mes<br>Mediana M: $1.870.000/mes","<b>Posgrado<\/b><br>Año: 2023<br>Brecha: 9.09%<br>Mediana H: $2.200.000/mes<br>Mediana M: $2.000.000/mes","<b>Posgrado<\/b><br>Año: 2024<br>Brecha: 12%<br>Mediana H: $2.500.000/mes<br>Mediana M: $2.200.000/mes","<b>Posgrado<\/b><br>Año: 2025<br>Brecha: 3.85%<br>Mediana H: $2.600.000/mes<br>Mediana M: $2.500.000/mes"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(255,217,47,1)","opacity":1,"size":9.4488188976377963,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(255,217,47,1)"}},"hoveron":"points","name":"Posgrado","legendgroup":"Posgrado","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[2018.7,2025.3],"y":[0,0],"text":"","type":"scatter","mode":"lines","line":{"width":1.8897637795275593,"color":"rgba(173,181,189,1)","dash":"dash"},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[2021,2021],"y":[-1.5315000000000001,32.161499999999997],"text":"","type":"scatter","mode":"lines","line":{"width":1.8897637795275593,"color":"rgba(173,181,189,1)","dash":"dot"},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":23.970112079701121,"r":7.9701120797011216,"b":24.707347447073481,"l":40.647571606475722},"paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":15.940224159402243},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[2018.7,2025.3],"tickmode":"array","ticktext":["2019","2020","2021","2022","2023","2024","2025"],"tickvals":[2019,2020,2021,2022,2023,2024,2025],"categoryorder":"array","categoryarray":["2019","2020","2021","2022","2023","2024","2025"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.9850560398505608,"tickwidth":0,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":12.7521793275218},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.72455564360919278,"zeroline":false,"anchor":"y","title":{"text":"","font":{"color":"rgba(0,0,0,1)","family":"","size":15.940224159402243}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-1.5315000000000001,32.161499999999997],"tickmode":"array","ticktext":["0","10","20","30"],"tickvals":[0,10,20,30],"categoryorder":"array","categoryarray":["0","10","20","30"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.9850560398505608,"tickwidth":0,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":12.7521793275218},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.72455564360919278,"zeroline":false,"anchor":"x","title":{"text":"Brecha salarial (%)","font":{"color":"rgba(0,0,0,1)","family":"","size":15.940224159402243}},"hoverformat":".2f"},"shapes":[],"showlegend":true,"legend":{"bgcolor":null,"bordercolor":null,"borderwidth":0,"font":{"color":"rgba(0,0,0,1)","family":"","size":12.7521793275218},"orientation":"h","x":0.5,"y":1.1200000000000001,"xanchor":"center","yanchor":"bottom","title":{"text":"","font":{"color":"rgba(0,0,0,1)","family":"","size":15.940224159402243}}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"5bd420a72e52":{"x":{},"y":{},"colour":{},"type":"scatter"},"5bd42f3a68f8":{"x":{},"y":{},"colour":{},"text":{}},"5bd417ce2cd":{"yintercept":{}},"5bd4783a5de9":{"xintercept":{}}},"cur_data":"5bd420a72e52","visdat":{"5bd420a72e52":["function (y) ","x"],"5bd42f3a68f8":["function (y) ","x"],"5bd417ce2cd":["function (y) ","x"],"5bd4783a5de9":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div></div></div><bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
+    <template>Expand</template>
+    <span class="bslib-full-screen-enter badge rounded-pill">
+        <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" style="height:1em;width:1em;" aria-hidden="true" role="img"><path d="M20 5C20 4.4 19.6 4 19 4H13C12.4 4 12 3.6 12 3C12 2.4 12.4 2 13 2H21C21.6 2 22 2.4 22 3V11C22 11.6 21.6 12 21 12C20.4 12 20 11.6 20 11V5ZM4 19C4 19.6 4.4 20 5 20H11C11.6 20 12 20.4 12 21C12 21.6 11.6 22 11 22H3C2.4 22 2 21.6 2 21V13C2 12.4 2.4 12 3 12C3.6 12 4 12.4 4 13V19Z"></path></svg>
+    </span>
+</bslib-tooltip><script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div>
+</div>
+<div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-columns: minmax(3em, 1fr);
+grid-auto-rows: minmax(0, 1fr);">
+<div class="card html-fill-item html-fill-container bslib-card" data-fill="false" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
+<div class="card-body html-fill-item html-fill-container">
+<div class="callout callout-style-simple callout-note no-icon">
+<div class="callout-body d-flex html-fill-item html-fill-container">
+<div class="callout-icon-container html-fill-item html-fill-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-body-container html-fill-item html-fill-container">
+<p><strong>¿Cómo leer el boxplot?</strong> Cada “caja” agrupa el <strong>50% central</strong> de los ingresos para esa categoría — la línea del medio es la mediana (el valor donde la mitad gana más y la mitad gana menos). Los “bigotes” muestran el rango típico (del percentil 5 al 95). Si la caja de los hombres está más arriba que la de las mujeres, significa que la mitad central de los hombres gana más. Cuando las cajas se solapan poco, la brecha es clara. <em>Nota: el gráfico muestra el 90% central de la distribución; el 5% de personas con los ingresos más altos no aparece para facilitar la comparación visual.</em></p>
+</div>
+</div>
+</div>
+</div>
+<bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
+    <template>Expand</template>
+    <span class="bslib-full-screen-enter badge rounded-pill">
+        <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" style="height:1em;width:1em;" aria-hidden="true" role="img"><path d="M20 5C20 4.4 19.6 4 19 4H13C12.4 4 12 3.6 12 3C12 2.4 12.4 2 13 2H21C21.6 2 22 2.4 22 3V11C22 11.6 21.6 12 21 12C20.4 12 20 11.6 20 11V5ZM4 19C4 19.6 4.4 20 5 20H11C11.6 20 12 20.4 12 21C12 21.6 11.6 22 11 22H3C2.4 22 2 21.6 2 21V13C2 12.4 2.4 12 3 12C3.6 12 4 12.4 4 13V19Z"></path></svg>
+    </span>
+</bslib-tooltip><script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div>
+</div>
+<div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-columns: minmax(3em, 1fr);
+grid-auto-rows: minmax(0, 1fr);">
+<div class="card html-fill-item html-fill-container bslib-card" data-fill="false" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
+<div class="card-body html-fill-item html-fill-container">
+<div class="callout callout-style-simple callout-tip no-icon">
+<div class="callout-body d-flex html-fill-item html-fill-container">
+<div class="callout-icon-container html-fill-item html-fill-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-body-container html-fill-item html-fill-container">
+<p><strong>Hallazgos clave:</strong> La brecha salarial <strong>crece con la educación</strong>: las mujeres con posgrado enfrentan la mayor diferencia — evidencia de un “techo de cristal” en los niveles más altos. Paradójicamente, la menor brecha está donde ambos sexos convergen al mínimo. La brecha en <strong>promedios</strong> (-2.7%) revela que los hombres acceden con más frecuencia a los empleos mejor pagados. Esto sugiere que las políticas de equidad educativa, siendo necesarias, no son suficientes para cerrar la brecha — por eso necesitamos los modelos econométricos de las siguientes pestañas.</p>
+</div>
+</div>
+</div>
+</div>
+<bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
+    <template>Expand</template>
+    <span class="bslib-full-screen-enter badge rounded-pill">
+        <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" style="height:1em;width:1em;" aria-hidden="true" role="img"><path d="M20 5C20 4.4 19.6 4 19 4H13C12.4 4 12 3.6 12 3C12 2.4 12.4 2 13 2H21C21.6 2 22 2.4 22 3V11C22 11.6 21.6 12 21 12C20.4 12 20 11.6 20 11V5ZM4 19C4 19.6 4.4 20 5 20H11C11.6 20 12 20.4 12 21C12 21.6 11.6 22 11 22H3C2.4 22 2 21.6 2 21V13C2 12.4 2.4 12 3 12C3.6 12 4 12.4 4 13V19Z"></path></svg>
+    </span>
+</bslib-tooltip><script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div>
+</div>
+<div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-columns: minmax(3em, 1fr);
+grid-auto-rows: minmax(0, 1fr);">
+<div class="card cell html-fill-item html-fill-container bslib-card" data-title="Brecha salarial por nivel educativo — serie completa" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
+<div class="card-header"><div class="card-title"><span style="display: inline">
+Brecha salarial por nivel educativo — serie completa
+</span></div></div>
+<div class="card-body html-fill-item html-fill-container">
+<div class="cell-output-display html-fill-item html-fill-container">
+<div class="datatables html-widget html-fill-item html-fill-container" id="htmlwidget-befe7f928595357f2261" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-befe7f928595357f2261">{"x":{"filter":"top","vertical":false,"filterHTML":"<tr>\n  <td data-type=\"integer\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"2019\" data-max=\"2025\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"factor\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"width: 100%; display: none;\">\n      <select multiple=\"multiple\" style=\"width: 100%;\" data-options=\"[&quot;Primaria&quot;,&quot;Secundaria&quot;,&quot;Media&quot;,&quot;Técnico / Tecnológico&quot;,&quot;Universitario&quot;,&quot;Posgrado&quot;]\"><\/select>\n    <\/div>\n  <\/td>\n  <td data-type=\"integer\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"640000\" data-max=\"2600000\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"integer\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"500000\" data-max=\"2500000\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0\" data-max=\"30.63\" data-scale=\"2\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"integer\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"4528\" data-max=\"81883\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"integer\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"2907\" data-max=\"73463\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n<\/tr>","extensions":["Buttons"],"caption":"<caption style=\"color: gray; font-size: 11px;\">Brecha salarial por educación — Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026.<\/caption>","data":[[2019,2019,2019,2019,2020,2020,2020,2020,2021,2021,2021,2021,2021,2021,2022,2022,2022,2022,2022,2022,2023,2023,2023,2023,2023,2023,2024,2024,2024,2024,2024,2024,2025,2025,2025,2025,2025,2025],["Primaria","Secundaria","Media","Universitario","Primaria","Secundaria","Media","Universitario","Primaria","Secundaria","Media","Técnico / Tecnológico","Universitario","Posgrado","Primaria","Secundaria","Media","Técnico / Tecnológico","Universitario","Posgrado","Primaria","Secundaria","Media","Técnico / Tecnológico","Universitario","Posgrado","Primaria","Secundaria","Media","Técnico / Tecnológico","Universitario","Posgrado","Primaria","Secundaria","Media","Técnico / Tecnológico","Universitario","Posgrado"],[800000,828116,900000,1476000,640000,780000,877803,1400000,700000,800000,908526,908526,1100000,2000000,800000,900000,1000000,1000000,1200000,2000000,900000,1000000,1160000,1200000,1300000,2200000,1000000,1160000,1300000,1300000,1500000,2500000,1100000,1200000,1423500,1462000,1600000,2600000],[600000,720000,828116,1200000,500000,600000,877000,1300000,500000,600000,900000,908000,1000000,1700000,555000,650000,1000000,1000000,1000000,1870000,630000,762000,1160000,1160000,1160000,2000000,750000,900000,1300000,1300000,1300000,2200000,800000,1000000,1423000,1423500,1423500,2500000],[25,13.06,7.99,18.7,21.88,23.08,0.09,7.14,28.57,25,0.9399999999999999,0.06,9.09,15,30.63,27.78,0,0,16.67,6.5,30,23.8,0,3.33,10.77,9.09,25,22.41,0,0,13.33,12,27.27,16.67,0.04,2.63,11.03,3.85],[41739,32441,81883,66891,17332,11791,29484,23300,34170,23433,57383,4844,11338,30944,35649,24930,63275,4649,13334,36162,33553,23163,59721,4582,12922,34287,31202,20671,57643,4528,12255,33885,31474,20934,60282,4945,12798,35111],[19122,15140,50726,73463,5840,4368,16058,25699,12906,9678,32282,2907,13903,34758,14831,11207,37729,3298,17149,40644,14066,10452,37143,3391,16182,39334,13404,9505,36711,3203,15330,38069,12697,9580,37781,3506,16337,39518]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Año<\/th>\n      <th>Nivel educativo<\/th>\n      <th>Mediana H ($/mes)<\/th>\n      <th>Mediana M ($/mes)<\/th>\n      <th>Brecha (%)<\/th>\n      <th>N Hombres<\/th>\n      <th>N Mujeres<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"bPaginate":false,"dom":"Bfrtip","language":{"info":"_START_ a _END_ de _TOTAL_","search":"Buscar:","paginate":{"previous":"Anterior","next":"Siguiente"}},"pageLength":10,"scrollX":true,"buttons":[{"extend":"csv","text":"Descargar CSV"},{"extend":"excel","text":"Descargar Excel"}],"columnDefs":[{"targets":2,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatCurrency(data, \"$\", 0, 3, \".\", \",\", true, null);\n  }"},{"targets":3,"render":"function(data, type, row, meta) {\n    return type !== 'display' ? data : DTWidget.formatCurrency(data, \"$\", 0, 3, \".\", \",\", true, null);\n  }"},{"className":"dt-right","targets":[0,2,3,4,5,6]},{"name":"anio","targets":0},{"name":"niv_edu_label","targets":1},{"name":"mediana_h","targets":2},{"name":"mediana_m","targets":3},{"name":"brecha_pct","targets":4},{"name":"n_hombres","targets":5},{"name":"n_mujeres","targets":6}],"order":[],"autoWidth":false,"orderClasses":false,"orderCellsTop":true,"rowCallback":"function(row, data, displayNum, displayIndex, dataIndex) {\nvar value=data[4]; $(this.api().cell(row, 4).node()).css({'font-weight':'bold','background-color':isNaN(parseFloat(value)) ? '' : value <= 5 ? \"#d4edda\" : value <= 15 ? \"#fff3cd\" : value <= 25 ? \"#f8d7da\" : \"#d9534f\"});\n}"}},"evals":["options.columnDefs.0.render","options.columnDefs.1.render","options.rowCallback"],"jsHooks":[]}</script>
+</div>
+</div>
+<bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
+    <template>Expand</template>
+    <span class="bslib-full-screen-enter badge rounded-pill">
+        <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" style="height:1em;width:1em;" aria-hidden="true" role="img"><path d="M20 5C20 4.4 19.6 4 19 4H13C12.4 4 12 3.6 12 3C12 2.4 12.4 2 13 2H21C21.6 2 22 2.4 22 3V11C22 11.6 21.6 12 21 12C20.4 12 20 11.6 20 11V5ZM4 19C4 19.6 4.4 20 5 20H11C11.6 20 12 20.4 12 21C12 21.6 11.6 22 11 22H3C2.4 22 2 21.6 2 21V13C2 12.4 2.4 12 3 12C3.6 12 4 12.4 4 13V19Z"></path></svg>
+    </span>
+</bslib-tooltip><script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div>
+</div>
+</div>
+</div>
+<div id="por-qué-les-pagan-menos" class="dashboard-page tab-pane grid-skip html-fill-item html-fill-container" data-orientation="rows" aria-labelledby="tab-por-qué-les-pagan-menos">
+<div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-rows: minmax(3em, max-content) 150px minmax(3em, 20fr) minmax(3em, max-content) minmax(3em, max-content) minmax(3em, 20fr) minmax(3em, max-content) minmax(3em, max-content) minmax(3em, 20fr); grid-auto-columns: minmax(0, 1fr);">
+<div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-columns: minmax(3em, 1fr);
+grid-auto-rows: minmax(0, 1fr);">
+<div class="card html-fill-item html-fill-container bslib-card" data-fill="false" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
+<div class="card-body html-fill-item html-fill-container">
+<div class="callout callout-style-simple callout-note no-icon">
+<div class="callout-body d-flex html-fill-item html-fill-container">
+<div class="callout-icon-container html-fill-item html-fill-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-body-container html-fill-item html-fill-container">
+<p><strong>Las mujeres ocupadas en Colombia tienen más educación que los hombres.</strong> Sin embargo, cuando comparamos personas con las mismas características (educación, experiencia, sector y zona), los hombres siguen ganando más. Esta sección descompone la brecha salarial para entender qué parte se explica por diferencias en perfiles y qué parte no tiene explicación observable.</p>
+</div>
+</div>
+</div>
+</div>
+<bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
+    <template>Expand</template>
+    <span class="bslib-full-screen-enter badge rounded-pill">
+        <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" style="height:1em;width:1em;" aria-hidden="true" role="img"><path d="M20 5C20 4.4 19.6 4 19 4H13C12.4 4 12 3.6 12 3C12 2.4 12.4 2 13 2H21C21.6 2 22 2.4 22 3V11C22 11.6 21.6 12 21 12C20.4 12 20 11.6 20 11V5ZM4 19C4 19.6 4.4 20 5 20H11C11.6 20 12 20.4 12 21C12 21.6 11.6 22 11 22H3C2.4 22 2 21.6 2 21V13C2 12.4 2.4 12 3 12C3.6 12 4 12.4 4 13V19Z"></path></svg>
+    </span>
+</bslib-tooltip><script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div>
+</div>
+<div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-columns: minmax(3em, 1fr) minmax(3em, 1fr) minmax(3em, 1fr);
+grid-auto-rows: minmax(0, 1fr);">
+<div class="card valuebox cell html-fill-item html-fill-container bslib-card bslib-value-box showcase-left-center" data-bslib-card-init="" data-require-bs-caller="card()" style=" background: #E64B35;">
+<div class="card-body html-fill-item html-fill-container">
+<div data-icon="exclamation-triangle" class="html-fill-item html-fill-container value-box-grid">
+<div class="value-box-showcase html-fill-item html-fill-container">
+
+<i class="bi bi-exclamation-triangle"></i></div>
+<div class="value-box-area">
+<p class="value-box-title">
+A iguales condiciones, los hombres ganan
+</p>
+<p class="value-box-value">
+8.9% más
+</p>
+</div>
+</div>
+</div>
+<script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div><div class="card valuebox cell html-fill-item html-fill-container bslib-card bslib-value-box showcase-left-center" data-bslib-card-init="" data-require-bs-caller="card()" style=" background: #4DBBD5;">
+<div class="card-body html-fill-item html-fill-container">
+<div data-icon="mortarboard" class="html-fill-item html-fill-container value-box-grid">
+<div class="value-box-showcase html-fill-item html-fill-container">
+
+<i class="bi bi-mortarboard"></i></div>
+<div class="value-box-area">
+<p class="value-box-title">
+Si se reconociera su educación, las mujeres ganarían
+</p>
+<p class="value-box-value">
+8.9% más
+</p>
+</div>
+</div>
+</div>
+<script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div><div class="card valuebox cell html-fill-item html-fill-container bslib-card bslib-value-box showcase-left-center" data-bslib-card-init="" data-require-bs-caller="card()" style=" background: #004457;">
+<div class="card-body html-fill-item html-fill-container">
+<div data-icon="arrow-left-right" class="html-fill-item html-fill-container value-box-grid">
+<div class="value-box-showcase html-fill-item html-fill-container">
+
+<i class="bi bi-arrow-left-right"></i></div>
+<div class="value-box-area">
+<p class="value-box-title">
+Brecha bruta total
+</p>
+<p class="value-box-value">
+0.1%
+</p>
+</div>
+</div>
+</div>
+<script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div>
+</div>
+<div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-columns: minmax(3em, 1fr);
+grid-auto-rows: minmax(0, 1fr);">
+<div class="card tabset html-fill-item html-fill-container bslib-card" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
+<div class="card-header dashboard-card-no-title bslib-navs-card-title">
+
+<ul class="nav nav-tabs card-header-tabs" role="tablist" data-tabsetid="card-tabset-13"><li class="nav-item" role="presentation"><a href="#card-tabset-13-1" role="tab" data-toggle="tab" data-bs-toggle="tab" data-value="¿Cómo ha cambiado la brecha salarial?" aria-selected="true" class="nav-link active">¿Cómo ha cambiado la brecha salarial?</a></li><li class="nav-item" role="presentation"><a href="#card-tabset-13-2" role="tab" data-toggle="tab" data-bs-toggle="tab" data-value="¿Qué factores explican la brecha?" aria-selected="false" class="nav-link">¿Qué factores explican la brecha?</a></li></ul></div>
+
+
+<div class="tab-content html-fill-item html-fill-container" data-tabset-id="card-tabset-13"><div class="tab-pane active show html-fill-item html-fill-container" role="tabpanel" id="card-tabset-13-1"><div class="card-body html-fill-item html-fill-container" data-title="¿Cómo ha cambiado la brecha salarial?">
+<div class="cell-output-display html-fill-item html-fill-container">
+<div class="plotly html-widget html-fill-item html-fill-container" id="htmlwidget-1163b924d3bb2ad2ce65" style="width:100%;height:406px;"></div>
+<script type="application/json" data-for="htmlwidget-1163b924d3bb2ad2ce65">{"x":{"data":[{"orientation":"v","width":[0.6999999999998181,0.6999999999998181,0.6999999999998181,0.6999999999998181,0.6999999999998181,0.6999999999998181,0.6999999999998181],"base":[-11.892204553343239,-20.696802606691392,-0.81553690584600436,-12.814036233058509,-10.891451707201401,-9.5984017100783934,-8.9264503434447757],"x":[2019,2020,2021,2022,2023,2024,2025],"y":[11.892204553343239,20.696802606691392,0.81553690584600436,12.814036233058509,10.891451707201401,9.5984017100783934,8.9264503434447757],"text":["anio: 2019<br />pct: -11.8922046<br />componente: Por características","anio: 2020<br />pct: -20.6968026<br />componente: Por características","anio: 2021<br />pct:  -0.8155369<br />componente: Por características","anio: 2022<br />pct: -12.8140362<br />componente: Por características","anio: 2023<br />pct: -10.8914517<br />componente: Por características","anio: 2024<br />pct:  -9.5984017<br />componente: Por características","anio: 2025<br />pct:  -8.9264503<br />componente: Por características"],"type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(77,187,213,1)","line":{"width":1.8897637795275593,"color":"transparent"}},"name":"Por características","legendgroup":"Por características","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"v","width":[0.6999999999998181,0.6999999999998181,0.6999999999998181,0.6999999999998181,0.6999999999998181,0.6999999999998181,0.6999999999998181],"base":[0,0,0,0,0,0,0],"x":[2019,2020,2021,2022,2023,2024,2025],"y":[11.593077671161096,14.787938517792112,4.806192131675048,12.764314228128255,11.860313633880434,10.668925835040346,8.8610450771950546],"text":["anio: 2019<br />pct:  11.5930777<br />componente: No explicada","anio: 2020<br />pct:  14.7879385<br />componente: No explicada","anio: 2021<br />pct:   4.8061921<br />componente: No explicada","anio: 2022<br />pct:  12.7643142<br />componente: No explicada","anio: 2023<br />pct:  11.8603136<br />componente: No explicada","anio: 2024<br />pct:  10.6689258<br />componente: No explicada","anio: 2025<br />pct:   8.8610451<br />componente: No explicada"],"type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(230,75,53,1)","line":{"width":1.8897637795275593,"color":"transparent"}},"name":"No explicada","legendgroup":"No explicada","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[2018.3150000000001,2025.6849999999999],"y":[0,0],"text":"","type":"scatter","mode":"lines","line":{"width":1.8897637795275593,"color":"rgba(51,51,51,1)","dash":"solid"},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":24.634288086342885,"r":8.6342880863428846,"b":26.766293067662936,"l":50.942299709423011},"paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":17.268576172685762},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[2018.3150000000001,2025.6849999999999],"tickmode":"array","ticktext":["2019","2020","2021","2022","2023","2024","2025"],"tickvals":[2019,2020,2021,2022,2023,2024,2025],"categoryorder":"array","categoryarray":["2019","2020","2021","2022","2023","2024","2025"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":4.3171440431714405,"tickwidth":0,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":13.814860938148611},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.78493528057662576,"zeroline":false,"anchor":"y","title":{"text":"","font":{"color":"rgba(0,0,0,1)","family":"","size":17.268576172685762}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-22.471039662915569,16.562175574016287],"tickmode":"array","ticktext":["-20","-10","0","10"],"tickvals":[-20,-10.000000000000002,0,10.000000000000004],"categoryorder":"array","categoryarray":["-20","-10","0","10"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":4.3171440431714423,"tickwidth":0,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":13.814860938148612},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.78493528057662576,"zeroline":false,"anchor":"x","title":{"text":"Diferencia salarial (%)","font":{"color":"rgba(0,0,0,1)","family":"","size":17.268576172685762}},"hoverformat":".2f"},"shapes":[],"showlegend":true,"legend":{"bgcolor":null,"bordercolor":null,"borderwidth":0,"font":{"color":"rgba(0,0,0,1)","family":"","size":13.814860938148611},"orientation":"h","x":0.5,"y":1.1000000000000001,"xanchor":"center","yanchor":"bottom","title":{"text":"","font":{"color":"rgba(0,0,0,1)","family":"","size":17.268576172685762}}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"5bd41722731":{"x":{},"y":{},"fill":{},"type":"bar"},"5bd41d512bb9":{"yintercept":{}}},"cur_data":"5bd41722731","visdat":{"5bd41722731":["function (y) ","x"],"5bd41d512bb9":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div></div><div class="tab-pane html-fill-item html-fill-container" role="tabpanel" id="card-tabset-13-2"><div class="card-body html-fill-item html-fill-container" data-title="¿Qué factores explican la brecha?">
+<div class="cell-output-display html-fill-item html-fill-container">
+<div class="plotly html-widget html-fill-item html-fill-container" id="htmlwidget-3b231ccd306a49158a2a" style="width:100%;height:406px;"></div>
+<script type="application/json" data-for="htmlwidget-3b231ccd306a49158a2a">{"x":{"data":[{"orientation":"h","width":[0.34999999999999964,0.34999999999999964,0.34999999999999964,0.35000000000000009,0.34999999999999987],"base":[-1.0398090421240698,0,0,0,0],"x":[1.0398090421240698,0.68468058428918577,3.4444796755377567,0.023916667688190344,0.37131408512436131],"y":[4.8250000000000002,2.8250000000000002,3.8250000000000002,0.82500000000000018,1.8250000000000002],"text":["reorder(var_grupo, abs(pct)): Educación<br />pct:  -1.03980904<br />componente_label: No explicada","reorder(var_grupo, abs(pct)): Experiencia<br />pct:   0.68468058<br />componente_label: No explicada","reorder(var_grupo, abs(pct)): Sector económico<br />pct:   3.44447968<br />componente_label: No explicada","reorder(var_grupo, abs(pct)): Tipo de empleo<br />pct:   0.02391667<br />componente_label: No explicada","reorder(var_grupo, abs(pct)): Zona (Urb/Rur)<br />pct:   0.37131409<br />componente_label: No explicada"],"type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(230,75,53,1)","line":{"width":1.8897637795275593,"color":"transparent"}},"name":"No explicada","legendgroup":"No explicada","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"h","width":[0.34999999999999964,0.34999999999999964,0.34999999999999964,0.35000000000000009,0.34999999999999987],"base":[-11.545857162473345,0,0,0,-0.99832438443836402],"x":[11.545857162473345,1.9759180263066536,1.2906850535313212,0.35112812362895585,0.99832438443836402],"y":[5.1749999999999998,3.1749999999999998,4.1749999999999998,1.1749999999999998,2.1749999999999998],"text":["reorder(var_grupo, abs(pct)): Educación<br />pct: -11.54585716<br />componente_label: Por características","reorder(var_grupo, abs(pct)): Experiencia<br />pct:   1.97591803<br />componente_label: Por características","reorder(var_grupo, abs(pct)): Sector económico<br />pct:   1.29068505<br />componente_label: Por características","reorder(var_grupo, abs(pct)): Tipo de empleo<br />pct:   0.35112812<br />componente_label: Por características","reorder(var_grupo, abs(pct)): Zona (Urb/Rur)<br />pct:  -0.99832438<br />componente_label: Por características"],"type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(77,187,213,1)","line":{"width":1.8897637795275593,"color":"transparent"}},"name":"Por características","legendgroup":"Por características","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[0,0],"y":[0.40000000000000002,5.5999999999999996],"text":"","type":"scatter","mode":"lines","line":{"width":1.8897637795275593,"color":"rgba(51,51,51,1)","dash":"solid"},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":23.970112079701121,"r":7.9701120797011216,"b":40.647571606475722,"l":113.97260273972609},"paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":15.940224159402243},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-12.295374004373899,4.193996517438312],"tickmode":"array","ticktext":["-12","-8","-4","0","4"],"tickvals":[-12,-8,-4,0,3.9999999999999982],"categoryorder":"array","categoryarray":["-12","-8","-4","0","4"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.9850560398505608,"tickwidth":0,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":12.7521793275218},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.72455564360919278,"zeroline":false,"anchor":"y","title":{"text":"Diferencia salarial (%)","font":{"color":"rgba(0,0,0,1)","family":"","size":15.940224159402243}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[0.40000000000000002,5.5999999999999996],"tickmode":"array","ticktext":["Tipo de empleo","Zona (Urb/Rur)","Experiencia","Sector económico","Educación"],"tickvals":[1,2,3,4,5],"categoryorder":"array","categoryarray":["Tipo de empleo","Zona (Urb/Rur)","Experiencia","Sector económico","Educación"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":3.9850560398505608,"tickwidth":0,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":12.7521793275218},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.72455564360919278,"zeroline":false,"anchor":"x","title":{"text":"","font":{"color":"rgba(0,0,0,1)","family":"","size":15.940224159402243}},"hoverformat":".2f"},"shapes":[],"showlegend":true,"legend":{"bgcolor":null,"bordercolor":null,"borderwidth":0,"font":{"color":"rgba(0,0,0,1)","family":"","size":12.7521793275218},"orientation":"h","x":0.5,"y":1.1000000000000001,"xanchor":"center","yanchor":"bottom","title":{"text":"","font":{"color":"rgba(0,0,0,1)","family":"","size":15.940224159402243}}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"5bd475845306":{"x":{},"y":{},"fill":{},"type":"bar"},"5bd4723d3b90":{"yintercept":{}}},"cur_data":"5bd475845306","visdat":{"5bd475845306":["function (y) ","x"],"5bd4723d3b90":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div></div></div><bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
+    <template>Expand</template>
+    <span class="bslib-full-screen-enter badge rounded-pill">
+        <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" style="height:1em;width:1em;" aria-hidden="true" role="img"><path d="M20 5C20 4.4 19.6 4 19 4H13C12.4 4 12 3.6 12 3C12 2.4 12.4 2 13 2H21C21.6 2 22 2.4 22 3V11C22 11.6 21.6 12 21 12C20.4 12 20 11.6 20 11V5ZM4 19C4 19.6 4.4 20 5 20H11C11.6 20 12 20.4 12 21C12 21.6 11.6 22 11 22H3C2.4 22 2 21.6 2 21V13C2 12.4 2.4 12 3 12C3.6 12 4 12.4 4 13V19Z"></path></svg>
+    </span>
+</bslib-tooltip><script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div>
+</div>
+<div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-columns: minmax(3em, 1fr);
+grid-auto-rows: minmax(0, 1fr);">
+<div class="card html-fill-item html-fill-container bslib-card" data-fill="false" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
+<div class="card-body html-fill-item html-fill-container">
+<div class="callout callout-style-simple callout-note no-icon">
+<div class="callout-body d-flex html-fill-item html-fill-container">
+<div class="callout-icon-container html-fill-item html-fill-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-body-container html-fill-item html-fill-container">
+<p><strong>¿Cómo leer estas gráficas?</strong> El modelo compara hombres y mujeres con las mismas características y separa la brecha en dos partes: la <strong>azul</strong> (“por características”) es la que se explica porque hombres y mujeres tienen perfiles distintos — por ejemplo, trabajan en sectores diferentes o tienen distinta experiencia. La <strong>roja</strong> (“no explicada”) es la que persiste <em>a iguales condiciones</em> — no se justifica por el perfil de la persona.</p>
+</div>
+</div>
+</div>
+</div>
+<bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
+    <template>Expand</template>
+    <span class="bslib-full-screen-enter badge rounded-pill">
+        <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" style="height:1em;width:1em;" aria-hidden="true" role="img"><path d="M20 5C20 4.4 19.6 4 19 4H13C12.4 4 12 3.6 12 3C12 2.4 12.4 2 13 2H21C21.6 2 22 2.4 22 3V11C22 11.6 21.6 12 21 12C20.4 12 20 11.6 20 11V5ZM4 19C4 19.6 4.4 20 5 20H11C11.6 20 12 20.4 12 21C12 21.6 11.6 22 11 22H3C2.4 22 2 21.6 2 21V13C2 12.4 2.4 12 3 12C3.6 12 4 12.4 4 13V19Z"></path></svg>
+    </span>
+</bslib-tooltip><script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div>
+</div>
+<div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-columns: minmax(3em, 1fr);
+grid-auto-rows: minmax(0, 1fr);">
+<div class="card html-fill-item html-fill-container bslib-card" data-fill="false" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
+<div class="card-body html-fill-item html-fill-container">
+<div class="callout callout-style-simple callout-tip no-icon">
+<div class="callout-body d-flex html-fill-item html-fill-container">
+<div class="callout-icon-container html-fill-item html-fill-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-body-container html-fill-item html-fill-container">
+<p><strong>Mensaje clave:</strong> La brecha no explicada — la que persiste después de controlar por educación, experiencia, sector y zona — se ha mantenido relativamente estable. Esto indica que la discriminación salarial no se reduce solo con el paso del tiempo: requiere intervención activa de política pública.</p>
+</div>
+</div>
+</div>
+</div>
+<bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
+    <template>Expand</template>
+    <span class="bslib-full-screen-enter badge rounded-pill">
+        <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" style="height:1em;width:1em;" aria-hidden="true" role="img"><path d="M20 5C20 4.4 19.6 4 19 4H13C12.4 4 12 3.6 12 3C12 2.4 12.4 2 13 2H21C21.6 2 22 2.4 22 3V11C22 11.6 21.6 12 21 12C20.4 12 20 11.6 20 11V5ZM4 19C4 19.6 4.4 20 5 20H11C11.6 20 12 20.4 12 21C12 21.6 11.6 22 11 22H3C2.4 22 2 21.6 2 21V13C2 12.4 2.4 12 3 12C3.6 12 4 12.4 4 13V19Z"></path></svg>
+    </span>
+</bslib-tooltip><script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div>
+</div>
+<div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-columns: minmax(3em, 1fr);
+grid-auto-rows: minmax(0, 1fr);">
+<div class="card tabset html-fill-item html-fill-container bslib-card" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
+<div class="card-header dashboard-card-no-title bslib-navs-card-title">
+
+<ul class="nav nav-tabs card-header-tabs" role="tablist" data-tabsetid="card-tabset-16"><li class="nav-item" role="presentation"><a href="#card-tabset-16-1" role="tab" data-toggle="tab" data-bs-toggle="tab" data-value="¿Dónde es peor? Por zona" aria-selected="true" class="nav-link active">¿Dónde es peor? Por zona</a></li><li class="nav-item" role="presentation"><a href="#card-tabset-16-2" role="tab" data-toggle="tab" data-bs-toggle="tab" data-value="¿Dónde es peor? Por etnia" aria-selected="false" class="nav-link">¿Dónde es peor? Por etnia</a></li></ul></div>
+
+
+<div class="tab-content html-fill-item html-fill-container" data-tabset-id="card-tabset-16"><div class="tab-pane active show html-fill-item html-fill-container" role="tabpanel" id="card-tabset-16-1"><div class="card-body html-fill-item html-fill-container" data-title="¿Dónde es peor? Por zona">
+<div class="cell-output-display html-fill-item html-fill-container">
+<div class="plotly html-widget html-fill-item html-fill-container" id="htmlwidget-98c31de0048d29087dbb" style="width:100%;height:406px;"></div>
+<script type="application/json" data-for="htmlwidget-98c31de0048d29087dbb">{"x":{"data":[{"x":[2019,2020,2021,2022,2023,2024,2025],"y":[25.010531335446824,24.072865113090263,34.398204252492725,24.279298141592591,18.173043814737255,16.906425994284486,12.611216800649752],"text":["anio: 2019<br />pct: 25.010531<br />grupo: Rural","anio: 2020<br />pct: 24.072865<br />grupo: Rural","anio: 2021<br />pct: 34.398204<br />grupo: Rural","anio: 2022<br />pct: 24.279298<br />grupo: Rural","anio: 2023<br />pct: 18.173044<br />grupo: Rural","anio: 2024<br />pct: 16.906426<br />grupo: Rural","anio: 2025<br />pct: 12.611217<br />grupo: Rural"],"type":"scatter","mode":"lines+markers","line":{"width":4.5354330708661417,"color":"rgba(181,101,29,1)","dash":"solid"},"hoveron":"points","name":"Rural","legendgroup":"Rural","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","marker":{"autocolorscale":false,"color":"rgba(181,101,29,1)","opacity":1,"size":11.338582677165356,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(181,101,29,1)"}},"frame":null},{"x":[2019,2020,2021,2022,2023,2024,2025],"y":[7.4601189944036079,11.190812810746445,2.9691081180347076,11.706670594613895,10.489798486175198,9.0578718429361285,8.4298641946044146],"text":["anio: 2019<br />pct:  7.460119<br />grupo: Urbano","anio: 2020<br />pct: 11.190813<br />grupo: Urbano","anio: 2021<br />pct:  2.969108<br />grupo: Urbano","anio: 2022<br />pct: 11.706671<br />grupo: Urbano","anio: 2023<br />pct: 10.489798<br />grupo: Urbano","anio: 2024<br />pct:  9.057872<br />grupo: Urbano","anio: 2025<br />pct:  8.429864<br />grupo: Urbano"],"type":"scatter","mode":"lines+markers","line":{"width":4.5354330708661417,"color":"rgba(69,105,144,1)","dash":"solid"},"hoveron":"points","name":"Urbano","legendgroup":"Urbano","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","marker":{"autocolorscale":false,"color":"rgba(69,105,144,1)","opacity":1,"size":11.338582677165356,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(69,105,144,1)"}},"frame":null},{"x":[2018.7,2025.3],"y":[0,0],"text":"yintercept: 0","type":"scatter","mode":"lines","line":{"width":1.8897637795275593,"color":"rgba(173,181,189,1)","dash":"dash"},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[2021,2021],"y":[-1.7199102126246364,36.118114465117358],"text":"xintercept: 2021","type":"scatter","mode":"lines","line":{"width":1.8897637795275593,"color":"rgba(173,181,189,1)","dash":"dot"},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":24.634288086342885,"r":8.6342880863428846,"b":26.766293067662936,"l":44.034869240348712},"paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":17.268576172685762},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[2018.7,2025.3],"tickmode":"array","ticktext":["2019","2020","2021","2022","2023","2024","2025"],"tickvals":[2019,2020,2021,2022,2023,2024,2025],"categoryorder":"array","categoryarray":["2019","2020","2021","2022","2023","2024","2025"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":4.3171440431714405,"tickwidth":0,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":13.814860938148611},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.78493528057662576,"zeroline":false,"anchor":"y","title":{"text":"","font":{"color":"rgba(0,0,0,1)","family":"","size":17.268576172685762}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-1.7199102126246364,36.118114465117358],"tickmode":"array","ticktext":["0","10","20","30"],"tickvals":[-2.2204460492503131e-16,10,20.000000000000004,30],"categoryorder":"array","categoryarray":["0","10","20","30"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":4.3171440431714423,"tickwidth":0,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":13.814860938148612},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.78493528057662576,"zeroline":false,"anchor":"x","title":{"text":"Brecha no explicada (%)","font":{"color":"rgba(0,0,0,1)","family":"","size":17.268576172685762}},"hoverformat":".2f"},"shapes":[],"showlegend":true,"legend":{"bgcolor":null,"bordercolor":null,"borderwidth":0,"font":{"color":"rgba(0,0,0,1)","family":"","size":13.814860938148611},"orientation":"h","x":0.5,"y":1.1000000000000001,"xanchor":"center","yanchor":"bottom","title":{"text":"","font":{"color":"rgba(0,0,0,1)","family":"","size":17.268576172685762}}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"5bd466fe64cc":{"x":{},"y":{},"colour":{},"type":"scatter"},"5bd47eef7193":{"x":{},"y":{},"colour":{}},"5bd4236c49c2":{"yintercept":{}},"5bd4578a4e89":{"xintercept":{}}},"cur_data":"5bd466fe64cc","visdat":{"5bd466fe64cc":["function (y) ","x"],"5bd47eef7193":["function (y) ","x"],"5bd4236c49c2":["function (y) ","x"],"5bd4578a4e89":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div></div><div class="tab-pane html-fill-item html-fill-container" role="tabpanel" id="card-tabset-16-2"><div class="card-body html-fill-item html-fill-container" data-title="¿Dónde es peor? Por etnia">
+<div class="cell-output-display html-fill-item html-fill-container">
+<div class="plotly html-widget html-fill-item html-fill-container" id="htmlwidget-727739a9038b9f16039a" style="width:100%;height:406px;"></div>
+<script type="application/json" data-for="htmlwidget-727739a9038b9f16039a">{"x":{"data":[{"x":[2019,2020,2021,2022,2023,2024,2025],"y":[22.792055483339034,22.377660065951819,59.402410881549081,26.352720362761573,26.400888213143066,21.164616731910467,21.432586194808636],"text":["anio: 2019<br />pct: 22.792055<br />grupo: Étnico","anio: 2020<br />pct: 22.377660<br />grupo: Étnico","anio: 2021<br />pct: 59.402411<br />grupo: Étnico","anio: 2022<br />pct: 26.352720<br />grupo: Étnico","anio: 2023<br />pct: 26.400888<br />grupo: Étnico","anio: 2024<br />pct: 21.164617<br />grupo: Étnico","anio: 2025<br />pct: 21.432586<br />grupo: Étnico"],"type":"scatter","mode":"lines+markers","line":{"width":4.5354330708661417,"color":"rgba(0,158,115,1)","dash":"solid"},"hoveron":"points","name":"Étnico","legendgroup":"Étnico","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","marker":{"autocolorscale":false,"color":"rgba(0,158,115,1)","opacity":1,"size":11.338582677165356,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(0,158,115,1)"}},"frame":null},{"x":[2019,2020,2021,2022,2023,2024,2025],"y":[11.687982461909057,13.588096668426667,2.9816923699723366,13.273629860459007,11.542774490230208,10.031316235440215,10.273241064246537],"text":["anio: 2019<br />pct: 11.687982<br />grupo: No étnico","anio: 2020<br />pct: 13.588097<br />grupo: No étnico","anio: 2021<br />pct:  2.981692<br />grupo: No étnico","anio: 2022<br />pct: 13.273630<br />grupo: No étnico","anio: 2023<br />pct: 11.542774<br />grupo: No étnico","anio: 2024<br />pct: 10.031316<br />grupo: No étnico","anio: 2025<br />pct: 10.273241<br />grupo: No étnico"],"type":"scatter","mode":"lines+markers","line":{"width":4.5354330708661417,"color":"rgba(204,121,167,1)","dash":"solid"},"hoveron":"points","name":"No étnico","legendgroup":"No étnico","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","marker":{"autocolorscale":false,"color":"rgba(204,121,167,1)","opacity":1,"size":11.338582677165356,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(204,121,167,1)"}},"frame":null},{"x":[2018.7,2025.3],"y":[0,0],"text":"yintercept: 0","type":"scatter","mode":"lines","line":{"width":1.8897637795275593,"color":"rgba(173,181,189,1)","dash":"dash"},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[2021,2021],"y":[-2.9701205440774543,62.372531425626534],"text":"xintercept: 2021","type":"scatter","mode":"lines","line":{"width":1.8897637795275593,"color":"rgba(173,181,189,1)","dash":"dot"},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":24.634288086342885,"r":8.6342880863428846,"b":26.766293067662936,"l":44.034869240348712},"paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":17.268576172685762},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[2018.7,2025.3],"tickmode":"array","ticktext":["2019","2020","2021","2022","2023","2024","2025"],"tickvals":[2019,2020,2021,2022,2023,2024,2025],"categoryorder":"array","categoryarray":["2019","2020","2021","2022","2023","2024","2025"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":4.3171440431714405,"tickwidth":0,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":13.814860938148611},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.78493528057662576,"zeroline":false,"anchor":"y","title":{"text":"","font":{"color":"rgba(0,0,0,1)","family":"","size":17.268576172685762}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-2.9701205440774543,62.372531425626534],"tickmode":"array","ticktext":["0","20","40","60"],"tickvals":[0,20,40,60],"categoryorder":"array","categoryarray":["0","20","40","60"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":4.3171440431714423,"tickwidth":0,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":13.814860938148612},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.78493528057662576,"zeroline":false,"anchor":"x","title":{"text":"Brecha no explicada (%)","font":{"color":"rgba(0,0,0,1)","family":"","size":17.268576172685762}},"hoverformat":".2f"},"shapes":[],"showlegend":true,"legend":{"bgcolor":null,"bordercolor":null,"borderwidth":0,"font":{"color":"rgba(0,0,0,1)","family":"","size":13.814860938148611},"orientation":"h","x":0.5,"y":1.1000000000000001,"xanchor":"center","yanchor":"bottom","title":{"text":"","font":{"color":"rgba(0,0,0,1)","family":"","size":17.268576172685762}}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"5bd43acb1c4a":{"x":{},"y":{},"colour":{},"type":"scatter"},"5bd479a47040":{"x":{},"y":{},"colour":{}},"5bd463de3860":{"yintercept":{}},"5bd44bba423f":{"xintercept":{}}},"cur_data":"5bd43acb1c4a","visdat":{"5bd43acb1c4a":["function (y) ","x"],"5bd479a47040":["function (y) ","x"],"5bd463de3860":["function (y) ","x"],"5bd44bba423f":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div></div></div><bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
+    <template>Expand</template>
+    <span class="bslib-full-screen-enter badge rounded-pill">
+        <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" style="height:1em;width:1em;" aria-hidden="true" role="img"><path d="M20 5C20 4.4 19.6 4 19 4H13C12.4 4 12 3.6 12 3C12 2.4 12.4 2 13 2H21C21.6 2 22 2.4 22 3V11C22 11.6 21.6 12 21 12C20.4 12 20 11.6 20 11V5ZM4 19C4 19.6 4.4 20 5 20H11C11.6 20 12 20.4 12 21C12 21.6 11.6 22 11 22H3C2.4 22 2 21.6 2 21V13C2 12.4 2.4 12 3 12C3.6 12 4 12.4 4 13V19Z"></path></svg>
+    </span>
+</bslib-tooltip><script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div>
+</div>
+<div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-columns: minmax(3em, 1fr);
+grid-auto-rows: minmax(0, 1fr);">
+<div class="card html-fill-item html-fill-container bslib-card" data-fill="false" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
+<div class="card-body html-fill-item html-fill-container">
+<div class="callout callout-style-simple callout-tip no-icon">
+<div class="callout-body d-flex html-fill-item html-fill-container">
+<div class="callout-icon-container html-fill-item html-fill-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-body-container html-fill-item html-fill-container">
+<p><strong>Mensaje clave:</strong> La brecha no explicada es <strong>peor en zonas rurales</strong> y para <strong>mujeres de grupos étnicos</strong>, donde la intersección de género con otras dimensiones de desigualdad amplifica la penalización salarial. Las políticas de equidad salarial deben priorizar estos territorios y poblaciones.</p>
+</div>
+</div>
+</div>
+</div>
+<bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
+    <template>Expand</template>
+    <span class="bslib-full-screen-enter badge rounded-pill">
+        <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" style="height:1em;width:1em;" aria-hidden="true" role="img"><path d="M20 5C20 4.4 19.6 4 19 4H13C12.4 4 12 3.6 12 3C12 2.4 12.4 2 13 2H21C21.6 2 22 2.4 22 3V11C22 11.6 21.6 12 21 12C20.4 12 20 11.6 20 11V5ZM4 19C4 19.6 4.4 20 5 20H11C11.6 20 12 20.4 12 21C12 21.6 11.6 22 11 22H3C2.4 22 2 21.6 2 21V13C2 12.4 2.4 12 3 12C3.6 12 4 12.4 4 13V19Z"></path></svg>
+    </span>
+</bslib-tooltip><script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div>
+</div>
+<div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-columns: minmax(3em, 1fr);
+grid-auto-rows: minmax(0, 1fr);">
+<div class="card html-fill-item html-fill-container bslib-card" data-fill="false" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
+<div class="card-body html-fill-item html-fill-container">
+<div class="callout callout-style-simple callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center collapsed html-fill-item html-fill-container" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container html-fill-item html-fill-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill html-fill-item html-fill-container">
+<span class="screen-reader-only">Tip</span>Nota metodológica
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end html-fill-item html-fill-container"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse html-fill-item html-fill-container">
+<div class="callout-body-container callout-body html-fill-item html-fill-container">
+<p>Método: <strong>Oaxaca-Blinder twofold</strong> (Blinder, 1973; Oaxaca, 1973). Se descompone la diferencia en el logaritmo del salario por hora entre hombres y mujeres en dos partes: (1) la explicada por diferencias en características observables (educación, experiencia, sector, posición ocupacional y zona) y (2) la no explicada, que puede reflejar discriminación u otros factores no observados. Se utilizan los coeficientes masculinos como referencia (group.weight = 0). Errores estándar por bootstrap (R = 30). Muestra trimada al P1–P99 del salario/hora. La línea punteada en 2021 indica el cambio de marco muestral censal.</p>
+</div>
+</div>
+</div>
+</div>
+<bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
+    <template>Expand</template>
+    <span class="bslib-full-screen-enter badge rounded-pill">
+        <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" style="height:1em;width:1em;" aria-hidden="true" role="img"><path d="M20 5C20 4.4 19.6 4 19 4H13C12.4 4 12 3.6 12 3C12 2.4 12.4 2 13 2H21C21.6 2 22 2.4 22 3V11C22 11.6 21.6 12 21 12C20.4 12 20 11.6 20 11V5ZM4 19C4 19.6 4.4 20 5 20H11C11.6 20 12 20.4 12 21C12 21.6 11.6 22 11 22H3C2.4 22 2 21.6 2 21V13C2 12.4 2.4 12 3 12C3.6 12 4 12.4 4 13V19Z"></path></svg>
+    </span>
+</bslib-tooltip><script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div>
+</div>
+<div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-columns: minmax(3em, 1fr);
+grid-auto-rows: minmax(0, 1fr);">
+<div class="card cell html-fill-item html-fill-container bslib-card" data-title="Tabla detallada de resultados O-B" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
+<div class="card-header"><div class="card-title"><span style="display: inline">
+Tabla detallada de resultados O-B
+</span></div></div>
+<div class="card-body html-fill-item html-fill-container">
+<div class="cell-output-display html-fill-item html-fill-container">
+<div class="datatables html-widget html-fill-item html-fill-container" id="htmlwidget-44a65ba1a5625e819fd7" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-44a65ba1a5625e819fd7">{"x":{"filter":"top","vertical":false,"filterHTML":"<tr>\n  <td data-type=\"integer\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"2019\" data-max=\"2025\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"integer\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"746\" data-max=\"124415\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"integer\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"298\" data-max=\"113192\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n<\/tr>","extensions":["Buttons"],"caption":"<caption style=\"color: gray; font-size: 11px;\">Descomposición Oaxaca-Blinder — Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026.<\/caption>","data":[[2019,2019,2019,2019,2019,2019,2019,2019,2019,2019,2020,2020,2020,2020,2020,2020,2020,2020,2020,2020,2021,2021,2021,2021,2021,2021,2021,2021,2021,2021,2022,2022,2022,2022,2022,2022,2022,2022,2022,2022,2023,2023,2023,2023,2023,2023,2023,2023,2023,2023,2024,2024,2024,2024,2024,2024,2024,2024,2024,2024,2025,2025,2025,2025,2025,2025,2025,2025,2025,2025],["Etnia","Etnia","Etnia","Etnia","Nacional","Nacional","Zona","Zona","Zona","Zona","Etnia","Etnia","Etnia","Etnia","Nacional","Nacional","Zona","Zona","Zona","Zona","Etnia","Etnia","Etnia","Etnia","Nacional","Nacional","Zona","Zona","Zona","Zona","Etnia","Etnia","Etnia","Etnia","Nacional","Nacional","Zona","Zona","Zona","Zona","Etnia","Etnia","Etnia","Etnia","Nacional","Nacional","Zona","Zona","Zona","Zona","Etnia","Etnia","Etnia","Etnia","Nacional","Nacional","Zona","Zona","Zona","Zona","Etnia","Etnia","Etnia","Etnia","Nacional","Nacional","Zona","Zona","Zona","Zona"],["No étnico","No étnico","Étnico","Étnico","2019","2019","Rural","Rural","Urbano","Urbano","No étnico","No étnico","Étnico","Étnico","2020","2020","Rural","Rural","Urbano","Urbano","No étnico","No étnico","Étnico","Étnico","2021","2021","Rural","Rural","Urbano","Urbano","No étnico","No étnico","Étnico","Étnico","2022","2022","Rural","Rural","Urbano","Urbano","No étnico","No étnico","Étnico","Étnico","2023","2023","Rural","Rural","Urbano","Urbano","No étnico","No étnico","Étnico","Étnico","2024","2024","Rural","Rural","Urbano","Urbano","No étnico","No étnico","Étnico","Étnico","2025","2025","Rural","Rural","Urbano","Urbano"],["Explicado","No explicado","Explicado","No explicado","Explicado","No explicado","Explicado","No explicado","Explicado","No explicado","Explicado","No explicado","Explicado","No explicado","Explicado","No explicado","Explicado","No explicado","Explicado","No explicado","Explicado","No explicado","Explicado","No explicado","Explicado","No explicado","Explicado","No explicado","Explicado","No explicado","Explicado","No explicado","Explicado","No explicado","Explicado","No explicado","Explicado","No explicado","Explicado","No explicado","Explicado","No explicado","Explicado","No explicado","Explicado","No explicado","Explicado","No explicado","Explicado","No explicado","Explicado","No explicado","Explicado","No explicado","Explicado","No explicado","Explicado","No explicado","Explicado","No explicado","Explicado","No explicado","Explicado","No explicado","Explicado","No explicado","Explicado","No explicado","Explicado","No explicado"],["-12.89 (±0.79)","11.69 (±0.7)","5.63 (±1.36)","22.79 (±2.57)","-11.89 (±1.31)","11.59 (±1.24)","-23.94 (±1.58)","25.01 (±1.53)","-4.1 (±0.7)","7.46 (±0.75)","-18.06 (±0.91)","13.59 (±0.64)","6.8 (±1.95)","22.38 (±3.69)","-20.7 (±1.08)","14.79 (±1.03)","-27.83 (±2.08)","24.07 (±2.2)","-11.37 (±0.74)","11.19 (±0.63)","2.34 (±1.67)","2.98 (±3.78)","-0.3 (±5.42)","59.4 (±11.49)","-0.82 (±3.38)","4.81 (±4.73)","-15.51 (±6.17)","34.4 (±6.21)","4.58 (±2.22)","2.97 (±3.68)","-10.93 (±0.7)","13.27 (±0.97)","4.73 (±1.49)","26.35 (±3.35)","-12.81 (±0.93)","12.76 (±0.9)","-18.16 (±1.11)","24.28 (±1.36)","-7.06 (±0.49)","11.71 (±0.73)","-10.77 (±0.48)","11.54 (±0.52)","3.74 (±0.91)","26.4 (±2.45)","-10.89 (±0.7)","11.86 (±0.6)","-13.95 (±1.21)","18.17 (±1.4)","-6.79 (±0.71)","10.49 (±0.64)","-9.45 (±0.54)","10.03 (±0.75)","3.81 (±1.23)","21.16 (±2.77)","-9.6 (±0.54)","10.67 (±0.62)","-14.59 (±1.03)","16.91 (±0.79)","-5.16 (±0.78)","9.06 (±0.53)","-9.64 (±0.48)","10.27 (±0.48)","1.89 (±1.01)","21.43 (±2.37)","-8.93 (±0.56)","8.86 (±0.52)","-10.43 (±1.1)","12.61 (±1.06)","-4.95 (±0.59)","8.43 (±0.64)"],[122987,122987,1428,1428,124415,124415,7007,7007,72547,72547,55922,55922,746,746,56668,56668,5593,5593,51075,51075,85063,85063,1502,1502,86565,86565,11441,11441,75124,75124,93835,93835,1495,1495,95330,95330,12206,12206,83124,83124,88760,88760,1360,1360,90120,90120,11448,11448,78672,78672,87899,87899,1408,1408,89307,89307,11665,11665,77642,77642,89939,89939,1377,1377,91316,91316,11567,11567,79749,79749],[112509,112509,683,683,113192,113192,2387,2387,69741,69741,48563,48563,298,298,48861,48861,1687,1687,47174,47174,73410,73410,573,573,73983,73983,3732,3732,70251,70251,83522,83522,630,630,84152,84152,4725,4725,79427,79427,81090,81090,562,562,81652,81652,4494,4494,77158,77158,79616,79616,520,520,80136,80136,4616,4616,75520,75520,81746,81746,498,498,82244,82244,4708,4708,77536,77536]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Año<\/th>\n      <th>Corte<\/th>\n      <th>Grupo<\/th>\n      <th>Componente<\/th>\n      <th>Diferencia % (±SE)<\/th>\n      <th>N Hombres<\/th>\n      <th>N Mujeres<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"bPaginate":false,"dom":"Bfrtip","language":{"info":"_START_ a _END_ de _TOTAL_","search":"Buscar:","paginate":{"previous":"Anterior","next":"Siguiente"}},"pageLength":10,"scrollX":true,"buttons":[{"extend":"csv","text":"Descargar CSV"},{"extend":"excel","text":"Descargar Excel"}],"columnDefs":[{"className":"dt-right","targets":[0,5,6]},{"name":"anio","targets":0},{"name":"corte","targets":1},{"name":"grupo","targets":2},{"name":"componente","targets":3},{"name":"resultado","targets":4},{"name":"n_hombres","targets":5},{"name":"n_mujeres","targets":6}],"order":[],"autoWidth":false,"orderClasses":false,"orderCellsTop":true}},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
+    <template>Expand</template>
+    <span class="bslib-full-screen-enter badge rounded-pill">
+        <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" style="height:1em;width:1em;" aria-hidden="true" role="img"><path d="M20 5C20 4.4 19.6 4 19 4H13C12.4 4 12 3.6 12 3C12 2.4 12.4 2 13 2H21C21.6 2 22 2.4 22 3V11C22 11.6 21.6 12 21 12C20.4 12 20 11.6 20 11V5ZM4 19C4 19.6 4.4 20 5 20H11C11.6 20 12 20.4 12 21C12 21.6 11.6 22 11 22H3C2.4 22 2 21.6 2 21V13C2 12.4 2.4 12 3 12C3.6 12 4 12.4 4 13V19Z"></path></svg>
+    </span>
+</bslib-tooltip><script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div>
+</div>
+</div>
+</div>
+<div id="es-real-la-brecha" class="dashboard-page tab-pane grid-skip html-fill-item html-fill-container" data-orientation="rows" aria-labelledby="tab-es-real-la-brecha">
+<div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-rows: minmax(3em, max-content) 150px minmax(3em, 20fr) minmax(3em, max-content) minmax(3em, max-content) minmax(3em, max-content) minmax(3em, max-content) minmax(3em, 20fr) minmax(3em, max-content); grid-auto-columns: minmax(0, 1fr);">
+<div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-columns: minmax(3em, 1fr);
+grid-auto-rows: minmax(0, 1fr);">
+<div class="card html-fill-item html-fill-container bslib-card" data-fill="false" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
+<div class="card-body html-fill-item html-fill-container">
+<div class="callout callout-style-simple callout-note no-icon">
+<div class="callout-body d-flex html-fill-item html-fill-container">
+<div class="callout-icon-container html-fill-item html-fill-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-body-container html-fill-item html-fill-container">
+<p><strong>¿Qué pasa si comparamos solo personas con exactamente el mismo perfil?</strong> Este método empareja hombres y mujeres con la misma educación, edad, tipo de empleo y zona, sin asumir relaciones matemáticas entre las variables. Si la brecha persiste entre personas idénticas en papel, es evidencia robusta de desigualdad.</p>
+</div>
+</div>
+</div>
+</div>
+<bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
+    <template>Expand</template>
+    <span class="bslib-full-screen-enter badge rounded-pill">
+        <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" style="height:1em;width:1em;" aria-hidden="true" role="img"><path d="M20 5C20 4.4 19.6 4 19 4H13C12.4 4 12 3.6 12 3C12 2.4 12.4 2 13 2H21C21.6 2 22 2.4 22 3V11C22 11.6 21.6 12 21 12C20.4 12 20 11.6 20 11V5ZM4 19C4 19.6 4.4 20 5 20H11C11.6 20 12 20.4 12 21C12 21.6 11.6 22 11 22H3C2.4 22 2 21.6 2 21V13C2 12.4 2.4 12 3 12C3.6 12 4 12.4 4 13V19Z"></path></svg>
+    </span>
+</bslib-tooltip><script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div>
+</div>
+<div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-columns: minmax(3em, 1fr) minmax(3em, 1fr) minmax(3em, 1fr);
+grid-auto-rows: minmax(0, 1fr);">
+<div class="card valuebox cell html-fill-item html-fill-container bslib-card bslib-value-box showcase-left-center" data-bslib-card-init="" data-require-bs-caller="card()" style=" background: #E64B35;">
+<div class="card-body html-fill-item html-fill-container">
+<div data-icon="exclamation-triangle" class="html-fill-item html-fill-container value-box-grid">
+<div class="value-box-showcase html-fill-item html-fill-container">
+
+<i class="bi bi-exclamation-triangle"></i></div>
+<div class="value-box-area">
+<p class="value-box-title">
+Entre personas con el mismo perfil, los hombres ganan
+</p>
+<p class="value-box-value">
+9.6% más
+</p>
+</div>
+</div>
+</div>
+<script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div><div class="card valuebox cell html-fill-item html-fill-container bslib-card bslib-value-box showcase-left-center" data-bslib-card-init="" data-require-bs-caller="card()" style=" background: #4DBBD5;">
+<div class="card-body html-fill-item html-fill-container">
+<div data-icon="people" class="html-fill-item html-fill-container value-box-grid">
+<div class="value-box-showcase html-fill-item html-fill-container">
+
+<i class="bi bi-people"></i></div>
+<div class="value-box-area">
+<p class="value-box-title">
+Personas que pudieron ser comparadas
+</p>
+<p class="value-box-value">
+99.9%
+</p>
+</div>
+</div>
+</div>
+<script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div><div class="card valuebox cell html-fill-item html-fill-container bslib-card bslib-value-box showcase-left-center" data-bslib-card-init="" data-require-bs-caller="card()" style=" background: #004457;">
+<div class="card-body html-fill-item html-fill-container">
+<div data-icon="arrow-left-right" class="html-fill-item html-fill-container value-box-grid">
+<div class="value-box-showcase html-fill-item html-fill-container">
+
+<i class="bi bi-arrow-left-right"></i></div>
+<div class="value-box-area">
+<p class="value-box-title">
+Brecha salarial total — 2025
+</p>
+<p class="value-box-value">
+0.1%
+</p>
+</div>
+</div>
+</div>
+<script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div>
+</div>
+<div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-columns: minmax(3em, 1fr);
+grid-auto-rows: minmax(0, 1fr);">
+<div class="card tabset html-fill-item html-fill-container bslib-card" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
+<div class="card-header dashboard-card-no-title bslib-navs-card-title">
+
+<ul class="nav nav-tabs card-header-tabs" role="tablist" data-tabsetid="card-tabset-24"><li class="nav-item" role="presentation"><a href="#card-tabset-24-1" role="tab" data-toggle="tab" data-bs-toggle="tab" data-value="¿Cómo se descompone la brecha? (4 componentes)" aria-selected="true" class="nav-link active">¿Cómo se descompone la brecha? (4 componentes)</a></li><li class="nav-item" role="presentation"><a href="#card-tabset-24-2" role="tab" data-toggle="tab" data-bs-toggle="tab" data-value="Brecha entre iguales por año" aria-selected="false" class="nav-link">Brecha entre iguales por año</a></li></ul></div>
+
+
+<div class="tab-content html-fill-item html-fill-container" data-tabset-id="card-tabset-24"><div class="tab-pane active show html-fill-item html-fill-container" role="tabpanel" id="card-tabset-24-1"><div class="card-body html-fill-item html-fill-container" data-title="¿Cómo se descompone la brecha? (4 componentes)">
+<div class="cell-output-display html-fill-item html-fill-container">
+<div class="plotly html-widget html-fill-item html-fill-container" id="htmlwidget-b98d8e9beaa229a28826" style="width:100%;height:406px;"></div>
+<script type="application/json" data-for="htmlwidget-b98d8e9beaa229a28826">{"x":{"data":[{"orientation":"v","width":[0.6999999999998181,0.6999999999998181,0.6999999999998181,0.6999999999998181,0.6999999999998181,0.6999999999998181,0.6999999999998181],"base":[-11.147133635587981,-13.457511478232989,-1.5396855448529292,-9.8122512296257369,-8.87277868704758,-8.6749328779523385,-9.2094561067547058],"x":[2019,2020,2021,2022,2023,2024,2025],"y":[11.147133635587981,13.457511478232989,1.5396855448529292,9.8122512296257369,8.8552921286220947,8.6579077482714588,9.2094561067547058],"text":["anio: 2019<br />pct: -1.114713e+01<br />componente: Por características (perfiles)","anio: 2020<br />pct: -1.345751e+01<br />componente: Por características (perfiles)","anio: 2021<br />pct: -1.539686e+00<br />componente: Por características (perfiles)","anio: 2022<br />pct: -9.812251e+00<br />componente: Por características (perfiles)","anio: 2023<br />pct: -8.855292e+00<br />componente: Por características (perfiles)","anio: 2024<br />pct: -8.657908e+00<br />componente: Por características (perfiles)","anio: 2025<br />pct: -9.209456e+00<br />componente: Por características (perfiles)"],"type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(77,187,213,1)","line":{"width":1.8897637795275593,"color":"transparent"}},"name":"Por características (perfiles)","legendgroup":"Por características (perfiles)","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"v","width":[0.6999999999998181,0.6999999999998181,0.6999999999998181,0.6999999999998181,0.6999999999998181,0.6999999999998181,0.6999999999998181],"base":[0.15348513954011658,0.0024622217425863333,0.15064873610418297,0.036488456008417859,0,0.0070295461746239423,0.06128836171592128],"x":[2019,2020,2021,2022,2023,2024,2025],"y":[10.033554717845877,8.0366766950748492,7.6028838268897738,10.298925278184729,10.08435886733662,8.9962407017075918,9.6178671169144057],"text":["anio: 2019<br />pct:  1.003355e+01<br />componente: No explicada (entre iguales)","anio: 2020<br />pct:  8.036677e+00<br />componente: No explicada (entre iguales)","anio: 2021<br />pct:  7.602884e+00<br />componente: No explicada (entre iguales)","anio: 2022<br />pct:  1.029893e+01<br />componente: No explicada (entre iguales)","anio: 2023<br />pct:  1.008436e+01<br />componente: No explicada (entre iguales)","anio: 2024<br />pct:  8.996241e+00<br />componente: No explicada (entre iguales)","anio: 2025<br />pct:  9.617867e+00<br />componente: No explicada (entre iguales)"],"type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(230,75,53,1)","line":{"width":1.8897637795275593,"color":"transparent"}},"name":"No explicada (entre iguales)","legendgroup":"No explicada (entre iguales)","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"v","width":[0.6999999999998181,0.6999999999998181,0.6999999999998181,0.6999999999998181,0.6999999999998181,0.6999999999998181,0.6999999999998181],"base":[0.15126965945751811,0.0024622217425863333,0.14034429901200055,0.036488456008417859,-0.017486558425484838,-0.017025129680880036,0.061156475325074136],"x":[2019,2020,2021,2022,2023,2024,2025],"y":[0.0022154800825984755,0,0.010304437092182428,0,0.017486558425484838,0.017025129680880036,0.00013188639084714404],"text":["anio: 2019<br />pct:  2.215480e-03<br />componente: Hombres sin par","anio: 2020<br />pct:  0.000000e+00<br />componente: Hombres sin par","anio: 2021<br />pct:  1.030444e-02<br />componente: Hombres sin par","anio: 2022<br />pct:  0.000000e+00<br />componente: Hombres sin par","anio: 2023<br />pct: -1.748656e-02<br />componente: Hombres sin par","anio: 2024<br />pct: -1.702513e-02<br />componente: Hombres sin par","anio: 2025<br />pct:  1.318864e-04<br />componente: Hombres sin par"],"type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(183,112,151,1)","line":{"width":1.8897637795275593,"color":"transparent"}},"name":"Hombres sin par","legendgroup":"Hombres sin par","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"v","width":[0.6999999999998181,0.6999999999998181,0.6999999999998181,0.6999999999998181,0.6999999999998181,0.6999999999998181,0.6999999999998181],"base":[0,0,0,0,0,0,0],"x":[2019,2020,2021,2022,2023,2024,2025],"y":[0.15126965945751811,0.0024622217425863333,0.14034429901200055,0.036488456008417859,0,0.0070295461746239423,0.061156475325074136],"text":["anio: 2019<br />pct:  1.512697e-01<br />componente: Mujeres sin par","anio: 2020<br />pct:  2.462222e-03<br />componente: Mujeres sin par","anio: 2021<br />pct:  1.403443e-01<br />componente: Mujeres sin par","anio: 2022<br />pct:  3.648846e-02<br />componente: Mujeres sin par","anio: 2023<br />pct:  0.000000e+00<br />componente: Mujeres sin par","anio: 2024<br />pct:  7.029546e-03<br />componente: Mujeres sin par","anio: 2025<br />pct:  6.115648e-02<br />componente: Mujeres sin par"],"type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(151,163,96,1)","line":{"width":1.8897637795275593,"color":"transparent"}},"name":"Mujeres sin par","legendgroup":"Mujeres sin par","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[2018.3150000000001,2025.6849999999999],"y":[0,0],"text":"","type":"scatter","mode":"lines","line":{"width":1.8897637795275593,"color":"rgba(51,51,51,1)","dash":"solid"},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":24.634288086342885,"r":8.6342880863428846,"b":26.766293067662936,"l":50.942299709423011},"paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":17.268576172685762},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[2018.3150000000001,2025.6849999999999],"tickmode":"array","ticktext":["2019","2020","2021","2022","2023","2024","2025"],"tickvals":[2019,2020,2021,2022,2023,2024,2025],"categoryorder":"array","categoryarray":["2019","2020","2021","2022","2023","2024","2025"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":4.3171440431714405,"tickwidth":0,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":13.814860938148611},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.78493528057662576,"zeroline":false,"anchor":"y","title":{"text":"","font":{"color":"rgba(0,0,0,1)","family":"","size":17.268576172685762}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-14.647157738854297,11.525059994814454],"tickmode":"array","ticktext":["-10","-5","0","5","10"],"tickvals":[-10,-5,1.7763568394002505e-15,5,10],"categoryorder":"array","categoryarray":["-10","-5","0","5","10"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":4.3171440431714423,"tickwidth":0,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":13.814860938148612},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.78493528057662576,"zeroline":false,"anchor":"x","title":{"text":"Diferencia salarial (%)","font":{"color":"rgba(0,0,0,1)","family":"","size":17.268576172685762}},"hoverformat":".2f"},"shapes":[],"showlegend":true,"legend":{"bgcolor":null,"bordercolor":null,"borderwidth":0,"font":{"color":"rgba(0,0,0,1)","family":"","size":13.814860938148611},"orientation":"h","x":0.5,"y":1.1499999999999999,"xanchor":"center","yanchor":"bottom","title":{"text":"","font":{"color":"rgba(0,0,0,1)","family":"","size":17.268576172685762}}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"5bd46f7721aa":{"x":{},"y":{},"fill":{},"type":"bar"},"5bd438ff16e1":{"yintercept":{}}},"cur_data":"5bd46f7721aa","visdat":{"5bd46f7721aa":["function (y) ","x"],"5bd438ff16e1":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div></div><div class="tab-pane html-fill-item html-fill-container" role="tabpanel" id="card-tabset-24-2"><div class="card-body html-fill-item html-fill-container" data-title="Brecha entre iguales por año">
+<div class="cell-output-display html-fill-item html-fill-container">
+<div class="plotly html-widget html-fill-item html-fill-container" id="htmlwidget-e226ae8156059328d66d" style="width:100%;height:406px;"></div>
+<script type="application/json" data-for="htmlwidget-e226ae8156059328d66d">{"x":{"data":[{"x":[2019,2020,2021,2022,2023,2024,2025],"y":[10.033554717845877,8.0366766950748492,7.6028838268897738,10.298925278184729,10.08435886733662,8.9962407017075918,9.6178671169144057],"text":["anio: 2019<br />pct: 10.033555","anio: 2020<br />pct:  8.036677","anio: 2021<br />pct:  7.602884","anio: 2022<br />pct: 10.298925","anio: 2023<br />pct: 10.084359","anio: 2024<br />pct:  8.996241","anio: 2025<br />pct:  9.617867"],"type":"scatter","mode":"lines+markers","line":{"width":4.5354330708661417,"color":"rgba(230,75,53,1)","dash":"solid"},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","marker":{"autocolorscale":false,"color":"rgba(230,75,53,1)","opacity":1,"size":11.338582677165356,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(230,75,53,1)"}},"frame":null},{"x":[2018.7,2025.3],"y":[0,0],"text":"yintercept: 0","type":"scatter","mode":"lines","line":{"width":1.8897637795275593,"color":"rgba(173,181,189,1)","dash":"dash"},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[2021,2021],"y":[-0.51494626390923648,10.813871542093965],"text":"xintercept: 2021","type":"scatter","mode":"lines","line":{"width":1.8897637795275593,"color":"rgba(173,181,189,1)","dash":"dot"},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":24.634288086342885,"r":8.6342880863428846,"b":26.766293067662936,"l":57.849730178497325},"paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":17.268576172685762},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[2018.7,2025.3],"tickmode":"array","ticktext":["2019","2020","2021","2022","2023","2024","2025"],"tickvals":[2019,2020,2021,2022,2023,2024,2025],"categoryorder":"array","categoryarray":["2019","2020","2021","2022","2023","2024","2025"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":4.3171440431714405,"tickwidth":0,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":13.814860938148611},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.78493528057662576,"zeroline":false,"anchor":"y","title":{"text":"","font":{"color":"rgba(0,0,0,1)","family":"","size":17.268576172685762}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-0.51494626390923648,10.813871542093965],"tickmode":"array","ticktext":["0.0","2.5","5.0","7.5","10.0"],"tickvals":[0,2.5,5,7.4999999999999991,10],"categoryorder":"array","categoryarray":["0.0","2.5","5.0","7.5","10.0"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":4.3171440431714423,"tickwidth":0,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":13.814860938148612},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.78493528057662576,"zeroline":false,"anchor":"x","title":{"text":"Brecha no explicada (%)","font":{"color":"rgba(0,0,0,1)","family":"","size":17.268576172685762}},"hoverformat":".2f"},"shapes":[],"showlegend":false,"legend":{"bgcolor":null,"bordercolor":null,"borderwidth":0,"font":{"color":"rgba(0,0,0,1)","family":"","size":13.814860938148611}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"5bd4107e70cf":{"x":{},"y":{},"type":"scatter"},"5bd4127f1cb3":{"x":{},"y":{}},"5bd44abb4b66":{"yintercept":{}},"5bd4170d4150":{"xintercept":{}}},"cur_data":"5bd4107e70cf","visdat":{"5bd4107e70cf":["function (y) ","x"],"5bd4127f1cb3":["function (y) ","x"],"5bd44abb4b66":["function (y) ","x"],"5bd4170d4150":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div></div></div><bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
+    <template>Expand</template>
+    <span class="bslib-full-screen-enter badge rounded-pill">
+        <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" style="height:1em;width:1em;" aria-hidden="true" role="img"><path d="M20 5C20 4.4 19.6 4 19 4H13C12.4 4 12 3.6 12 3C12 2.4 12.4 2 13 2H21C21.6 2 22 2.4 22 3V11C22 11.6 21.6 12 21 12C20.4 12 20 11.6 20 11V5ZM4 19C4 19.6 4.4 20 5 20H11C11.6 20 12 20.4 12 21C12 21.6 11.6 22 11 22H3C2.4 22 2 21.6 2 21V13C2 12.4 2.4 12 3 12C3.6 12 4 12.4 4 13V19Z"></path></svg>
+    </span>
+</bslib-tooltip><script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div>
+</div>
+<div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-columns: minmax(3em, 1fr);
+grid-auto-rows: minmax(0, 1fr);">
+<div class="card html-fill-item html-fill-container bslib-card" data-fill="false" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
+<div class="card-body html-fill-item html-fill-container">
+<div class="callout callout-style-simple callout-note no-icon">
+<div class="callout-body d-flex html-fill-item html-fill-container">
+<div class="callout-icon-container html-fill-item html-fill-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-body-container html-fill-item html-fill-container">
+<p><strong>¿Qué significan los 4 componentes?</strong> Este método busca para cada mujer un hombre con <em>exactamente</em> el mismo perfil (educación, edad, empleo, zona). La brecha se descompone así: <strong>“No explicada (entre iguales)”</strong> es la diferencia salarial entre personas idénticas en papel — la evidencia más directa de desigualdad. <strong>“Por características”</strong> refleja que hombres y mujeres se distribuyen en perfiles distintos. <strong>“Hombres sin par”</strong> y <strong>“Mujeres sin par”</strong> son personas para las que no se encontró un par del otro sexo con el mismo perfil — por ejemplo, mujeres en oficios donde casi no hay hombres, o viceversa.</p>
+</div>
+</div>
+</div>
+</div>
+<bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
+    <template>Expand</template>
+    <span class="bslib-full-screen-enter badge rounded-pill">
+        <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" style="height:1em;width:1em;" aria-hidden="true" role="img"><path d="M20 5C20 4.4 19.6 4 19 4H13C12.4 4 12 3.6 12 3C12 2.4 12.4 2 13 2H21C21.6 2 22 2.4 22 3V11C22 11.6 21.6 12 21 12C20.4 12 20 11.6 20 11V5ZM4 19C4 19.6 4.4 20 5 20H11C11.6 20 12 20.4 12 21C12 21.6 11.6 22 11 22H3C2.4 22 2 21.6 2 21V13C2 12.4 2.4 12 3 12C3.6 12 4 12.4 4 13V19Z"></path></svg>
+    </span>
+</bslib-tooltip><script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div>
+</div>
+<div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-columns: minmax(3em, 1fr);
+grid-auto-rows: minmax(0, 1fr);">
+<div class="card html-fill-item html-fill-container bslib-card" data-fill="false" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
+<div class="card-body html-fill-item html-fill-container">
+<div class="callout callout-style-simple callout-warning no-icon">
+<div class="callout-body d-flex html-fill-item html-fill-container">
+<div class="callout-icon-container html-fill-item html-fill-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-body-container html-fill-item html-fill-container">
+<p><strong>Validación cruzada:</strong> La brecha entre iguales (Ñopo: 9.6%) es coherente con la brecha no explicada de la pestaña anterior (Oaxaca-Blinder: 8.9%). Dos métodos distintos confirman el mismo hallazgo: a iguales condiciones, los hombres ganan más.</p>
+</div>
+</div>
+</div>
+</div>
+<bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
+    <template>Expand</template>
+    <span class="bslib-full-screen-enter badge rounded-pill">
+        <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" style="height:1em;width:1em;" aria-hidden="true" role="img"><path d="M20 5C20 4.4 19.6 4 19 4H13C12.4 4 12 3.6 12 3C12 2.4 12.4 2 13 2H21C21.6 2 22 2.4 22 3V11C22 11.6 21.6 12 21 12C20.4 12 20 11.6 20 11V5ZM4 19C4 19.6 4.4 20 5 20H11C11.6 20 12 20.4 12 21C12 21.6 11.6 22 11 22H3C2.4 22 2 21.6 2 21V13C2 12.4 2.4 12 3 12C3.6 12 4 12.4 4 13V19Z"></path></svg>
+    </span>
+</bslib-tooltip><script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div>
+</div>
+<div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-columns: minmax(3em, 1fr);
+grid-auto-rows: minmax(0, 1fr);">
+<div class="card html-fill-item html-fill-container bslib-card" data-fill="false" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
+<div class="card-body html-fill-item html-fill-container">
+<div class="callout callout-style-simple callout-tip no-icon">
+<div class="callout-body d-flex html-fill-item html-fill-container">
+<div class="callout-icon-container html-fill-item html-fill-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-body-container html-fill-item html-fill-container">
+<p><strong>Mensaje clave:</strong> Incluso comparando personas con exactamente el mismo perfil, los hombres ganan 9.6% más que las mujeres. Esta brecha no se explica por educación, experiencia ni sector — es la evidencia más robusta de que la desigualdad salarial de género en Colombia es real y persistente.</p>
+</div>
+</div>
+</div>
+</div>
+<bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
+    <template>Expand</template>
+    <span class="bslib-full-screen-enter badge rounded-pill">
+        <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" style="height:1em;width:1em;" aria-hidden="true" role="img"><path d="M20 5C20 4.4 19.6 4 19 4H13C12.4 4 12 3.6 12 3C12 2.4 12.4 2 13 2H21C21.6 2 22 2.4 22 3V11C22 11.6 21.6 12 21 12C20.4 12 20 11.6 20 11V5ZM4 19C4 19.6 4.4 20 5 20H11C11.6 20 12 20.4 12 21C12 21.6 11.6 22 11 22H3C2.4 22 2 21.6 2 21V13C2 12.4 2.4 12 3 12C3.6 12 4 12.4 4 13V19Z"></path></svg>
+    </span>
+</bslib-tooltip><script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div>
+</div>
+<div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-columns: minmax(3em, 1fr);
+grid-auto-rows: minmax(0, 1fr);">
+<div class="card html-fill-item html-fill-container bslib-card" data-fill="false" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
+<div class="card-body html-fill-item html-fill-container">
+<div class="callout callout-style-simple callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center collapsed html-fill-item html-fill-container" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container html-fill-item html-fill-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill html-fill-item html-fill-container">
+<span class="screen-reader-only">Tip</span>Nota metodológica
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end html-fill-item html-fill-container"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse html-fill-item html-fill-container">
+<div class="callout-body-container callout-body html-fill-item html-fill-container">
+<p>Método: <strong>Ñopo (2008)</strong>. Matching exacto por educación (4 grupos), edad (5 grupos), posición ocupacional y zona. Descompone la brecha en 4 partes: D<sub>X</sub> (diferencia en perfiles), D<sub>0</sub> (brecha entre iguales), D<sub>M</sub> (hombres sin par comparable) y D<sub>F</sub> (mujeres sin par comparable). No asume relaciones matemáticas entre variables, lo que lo hace robusto como validación del método Oaxaca-Blinder.</p>
+</div>
+</div>
+</div>
+</div>
+<bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
+    <template>Expand</template>
+    <span class="bslib-full-screen-enter badge rounded-pill">
+        <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" style="height:1em;width:1em;" aria-hidden="true" role="img"><path d="M20 5C20 4.4 19.6 4 19 4H13C12.4 4 12 3.6 12 3C12 2.4 12.4 2 13 2H21C21.6 2 22 2.4 22 3V11C22 11.6 21.6 12 21 12C20.4 12 20 11.6 20 11V5ZM4 19C4 19.6 4.4 20 5 20H11C11.6 20 12 20.4 12 21C12 21.6 11.6 22 11 22H3C2.4 22 2 21.6 2 21V13C2 12.4 2.4 12 3 12C3.6 12 4 12.4 4 13V19Z"></path></svg>
+    </span>
+</bslib-tooltip><script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div>
+</div>
+<div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-columns: minmax(3em, 1fr) minmax(3em, 1fr);
+grid-auto-rows: minmax(0, 1fr);">
+<div class="card cell html-fill-item html-fill-container bslib-card" data-title="Tabla detallada de resultados Ñopo" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
+<div class="card-header"><div class="card-title"><span style="display: inline">
+Tabla detallada de resultados Ñopo
+</span></div></div>
+<div class="card-body html-fill-item html-fill-container">
+<div class="cell-output-display html-fill-item html-fill-container">
+<div class="datatables html-widget html-fill-item html-fill-container" id="htmlwidget-6b042d6f9c22ef9ad1e1" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-6b042d6f9c22ef9ad1e1">{"x":{"filter":"top","vertical":false,"filterHTML":"<tr>\n  <td data-type=\"integer\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"2019\" data-max=\"2025\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"-13.46\" data-max=\"10.3\" data-scale=\"2\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"integer\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"16604\" data-max=\"17382\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"integer\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"12618\" data-max=\"13396\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"99.8\" data-max=\"100\" data-scale=\"1\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n<\/tr>","extensions":["Buttons"],"caption":"<caption style=\"color: gray; font-size: 11px;\">Descomposición Ñopo — Fuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026.<\/caption>","data":[[2019,2019,2019,2019,2019,2020,2020,2020,2020,2020,2021,2021,2021,2021,2021,2022,2022,2022,2022,2022,2023,2023,2023,2023,2023,2024,2024,2024,2024,2024,2025,2025,2025,2025,2025],["Brecha total","Hombres sin par (D_M)","Mujeres sin par (D_F)","No explicada — entre iguales (D0)","Por características — perfiles (D_X)","Brecha total","Hombres sin par (D_M)","Mujeres sin par (D_F)","No explicada — entre iguales (D0)","Por características — perfiles (D_X)","Brecha total","Hombres sin par (D_M)","Mujeres sin par (D_F)","No explicada — entre iguales (D0)","Por características — perfiles (D_X)","Brecha total","Hombres sin par (D_M)","Mujeres sin par (D_F)","No explicada — entre iguales (D0)","Por características — perfiles (D_X)","Brecha total","Hombres sin par (D_M)","Mujeres sin par (D_F)","No explicada — entre iguales (D0)","Por características — perfiles (D_X)","Brecha total","Hombres sin par (D_M)","Mujeres sin par (D_F)","No explicada — entre iguales (D0)","Por características — perfiles (D_X)","Brecha total","Hombres sin par (D_M)","Mujeres sin par (D_F)","No explicada — entre iguales (D0)","Por características — perfiles (D_X)"],[-0.96,0,0.15,10.03,-11.15,-5.42,0,0,8.039999999999999,-13.46,6.21,0.01,0.14,7.6,-1.54,0.52,0,0.04,10.3,-9.81,1.21,-0.02,0,10.08,-8.859999999999999,0.33,-0.02,0.01,9,-8.66,0.47,0,0.06,9.619999999999999,-9.210000000000001],[16604,16604,16604,16604,16604,17382,17382,17382,17382,17382,17114,17114,17114,17114,17114,16712,16712,16712,16712,16712,16729,16729,16729,16729,16729,16803,16803,16803,16803,16803,16720,16720,16720,16720,16720],[13396,13396,13396,13396,13396,12618,12618,12618,12618,12618,12886,12886,12886,12886,12886,13288,13288,13288,13288,13288,13271,13271,13271,13271,13271,13197,13197,13197,13197,13197,13280,13280,13280,13280,13280],[99.8,99.8,99.8,99.8,99.8,100,100,100,100,100,99.90000000000001,99.90000000000001,99.90000000000001,99.90000000000001,99.90000000000001,99.90000000000001,99.90000000000001,99.90000000000001,99.90000000000001,99.90000000000001,100,100,100,100,100,100,100,100,100,100,99.90000000000001,99.90000000000001,99.90000000000001,99.90000000000001,99.90000000000001]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Año<\/th>\n      <th>Componente<\/th>\n      <th>Diferencia (%)<\/th>\n      <th>N Hombres<\/th>\n      <th>N Mujeres<\/th>\n      <th>% Matching<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"bPaginate":false,"dom":"Bfrtip","language":{"info":"_START_ a _END_ de _TOTAL_","search":"Buscar:","paginate":{"previous":"Anterior","next":"Siguiente"}},"pageLength":10,"scrollX":true,"buttons":[{"extend":"csv","text":"Descargar CSV"},{"extend":"excel","text":"Descargar Excel"}],"columnDefs":[{"className":"dt-right","targets":[0,2,3,4,5]},{"name":"anio","targets":0},{"name":"componente_label","targets":1},{"name":"pct","targets":2},{"name":"n_hombres","targets":3},{"name":"n_mujeres","targets":4},{"name":"pct_matching","targets":5}],"order":[],"autoWidth":false,"orderClasses":false,"orderCellsTop":true}},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
+    <template>Expand</template>
+    <span class="bslib-full-screen-enter badge rounded-pill">
+        <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" style="height:1em;width:1em;" aria-hidden="true" role="img"><path d="M20 5C20 4.4 19.6 4 19 4H13C12.4 4 12 3.6 12 3C12 2.4 12.4 2 13 2H21C21.6 2 22 2.4 22 3V11C22 11.6 21.6 12 21 12C20.4 12 20 11.6 20 11V5ZM4 19C4 19.6 4.4 20 5 20H11C11.6 20 12 20.4 12 21C12 21.6 11.6 22 11 22H3C2.4 22 2 21.6 2 21V13C2 12.4 2.4 12 3 12C3.6 12 4 12.4 4 13V19Z"></path></svg>
+    </span>
+</bslib-tooltip><script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div><div class="card html-fill-item html-fill-container bslib-card" data-fill="false" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
+<div class="card-body html-fill-item html-fill-container">
+<div class="callout callout-style-simple callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center collapsed html-fill-item html-fill-container" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container html-fill-item html-fill-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill html-fill-item html-fill-container">
+<span class="screen-reader-only">Tip</span>Replicabilidad
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end html-fill-item html-fill-container"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse html-fill-item html-fill-container">
+<div class="callout-body-container callout-body html-fill-item html-fill-container">
+<p>Este análisis es <strong>replicable y adaptable</strong> a otros contextos:</p>
+<ul>
+<li><strong>Datos:</strong> Cualquier encuesta de hogares con variables de sexo, edad, educación, ingreso laboral, sector, posición ocupacional y factor de expansión. En la región: ENOE (México), EPH (Argentina), PNAD (Brasil), CASEN (Chile).</li>
+<li><strong>Código:</strong> Disponible en <a href="https://github.com/equilab-ean/equilab-dat4ccion-2026">GitHub</a>. Scripts R modulares con paquetes <code>oaxaca</code> y funciones custom para Ñopo.</li>
+<li><strong>Limitaciones conocidas:</strong> Bootstrap R=30 (ampliar para publicación formal). Muestra trimada P1–P99 del salario/hora. Proxy de experiencia (edad - educación - 6). El ingreso por hora se calcula como ing_total / (horas_sem × 4.33).</li>
+<li><strong>Escalamiento:</strong> Los módulos O-B y Ñopo pueden aplicarse a cualquier variable continua de resultado (salario, horas, productividad) con las mismas variables de matching.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
+    <template>Expand</template>
+    <span class="bslib-full-screen-enter badge rounded-pill">
+        <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" style="height:1em;width:1em;" aria-hidden="true" role="img"><path d="M20 5C20 4.4 19.6 4 19 4H13C12.4 4 12 3.6 12 3C12 2.4 12.4 2 13 2H21C21.6 2 22 2.4 22 3V11C22 11.6 21.6 12 21 12C20.4 12 20 11.6 20 11V5ZM4 19C4 19.6 4.4 20 5 20H11C11.6 20 12 20.4 12 21C12 21.6 11.6 22 11 22H3C2.4 22 2 21.6 2 21V13C2 12.4 2.4 12 3 12C3.6 12 4 12.4 4 13V19Z"></path></svg>
+    </span>
+</bslib-tooltip><script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div>
+</div>
+<div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-columns: minmax(3em, 1fr);
+grid-auto-rows: minmax(0, 1fr);">
+<div class="card html-fill-item html-fill-container bslib-card" data-fill="false" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
+<div class="card-body html-fill-item html-fill-container">
+<div class="callout callout-style-simple callout-warning no-icon callout-titled">
+<div class="callout-header d-flex align-content-center html-fill-item html-fill-container">
+<div class="callout-icon-container html-fill-item html-fill-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill html-fill-item html-fill-container">
+<span class="screen-reader-only">Warning</span>¿Qué revelan estos datos sobre las brechas salariales?
+</div>
+</div>
+<div class="callout-body-container callout-body html-fill-item html-fill-container">
+<p>Esta sección demuestra, con tres métodos independientes, que <strong>las mujeres colombianas ganan menos que los hombres a iguales condiciones</strong>. Tres hallazgos clave:</p>
+<ol type="1">
+<li><p><strong>La brecha en el promedio salarial es de -2.7%</strong>, y crece significativamente con el nivel educativo — las mujeres más calificadas enfrentan la mayor penalización salarial.</p></li>
+<li><p><strong>8.9% de la brecha no se explica por diferencias en educación, experiencia o sector</strong> (Oaxaca-Blinder). La validación por matching exacto (Ñopo) confirma una brecha de 9.6% entre personas con el mismo perfil. Dos métodos distintos, un mismo resultado.</p></li>
+<li><p><strong>La brecha es peor en zonas rurales y para mujeres de grupos étnicos</strong>, donde la intersección de género con otras dimensiones de desigualdad amplifica la penalización salarial.</p></li>
+</ol>
+<p><strong>¿Quién debería actuar?</strong> El Ministerio del Trabajo (políticas de transparencia salarial y auditorías de brecha), el Ministerio de Educación (retorno equitativo a la inversión educativa), secretarías departamentales (focalización en territorios con mayor brecha), y organizaciones de empleadores (diagnóstico interno de equidad remunerativa).</p>
+<div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-rows: minmax(3em, max-content); grid-auto-columns: minmax(0, 1fr);">
+<div class="card html-fill-item html-fill-container bslib-card" data-fill="false" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
+<div class="card-body html-fill-item html-fill-container">
+<p>Las tres páginas de este dashboard cuentan una historia completa:</p>
+<ul>
+<li><strong>Acceso laboral →</strong> Solo 48 de cada 100 mujeres participan del mercado laboral (vs 81 hombres). Más de la mitad de la brecha no se explica por características observables.</li>
+<li><strong>Calidad del empleo →</strong> Las mujeres se concentran en empleos domésticos, informales y sin remuneración, con alta segregación sectorial.</li>
+<li><strong>Brechas salariales →</strong> A iguales condiciones, los hombres ganan entre 8-10% más. La brecha crece con la educación y es peor en la ruralidad y para grupos étnicos.</li>
+</ul>
+<p>Estos hallazgos confirman que <strong>la desigualdad laboral de género en Colombia es estructural, multidimensional y persistente</strong>. No se resolverá solo con más educación ni solo con el paso del tiempo.</p>
+<p><strong>← Página anterior:</strong> <a href="./p2_calidad.html">Calidad del Empleo</a> | <strong>Inicio →</strong> <a href="./index.html">Radar de Brechas</a></p>
+</div>
+<bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
+    <template>Expand</template>
+    <span class="bslib-full-screen-enter badge rounded-pill">
+        <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" style="height:1em;width:1em;" aria-hidden="true" role="img"><path d="M20 5C20 4.4 19.6 4 19 4H13C12.4 4 12 3.6 12 3C12 2.4 12.4 2 13 2H21C21.6 2 22 2.4 22 3V11C22 11.6 21.6 12 21 12C20.4 12 20 11.6 20 11V5ZM4 19C4 19.6 4.4 20 5 20H11C11.6 20 12 20.4 12 21C12 21.6 11.6 22 11 22H3C2.4 22 2 21.6 2 21V13C2 12.4 2.4 12 3 12C3.6 12 4 12.4 4 13V19Z"></path></svg>
+    </span>
+</bslib-tooltip><script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div>
+</div>
+</div>
+</div>
+</div>
+<bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
+    <template>Expand</template>
+    <span class="bslib-full-screen-enter badge rounded-pill">
+        <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" style="height:1em;width:1em;" aria-hidden="true" role="img"><path d="M20 5C20 4.4 19.6 4 19 4H13C12.4 4 12 3.6 12 3C12 2.4 12.4 2 13 2H21C21.6 2 22 2.4 22 3V11C22 11.6 21.6 12 21 12C20.4 12 20 11.6 20 11V5ZM4 19C4 19.6 4.4 20 5 20H11C11.6 20 12 20.4 12 21C12 21.6 11.6 22 11 22H3C2.4 22 2 21.6 2 21V13C2 12.4 2.4 12 3 12C3.6 12 4 12.4 4 13V19Z"></path></svg>
+    </span>
+</bslib-tooltip><script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div><div id="3ade8a4a-fb1d-4a6c-8409-ac45482d5fc9" class="hidden html-fill-item html-fill-container">
+
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/YourFavouriteDataSuperstar\.github\.io\/equilab-dat4ccion-2026\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+<script type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (_event) {
+  if (window.bslib.Card) {
+    window.bslib.Card.initializeAllCards();
+  }
+}); 
+</script>
+  
+
+
+
+</body></html>

@@ -1,0 +1,893 @@
+/*-- scss:rules --*/
+
+/* ============================================================
+   EQUILAB DAT4CCIÓN 2026 — Estilos globales
+   Archivo central de diseño. Se aplica a todas las páginas
+   del sitio via _quarto.yml
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;900&family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap');
+
+/* ── Variables de marca ────────────────────────────────────── */
+:root {
+  --color-fondo:       #6c757d;
+  --color-acento:      #004457;
+  --color-primario:    #0086ab;
+  --color-hombres:     #5f7300;
+  --color-mujeres:     #6b2d50;
+  --color-neutro:      #6c757d;
+  --color-blanco:      #f4f4f4;
+  --color-texto:       #212529;
+  --color-texto-claro: #f8f9fa;
+  --color-borde:       #dee2e6;
+  --color-superficie:  #f8f9fa;
+
+  --fuente-titulo:  'Outfit', 'Segoe UI', system-ui, sans-serif;
+  --fuente-cuerpo:  'Public Sans', 'Segoe UI', system-ui, sans-serif;
+
+  --radio-card:    0.5rem;
+  --sombra-card:   0 2px 8px rgba(0,0,0,0.10);
+  --sombra-hover:  0 4px 16px rgba(0,0,0,0.18);
+  --transicion:    0.2s ease;
+}
+
+/* ── Value boxes — texto blanco y tamaño reducido ───────────── */
+.bslib-value-box .value-box-title,
+.bslib-value-box .value-box-value,
+.bslib-value-box .bi {
+  color: #ffffff !important;
+}
+.bslib-value-box .value-box-title {
+  font-size: 1.0rem !important;
+  line-height: 1.3 !important;
+}
+.bslib-value-box .value-box-value {
+  font-size: 2rem !important;
+}
+
+/* ── Reset y base ───────────────────────────────────────────── */
+body {
+  font-family: var(--fuente-cuerpo);
+  color: var(--color-texto);
+  background-color: var(--color-blanco);
+  background-image:
+    linear-gradient(rgba(150,150,150,0.2) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(150,150,150,0.2) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+}
+
+
+
+/* ── Navbar ─────────────────────────────────────────────────── */
+.navbar {
+  background-color: var(--color-fondo) !important;
+  border-bottom: 2px solid var(--color-primario);
+  padding: 0.6rem 1.5rem;
+}
+
+.navbar-brand {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--color-blanco) !important;
+  letter-spacing: 0.02em;
+}
+
+.navbar-nav .nav-link {
+  color: rgba(255,255,255,1.0) !important;
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  transition: background-color var(--transicion), color var(--transicion);
+}
+
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link.active {
+  color: var(--color-blanco) !important;
+  background-color: rgba(255,255,255,0.12);
+}
+
+/* ── Hero minimalista (metodología, etc.) ──────────────────── */
+.eq-hero-minimal {
+  background-color: #f0f0f0;
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  box-sizing: border-box;
+  padding: 5rem 2rem 4rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.eq-hero-minimal-badge {
+  display: inline-block;
+  font-family: var(--fuente-cuerpo);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #6c757d;
+  border: 1px solid #ced4da;
+  border-radius: 2rem;
+  padding: 0.25rem 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.eq-hero-minimal-titulo {
+  font-family: var(--fuente-titulo);
+  font-weight: 900;
+  font-size: clamp(2rem, 4.5vw, 3.2rem);
+  color: #212529;
+  line-height: 1.1;
+  margin: 0 0 1rem;
+  max-width: 650px;
+}
+
+.eq-hero-minimal-sub {
+  font-family: var(--fuente-cuerpo);
+  font-size: 1rem;
+  color: #6c757d;
+  max-width: 550px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ── Footer ─────────────────────────────────────────────────── */
+.page-footer {
+  background-color: var(--color-fondo) !important;
+  color: rgba(255,255,255,0.7) !important;
+  font-size: 0.8rem;
+  padding: 1rem 0;
+  border-top: 1px solid var(--color-primario);
+}
+
+/* ── Cards de navegación (portada) ─────────────────────────── */
+.eq-nav-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.2rem;
+  margin: 2rem 0;
+}
+
+.eq-card {
+  background: var(--color-blanco);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-card);
+  padding: 1.5rem;
+  box-shadow: var(--sombra-card);
+  text-decoration: none !important;
+  color: var(--color-texto) !important;
+  transition: box-shadow var(--transicion), transform var(--transicion);
+  display: block;
+}
+
+.eq-card:hover {
+  box-shadow: var(--sombra-hover);
+  transform: translateY(-2px);
+}
+
+.eq-card-icon {
+  font-size: 2rem;
+  margin-bottom: 0.6rem;
+  display: block;
+}
+
+.eq-card-titulo {
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 0.3rem;
+  color: var(--color-primario);
+}
+
+.eq-card-desc {
+  font-size: 0.85rem;
+  color: var(--color-neutro);
+  line-height: 1.4;
+}
+
+/* ── Hero de portada ────────────────────────────────────────── */
+.eq-hero {
+  background: linear-gradient(135deg, var(--color-mujeres) 0%, var(--color-primario) 100%);
+  color: var(--color-blanco);
+  min-height: 50vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 4rem 2rem 3rem;
+  border-radius: 0 0 var(--radio-card) var(--radio-card);
+  margin-bottom: 2rem;
+}
+
+.eq-hero h1 {
+  font-size: 2.8rem;
+  margin-bottom: 0.8rem;
+  color: var(--color-blanco);
+  line-height: 1.2;
+  max-width: 700px;
+  text-align: center;
+}
+
+.eq-hero p {
+  font-size: 1.1rem;
+  opacity: 0.88;
+  max-width: 620px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.eq-hero-badge {
+  display: inline-block;
+  align-self: center;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 2rem;
+  padding: 0.25rem 0.9rem;
+  font-size: 0.8rem;
+  margin-bottom: 1.2rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* ── TOC lateral derecho ────────────────────────────────────── */
+#TOC {
+  text-align: left;
+}
+
+#TOC .toc-title {
+  text-align: left;
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-primario);
+  margin-bottom: 0.8rem;
+}
+
+#TOC ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#TOC ul li a {
+  display: block;
+  text-align: right;
+  font-size: 0.82rem;
+  color: var(--color-neutro);
+  padding: 0.2rem 0;
+  text-decoration: none;
+  border-right: 2px solid var(--color-borde);
+  padding-right: 0.7rem;
+  transition: color var(--transicion), border-color var(--transicion);
+}
+
+#TOC ul li a:hover {
+  color: var(--color-primario);
+  border-right-color: var(--color-primario);
+}
+
+#TOC ul li a.active {
+  color: var(--color-primario);
+  font-weight: 600;
+  border-right-color: var(--color-primario);
+}
+
+/* ── Value boxes (dashboards) ───────────────────────────────── */
+.eq-valuebox {
+  background: var(--color-superficie);
+  border-left: 4px solid var(--color-primario);
+  border-radius: var(--radio-card);
+  padding: 1rem 1.2rem;
+  box-shadow: var(--sombra-card);
+}
+
+.eq-valuebox.hombres {
+  border-left-color: var(--color-hombres);
+}
+
+.eq-valuebox.mujeres {
+  border-left-color: var(--color-mujeres);
+}
+
+.eq-valuebox-valor {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--color-primario);
+}
+
+.eq-valuebox.hombres .eq-valuebox-valor { color: var(--color-hombres); }
+.eq-valuebox.mujeres .eq-valuebox-valor { color: var(--color-mujeres); }
+
+.eq-valuebox-label {
+  font-size: 0.82rem;
+  color: var(--color-neutro);
+  margin-top: 0.2rem;
+}
+
+/* ── Indicador de brecha (badge) ────────────────────────────── */
+.eq-brecha {
+  display: inline-block;
+  background: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffc107;
+  border-radius: 0.3rem;
+  padding: 0.15rem 0.6rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* ── Closeread: estilos de secciones narrativas ─────────────── */
+.cr-section {
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.cr-section h2 {
+  font-family: 'Outfit', 'Segoe UI', system-ui, sans-serif;
+  font-weight: 700;
+  color: #0086ab;
+  font-size: 1.5rem;
+  margin-bottom: 0.6rem;
+  margin-top: 0;
+}
+
+.eq-sticky-card {
+  background: var(--color-superficie);
+  border-radius: var(--radio-card);
+  padding: 1.5rem;
+  box-shadow: var(--sombra-card);
+  border-top: 4px solid var(--color-primario);
+}
+
+.eq-sticky-card.hombres { border-top-color: var(--color-hombres); }
+.eq-sticky-card.mujeres { border-top-color: var(--color-mujeres); }
+
+.eq-sticky-stat {
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--color-primario);
+  display: block;
+  line-height: 1;
+  margin-bottom: 0.3rem;
+}
+
+.eq-sticky-label {
+  font-size: 0.9rem;
+  color: var(--color-neutro);
+}
+
+/* ── Línea de cambio muestral (2021) ────────────────────────── */
+/* Aplicada en gráficos plotly via layout shapes, no CSS puro   */
+/* Documentado aquí como referencia:                            */
+/* shape: {type:'line', x0:'2021', x1:'2021',                  */
+/*          line: {color:'#adb5bd', dash:'dot', width:1.5}}     */
+
+/* ── Filtros crosstalk ──────────────────────────────────────── */
+.crosstalk-input-select select,
+.crosstalk-input-checkboxgroup label {
+  font-size: 0.88rem;
+}
+
+.crosstalk-input .control-label {
+  font-weight: 600;
+  font-size: 0.82rem;
+  color: var(--color-neutro);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.3rem;
+  display: block;
+}
+
+/* ── Tabla metodológica ─────────────────────────────────────── */
+.eq-tabla-metodologica {
+  font-size: 0.88rem;
+}
+
+.eq-tabla-metodologica th {
+  background-color: var(--color-fondo);
+  color: var(--color-blanco);
+  font-weight: 600;
+}
+
+/* ── Chips de fuente / nota ─────────────────────────────────── */
+.eq-fuente {
+  font-size: 0.75rem;
+  color: var(--color-neutro);
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+
+/* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .eq-hero h1   { font-size: 1.5rem; }
+  .eq-nav-cards { grid-template-columns: 1fr; }
+  .eq-sticky-stat { font-size: 2.2rem; }
+}
+
+/* ============================================================
+   PORTADA — Estilos de la pagina de inicio (closeread)
+   ============================================================ */
+
+/* ── Cuadricula en el area de stickies ─────────────────────── */
+.cr-section .sticky-col,
+.cr-section .sticky-col-stack {
+  background-image:
+    linear-gradient(rgba(150,150,150,0.18) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(150,150,150,0.18) 1px, transparent 1px);
+  background-size: 32px 32px;
+  background-color: #f4f4f4;
+}
+
+/* ── Primer bloque de narrativa con espacio superior ────────── */
+.cr-section .narrative-col > *:first-child {
+  padding-block-start: 8svh;
+}
+
+/* ── Parrafos narrativos ───────────────────────────────────── */
+.cr-section p {
+  line-height: 1.75;
+  color: #212529;
+}
+
+/* ── Stickies: centrar contenido verticalmente ─────────────── */
+.cr-section .sticky {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── PORTADA: sidebar lila ─────────────────────────────────── */
+.portada-section .narrative-col {
+  background-color: #efe5f6 !important;
+}
+
+.portada-section .narrative-col > *:first-child {
+  padding-block-start: 65svh !important;
+}
+
+/* ── PORTADA: sticky layout ────────────────────────────────── */
+.eq-portada-sticky {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  width: 100%;
+  padding: 3.5rem 4rem;
+  box-sizing: border-box;
+}
+
+.eq-portada-titulo {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 900;
+  font-size: clamp(5rem, 11vw, 9rem);
+  color: #000000;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+}
+
+.eq-portada-subtitulo {
+  font-family: 'Public Sans', sans-serif;
+  font-weight: 700;
+  font-size: clamp(1.6rem, 3.2vw, 2.8rem);
+  color: #004457;
+  line-height: 1.2;
+  max-width: 85%;
+}
+
+.eq-portada-fecha {
+  font-family: 'Public Sans', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #212529;
+  text-align: right;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.portada-bienvenida {
+  font-family: 'Public Sans', sans-serif;
+  font-style: italic;
+  font-size: 1.15rem;
+  color: #212529;
+  line-height: 1.4;
+}
+
+/* ── Sidebar lila compartido (secciones 2-8) ───────────────── */
+.lila-section .narrative-col {
+  background-color: #efe5f6 !important;
+}
+
+.lila-section .narrative-col > *:first-child {
+  padding-block-start: 45svh !important;
+}
+
+.momentos-section .narrative-col > *:first-child {
+  padding-block-start: 28svh !important;
+}
+
+/* ── Titulos del sidebar ───────────────────────────────────── */
+.eq-sidebar-titulo {
+  font-family: 'Public Sans', sans-serif;
+  font-style: italic;
+  font-size: clamp(1.8rem, 2.5vw, 2.4rem);
+  color: #212529;
+  line-height: 1.3;
+}
+
+.eq-sidebar-sub {
+  font-family: 'Public Sans', sans-serif;
+  font-size: 0.82rem;
+  color: #212529;
+  margin-top: 0.8rem;
+  line-height: 1.4;
+}
+
+/* ── Sticky: texto "Asi lo hicimos" ────────────────────────── */
+.eq-hicimos-texto {
+  max-width: 500px;
+  text-align: center;
+  font-family: 'Public Sans', sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.75;
+  color: #212529;
+  padding: 2rem;
+}
+
+.eq-hicimos-texto p + p {
+  margin-top: 1rem;
+}
+
+/* ── Boton guia metodologica ───────────────────────────────── */
+.eq-metodologia-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.eq-metodologia-label {
+  font-family: 'Public Sans', sans-serif;
+  font-size: 0.78rem;
+  color: #6c757d;
+}
+
+.eq-metodologia-btn {
+  background-color: #dde4bb;
+  border: 1.5px solid #b5bf8a;
+  border-radius: 10px;
+  padding: 0.75rem 2.5rem;
+  font-family: 'Public Sans', sans-serif;
+  font-size: 0.95rem;
+  color: #212529;
+  text-decoration: none;
+  display: inline-block;
+  transition: background-color 0.2s;
+}
+
+.eq-metodologia-btn:hover {
+  background-color: #c9d4a0;
+}
+
+/* ── Grid de momentos de analisis ──────────────────────────── */
+
+/* Permitir overflow en la sección de momentos para que el zoom no se corte */
+.momentos-section .sticky-col-stack {
+  overflow: visible !important;
+}
+.momentos-section .sticky-col-stack .sticky {
+  overflow: visible !important;
+}
+
+.eq-momentos-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2rem;
+  max-width: 420px;
+  margin: auto;
+  /* La transición se aplica vía JS; aquí definimos el will-change para rendimiento */
+  will-change: transform;
+}
+
+.eq-momento-card {
+  border-radius: 10px;
+  padding: 1.2rem 1rem;
+  text-align: center;
+  font-family: 'Public Sans', sans-serif;
+  font-size: 0.88rem;
+  color: #212529;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80px;
+  line-height: 1.3;
+}
+
+.eq-momento-card.acceso       { background-color: #dde4bb; border: 1.5px solid #b5bf8a; }
+.eq-momento-card.calidad      { background-color: #e2c5d6; border: 1.5px solid #c0a0b8; }
+.eq-momento-card.salariales   { background-color: #e6d1c6; border: 1.5px solid #c4ab9e; }
+.eq-momento-card.diversidades { background-color: #d1e4e9; border: 1.5px solid #a8c5cc; }
+.eq-momento-card.placeholder  { visibility: hidden; }
+
+/* Estado zoom: card activo visible, los demás invisibles */
+.eq-momento-card {
+  transition: opacity 0.4s ease;
+}
+.eq-momento-card.eq-card-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+.eq-momento-card.eq-card-active {
+  opacity: 1;
+}
+
+/* ============================================================
+   PÁGINA 4 — Mujeres diversas (estilos específicos)
+   ============================================================ */
+
+/* ── Hero de entrada p4 ────────────────────────────────────── */
+.p4-hero {
+  background: linear-gradient(135deg, #6b2d50 0%, #0086ab 100%);
+  color: #f4f4f4;
+  padding: 4rem 3rem 3.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.p4-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+}
+
+.p4-hero-badge {
+  display: inline-block;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.35);
+  border-radius: 2rem;
+  padding: 0.25rem 1rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-family: var(--fuente-cuerpo);
+  font-weight: 600;
+}
+
+.p4-hero h1 {
+  font-family: var(--fuente-titulo);
+  font-weight: 900;
+  font-size: clamp(2.2rem, 5vw, 3.6rem);
+  line-height: 1.05;
+  color: #f4f4f4;
+  margin: 0;
+  max-width: 700px;
+}
+
+.p4-hero p {
+  font-family: var(--fuente-cuerpo);
+  font-size: 1.05rem;
+  opacity: 0.88;
+  max-width: 600px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.p4-hero-colores {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.p4-hero-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--fuente-cuerpo);
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.3rem 0.85rem;
+  border-radius: 2rem;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
+.p4-hero-chip .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.p4-hero-chip.cis  .dot { background: #f0a8cc; }
+.p4-hero-chip.trans .dot { background: #7dd8f0; }
+
+/* ── Bloques de narrativa textual ──────────────────────────── */
+.eq-hicimos-texto {
+  max-width: 520px;
+  font-family: var(--fuente-cuerpo);
+  font-size: 1rem;
+  line-height: 1.8;
+  color: #212529;
+  padding: 2.5rem 2rem;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 0.75rem;
+  text-align: left;
+}
+
+.eq-hicimos-texto p + p {
+  margin-top: 1rem;
+}
+
+.eq-hicimos-texto strong {
+  color: #0086ab;
+}
+
+/* ── Número de sección en sidebar h2 ───────────────────────── */
+.p4-seccion-num {
+  display: inline-block;
+  font-family: var(--fuente-titulo);
+  font-weight: 900;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #ffffff;
+  background: #0086ab;
+  padding: 0.15rem 0.55rem;
+  border-radius: 0.2rem;
+  margin-bottom: 0.4rem;
+  vertical-align: middle;
+}
+
+/* ── Bloque de nota metodológica ───────────────────────────── */
+.p4-nota-metodologica {
+  max-width: 520px;
+  font-family: var(--fuente-cuerpo);
+  font-size: 0.88rem;
+  line-height: 1.65;
+  color: #212529;
+  padding: 1.5rem 1.5rem 1.5rem 1.3rem;
+  background: #f8f9fa;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.07);
+  border-left: 4px solid #6b2d50;
+  max-height: 75vh;
+  overflow-y: auto;
+}
+
+.p4-nota-metodologica p + p {
+  margin-top: 1rem;
+}
+
+.p4-nota-metodologica strong {
+  color: #6b2d50;
+}
+
+.p4-nota-metodologica code {
+  background: #ede7f6;
+  padding: 0.1em 0.4em;
+  border-radius: 3px;
+  font-size: 0.85em;
+  color: #4a1942;
+}
+
+/* ── Grid de creadoras ─────────────────────────────────────── */
+.eq-creadoras-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem 2.5rem;
+  max-width: 520px;
+  margin: auto;
+  text-align: center;
+}
+
+.eq-creadora-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.eq-creadora-nombre {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: #004457;
+}
+
+.eq-creadora-bio {
+  font-family: 'Public Sans', sans-serif;
+  font-size: 0.72rem;
+  color: #495057;
+  line-height: 1.45;
+  margin: 0;
+  max-width: 220px;
+}
+
+.eq-creadora-links {
+  display: flex;
+  gap: 0.7rem;
+  margin-top: 0.3rem;
+}
+
+.eq-creadora-links a {
+  color: #6c757d;
+  transition: color 0.2s ease, transform 0.2s ease;
+  display: inline-flex;
+}
+
+.eq-creadora-links a:hover {
+  color: #0086ab;
+  transform: scale(1.15);
+}
+
+.eq-icon {
+  width: 18px;
+  height: 18px;
+}
+
+/* ── Sección de cierre ────────────────────────────────────── */
+.eq-cierre-wrap {
+  background-color: #efe5f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  padding: 4rem 2rem;
+  text-align: center;
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  box-sizing: border-box;
+}
+
+.eq-cierre-frase {
+  font-family: 'Public Sans', sans-serif;
+  font-weight: 400;
+  font-style: italic;
+  font-size: clamp(1.4rem, 3vw, 2.2rem);
+  color: #212529;
+  line-height: 1.45;
+  max-width: 650px;
+  margin: 0 auto;
+}
+
+/* ── Footer del sitio ─────────────────────────────────────── */
+.eq-footer {
+  text-align: center;
+  padding: 1.2rem 1rem;
+  font-family: 'Public Sans', sans-serif;
+  font-size: 0.78rem;
+  color: #6c757d;
+  letter-spacing: 0.04em;
+  border-top: 1px solid #dee2e6;
+  background-color: #f4f4f4;
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .eq-creadoras-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}

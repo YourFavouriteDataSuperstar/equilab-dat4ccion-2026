@@ -1,0 +1,184 @@
+[
+  {
+    "objectID": "metodologia.html",
+    "href": "metodologia.html",
+    "title": "Ficha Metodológica",
+    "section": "",
+    "text": "Guía Metodológica\n  \n  \n    Decisiones de diseño, fuentes de datos, filtros aplicados,\n    modelos econométricos y limitaciones del estudio."
+  },
+  {
+    "objectID": "metodologia.html#muestra-compleja-estratificada",
+    "href": "metodologia.html#muestra-compleja-estratificada",
+    "title": "Ficha Metodológica",
+    "section": "Muestra compleja estratificada",
+    "text": "Muestra compleja estratificada\nLa GEIH usa un diseño bietápico: primero selecciona Unidades Primarias de Muestreo (segmentos cartográficos) y luego viviendas dentro de cada segmento. Esto implica que:\n\nLa estratificación por departamento y zona reduce el error estándar\nLa conglomeración de hogares dentro de segmentos lo aumenta, porque personas del mismo segmento se parecen más entre sí\n\nEl efecto neto se captura con el Efecto de Diseño (DEFF), que en la GEIH para indicadores nacionales suele estar entre 1.5 y 2.5."
+  },
+  {
+    "objectID": "metodologia.html#factor-de-expansión",
+    "href": "metodologia.html#factor-de-expansión",
+    "title": "Ficha Metodológica",
+    "section": "Factor de expansión",
+    "text": "Factor de expansión\nCada persona encuestada tiene asignado un factor de expansión (fex) que indica cuántas personas reales representa. Esto permite pasar de una muestra de ~40.000 hogares/mes a estimaciones para toda Colombia.\nTodas las estimaciones del dashboard usan fex para ser representativas. Los cálculos se realizan con el paquete survey de R, que respeta la estructura del diseño complejo para producir errores estándar correctos."
+  },
+  {
+    "objectID": "metodologia.html#cambio-de-marco-muestral-en-2021",
+    "href": "metodologia.html#cambio-de-marco-muestral-en-2021",
+    "title": "Ficha Metodológica",
+    "section": "Cambio de marco muestral en 2021",
+    "text": "Cambio de marco muestral en 2021\nEn 2021, el DANE renovó el marco muestral de la GEIH pasando del Censo 2005 al Censo 2018. El Censo 2018 encontró que las proyecciones anteriores habían sobreestimado la población colombiana, lo que cambió los factores de expansión.\nConsecuencia práctica: los totales de población (suma de fex) no son directamente comparables entre 2019–2020 y 2021–2025. Sin embargo, las tasas, proporciones y brechas relativas sí lo son, porque numerador y denominador se escalan con el mismo factor.\nPor esta razón, todas las gráficas de series temporales incluyen una línea punteada en 2021 que señala el punto de quiebre."
+  },
+  {
+    "objectID": "metodologia.html#covid-19-y-el-año-2020",
+    "href": "metodologia.html#covid-19-y-el-año-2020",
+    "title": "Ficha Metodológica",
+    "section": "COVID-19 y el año 2020",
+    "text": "COVID-19 y el año 2020\nLa pandemia afectó la recolección de la GEIH en 2020:\n\nMarzo–julio 2020: recolección exclusivamente telefónica\nMódulos suspendidos: migración y algunos módulos temáticos\nCobertura reducida: sexo = 85.6%, educación = 82%, etnia = 82%\n\nLos meses con mayor afectación son abril–junio 2020. Para el análisis descriptivo, se mantiene el año completo con advertencia. Para los modelos econométricos (Oaxaca-Blinder), no se incluye 2020 por la menor cobertura de variables clave."
+  },
+  {
+    "objectID": "metodologia.html#criterios-de-la-muestra-analítica",
+    "href": "metodologia.html#criterios-de-la-muestra-analítica",
+    "title": "Ficha Metodológica",
+    "section": "Criterios de la muestra analítica",
+    "text": "Criterios de la muestra analítica\nAntes de cualquier cálculo, se aplican filtros de limpieza que son comunes a todas las páginas del dashboard:\n\nEdad: población en edad de trabajar, 15 a 99 años\nSexo válido: sexo %in% c(1, 2) — se excluyen registros sin dato\nFactor de expansión: fex no nulo\n\nPara los indicadores de ingreso (Página 3) se excluyen adicionalmente: - Observaciones con ingreso cero, NA, o códigos especiales (98 = no sabe, 99 = no informa) - Salarios horarios por debajo del percentil 1 y por encima del percentil 99 (para reducir el efecto de valores extremos en los modelos)"
+  },
+  {
+    "objectID": "metodologia.html#dimensiones-de-interseccionalidad",
+    "href": "metodologia.html#dimensiones-de-interseccionalidad",
+    "title": "Ficha Metodológica",
+    "section": "Dimensiones de interseccionalidad",
+    "text": "Dimensiones de interseccionalidad\nTodas las páginas permiten desagregar por estas dimensiones, lo que hace visible cómo las brechas se amplían o reducen según el contexto:\n\nSexo: hombre (1) / mujer (2)\nAño: 2019 a 2025\nPertenencia étnica: autoidentificación con grupo étnico (sí/no)\nZona: cabecera municipal / resto rural\nNivel educativo: armonizado entre marcos muestrales para comparabilidad"
+  },
+  {
+    "objectID": "metodologia.html#página-1-acceso-laboral",
+    "href": "metodologia.html#página-1-acceso-laboral",
+    "title": "Ficha Metodológica",
+    "section": "Página 1 — Acceso laboral",
+    "text": "Página 1 — Acceso laboral\nLos tres indicadores centrales de acceso al mercado laboral se calculan directamente desde los microdatos del parquet PET:\n\nTGP (Tasa Global de Participación): proporción de la PET que está económicamente activa (ocupados + desocupados abiertos)\nTO (Tasa de Ocupación): proporción de la PET que tiene trabajo\nTD (Tasa de Desempleo): proporción de la PEA que busca trabajo activamente sin encontrarlo\n\nLas definiciones siguen el estándar DANE: Ocupados = condicion_activ %in% c(1, 2), Desocupados = condicion_activ == 3, PEA = ocupados + desocupados."
+  },
+  {
+    "objectID": "metodologia.html#página-2-calidad-del-empleo",
+    "href": "metodologia.html#página-2-calidad-del-empleo",
+    "title": "Ficha Metodológica",
+    "section": "Página 2 — Calidad del empleo",
+    "text": "Página 2 — Calidad del empleo\nLa calidad del empleo se operacionaliza en cuatro dimensiones:\n\nTipo de vinculación: distribución por posición ocupacional (asalariado, cuenta propia, empleo doméstico, familiar no remunerado)\nIntensidad horaria: promedio de horas semanales trabajadas y distribución por bandas (&lt;20h, 20-39h, 40-48h, &gt;48h)\nSegregación sectorial: Índice de Duncan, que mide cuánto difieren las distribuciones sectoriales de hombres y mujeres\nInformalidad (proxy): porcentaje en posiciones asociadas con alta informalidad (posicion_ocup %in% c(4, 6, 7, 8))"
+  },
+  {
+    "objectID": "metodologia.html#página-3-brechas-salariales",
+    "href": "metodologia.html#página-3-brechas-salariales",
+    "title": "Ficha Metodológica",
+    "section": "Página 3 — Brechas salariales",
+    "text": "Página 3 — Brechas salariales\nLa brecha salarial bruta compara los ingresos medianos de hombres y mujeres sin controlar por ningún otro factor. Se usa ing_total (ingreso laboral total mensual, 90.5% de cobertura) como variable principal:\n\\[\\text{Brecha bruta (\\%)} = \\frac{Mediana_H - Mediana_M}{Mediana_H} \\times 100\\]\nUna brecha positiva indica que los hombres ganan más en mediana. Se calcula por año, nivel educativo, sector y zona, siempre con su coeficiente de variación asociado."
+  },
+  {
+    "objectID": "metodologia.html#blinder-oaxaca-yun-boy-página-1",
+    "href": "metodologia.html#blinder-oaxaca-yun-boy-página-1",
+    "title": "Ficha Metodológica",
+    "section": "Blinder-Oaxaca-Yun (BOY) — Página 1",
+    "text": "Blinder-Oaxaca-Yun (BOY) — Página 1\nEl modelo BOY descompone la brecha de participación laboral entre hombres y mujeres. A diferencia del O-B clásico (que aplica sobre salarios), el BOY usa un modelo logit no lineal porque la variable dependiente es binaria: participa o no participa en el mercado laboral.\nLa brecha se separa en:\n\nDotaciones: diferencias en educación, experiencia y zona que explicarían que las mujeres participen menos\nCoeficientes: diferencias en cómo el mercado valora esas mismas características — el componente asociado con discriminación estructural\nResiduo: interacción entre ambos\n\nAdicionalmente, se aplica la descomposición de Yun para cuantificar la contribución individual de cada variable a la brecha."
+  },
+  {
+    "objectID": "metodologia.html#oaxaca-blinder-clásico-página-3",
+    "href": "metodologia.html#oaxaca-blinder-clásico-página-3",
+    "title": "Ficha Metodológica",
+    "section": "Oaxaca-Blinder clásico — Página 3",
+    "text": "Oaxaca-Blinder clásico — Página 3\nEl modelo Oaxaca-Blinder twofold (Blinder, 1973; Oaxaca, 1973) descompone la brecha salarial en dos componentes:\n\nComponente explicado: la parte de la brecha atribuible a diferencias en características observables (educación, experiencia, sector, zona)\nComponente no explicado: la parte que no se explica por esas diferencias — refleja discriminación y factores no observados\n\nEl modelo estima ecuaciones de Mincer separadas para hombres y mujeres, usando el log del salario por hora como variable dependiente. Se incluyen: años de escolaridad, experiencia potencial y su cuadrado, posición ocupacional, rama de actividad y zona."
+  },
+  {
+    "objectID": "metodologia.html#matching-de-ñopo-página-3",
+    "href": "metodologia.html#matching-de-ñopo-página-3",
+    "title": "Ficha Metodológica",
+    "section": "Matching de Ñopo — Página 3",
+    "text": "Matching de Ñopo — Página 3\nEl método de Ñopo (2008) complementa al O-B usando matching exacto en lugar de supuestos paramétricos. Compara únicamente personas con el mismo perfil observable (educación, edad, ocupación, zona) y mide la brecha entre pares comparables.\nLa brecha total se descompone en cuatro partes:\n\nD₀: brecha entre hombres y mujeres con las mismas características — el componente de discriminación\nD_X: diferencias en la distribución de características\nD_M / D_F: efecto de hombres y mujeres sin par comparable\n\nEste método es robusto a problemas de especificación funcional y sirve como validación no paramétrica del O-B."
+  },
+  {
+    "objectID": "metodologia.html#página-4-mujeres-diversas",
+    "href": "metodologia.html#página-4-mujeres-diversas",
+    "title": "Ficha Metodológica",
+    "section": "Página 4 — Mujeres diversas",
+    "text": "Página 4 — Mujeres diversas\nDesde 2022, la GEIH incluye una pregunta sobre identidad de género (módulo de características generales), lo que permite identificar a mujeres trans en los microdatos: personas que nacieron con sexo masculino (sexo_nacer == 1) pero se identifican como mujeres (identidad_genero == 2).\nEste análisis utiliza únicamente datos del Marco 2018 (2022–2025) porque la variable de identidad de género no existía antes."
+  },
+  {
+    "objectID": "metodologia.html#limitaciones-de-la-subpoblación",
+    "href": "metodologia.html#limitaciones-de-la-subpoblación",
+    "title": "Ficha Metodológica",
+    "section": "Limitaciones de la subpoblación",
+    "text": "Limitaciones de la subpoblación\nLa muestra de mujeres trans en la PET es de aproximadamente 640 observaciones en el período 2022–2025 acumulado. Esto implica:\n\nLos indicadores se calculan de forma agregada (2022–2025) en lugar de año por año, para maximizar el tamaño muestral\nNo se aplican modelos de descomposición (Oaxaca-Blinder o Ñopo) porque la muestra es insuficiente para estimar coeficientes estables\nLos resultados son descriptivos y deben interpretarse como indicativos de tendencias, no como estimaciones puntuales precisas\nSe comparan las condiciones laborales de mujeres cis y mujeres trans en acceso, calidad del empleo, posición ocupacional e ingresos"
+  },
+  {
+    "objectID": "metodologia.html#coeficiente-de-variación-cv",
+    "href": "metodologia.html#coeficiente-de-variación-cv",
+    "title": "Ficha Metodológica",
+    "section": "Coeficiente de Variación (CV)",
+    "text": "Coeficiente de Variación (CV)\nEl CV mide la precisión relativa de una estimación. Una cifra con CV alto (&gt;20%) tiene tanta incertidumbre que no puede reportarse como dato confiable. Esto es especialmente relevante cuando se desagrega en subgrupos pequeños: la brecha salarial nacional tiene un CV bajo, pero la brecha en un departamento pequeño para un grupo étnico minoritario puede ser estadísticamente no publicable.\nEl dashboard implementa un sistema de semáforo basado en los umbrales oficiales del DANE para clasificar la calidad de cada estimación. Toda cifra que se presenta incluye su CV calculado con survey."
+  },
+  {
+    "objectID": "metodologia.html#el-efecto-de-la-desagregación",
+    "href": "metodologia.html#el-efecto-de-la-desagregación",
+    "title": "Ficha Metodológica",
+    "section": "El efecto de la desagregación",
+    "text": "El efecto de la desagregación\nA medida que se desagrega (nacional → departamento → municipio, o se cruza con etnia, zona y educación), la muestra efectiva disminuye y el CV aumenta. Esto no es un error — es la limitación estadística natural de la encuesta para estimaciones muy desagregadas.\nCómo lo manejamos: las cifras con CV &gt; 20% no se muestran como estimaciones puntuales. En su lugar, se indica “muestra insuficiente” o se usan rangos intercuartílicos. El tamaño muestral (n_obs) se muestra en las tooltips de los gráficos interactivos."
+  },
+  {
+    "objectID": "metodologia.html#reproducibilidad-completa",
+    "href": "metodologia.html#reproducibilidad-completa",
+    "title": "Ficha Metodológica",
+    "section": "Reproducibilidad completa",
+    "text": "Reproducibilidad completa\nEl pipeline de datos está diseñado para que cualquier persona pueda reproducir el análisis desde cero. Consta de dos fases:\nFase 1 — Python: descarga los microdatos del DANE (~50 GB), extrae los módulos relevantes y armoniza las variables entre marcos muestrales en dos archivos Parquet base.\nFase 2 — R: precalcula los indicadores, modelos y estadísticos que el dashboard necesita. Cada página lee sus propios Parquets precalculados, lo que permite renderizar el sitio sin procesar los microdatos originales.\nLos Parquets precalculados están disponibles en Zenodo para quienes quieran explorar el dashboard sin ejecutar el pipeline completo."
+  },
+  {
+    "objectID": "metodologia.html#limitaciones-del-enfoque",
+    "href": "metodologia.html#limitaciones-del-enfoque",
+    "title": "Ficha Metodológica",
+    "section": "Limitaciones del enfoque",
+    "text": "Limitaciones del enfoque\n\nLa GEIH usa una variable de sexo binaria (hombre/mujer) en su diseño principal. La variable de identidad de género solo está disponible desde 2022, con muestra limitada.\nLas brechas reportadas en las páginas descriptivas son correlaciones, no relaciones causales. Los modelos de descomposición (O-B, Ñopo) aíslan parcialmente los factores observables, pero no eliminan toda la endogeneidad.\nLos datos de ingresos en encuestas de hogares tienden a subreportar los ingresos altos, lo que puede afectar las estimaciones en los extremos de la distribución.\nLas muestras departamentales pequeñas pueden producir estimaciones estadísticamente inestables — siempre verificar el semáforo de CV."
+  },
+  {
+    "objectID": "metodologia.html#uso-ético-de-los-resultados",
+    "href": "metodologia.html#uso-ético-de-los-resultados",
+    "title": "Ficha Metodológica",
+    "section": "Uso ético de los resultados",
+    "text": "Uso ético de los resultados\nLos resultados de este análisis deben usarse para informar políticas de reducción de brechas, no para justificarlas o naturalizarlas. Las brechas salariales y de participación reflejan estructuras históricas de desigualdad que son modificables con política pública.\nEl tratamiento de la categoría de mujeres trans respeta el principio de no hacer daño: se reportan tendencias agregadas sin exponer datos que puedan individualizar a personas de una población vulnerable."
+  },
+  {
+    "objectID": "metodologia.html#paquetes-y-herramientas",
+    "href": "metodologia.html#paquetes-y-herramientas",
+    "title": "Ficha Metodológica",
+    "section": "Paquetes y herramientas",
+    "text": "Paquetes y herramientas\n\n\n\n\n\n\n\nHerramienta\nUso\n\n\n\n\nQuarto + closeread\nRenderizado del sitio y narrativa scrollytelling\n\n\nR (≥ 4.2)\nAnálisis estadístico y precálculos\n\n\nPython (≥ 3.9)\nPipeline de descarga y armonización de microdatos\n\n\narrow\nLectura y escritura de archivos Parquet\n\n\ndplyr / tidyr\nManipulación y transformación de datos\n\n\nggplot2 / plotly\nVisualizaciones estáticas e interactivas\n\n\nsurvey\nEstimaciones con diseño muestral complejo y CVs\n\n\noaxaca\nDescomposición Oaxaca-Blinder\n\n\ncrosstalk\nFiltros interactivos del lado del cliente\n\n\ngt / DT\nTablas formateadas e interactivas\n\n\n\n\nFuente: DANE, GEIH 2019–2025. Cálculos: EQUILAB — DAT4CCIÓN 2026. Estimaciones ponderadas con factor de expansión (fex)."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "EQUILAB — DAT4CCION 2026",
+    "section": "",
+    "text": "Te damos\nla bienvenida…\n\n\n\n\n\n\n\n  EQUILAB\n  \n    Radar de brechas laborales para las mujeres en Colombia\n  \n  DAT4CCIÓN  ·  2026\n\n\n\n\n\n\n\n\n\n\nAsí lo\nhicimos…\n\n\n\n\nLa GEIH del DANE mide mensualmente las condiciones del mercado laboral colombiano, la pobreza monetaria y las condiciones de vida de los hogares. Es la principal fuente de indicadores de empleo, desempleo, ingresos laborales y posición ocupacional en Colombia.\n\n\n\n\n\n\n\n  Utilizamos los microdatos de la Gran Encuesta Integrada de Hogares (GEIH)\n  del Departamento Administrativo Nacional de Estadística (DANE) de los años\n  2019 a 2025.\n  Esta encuesta mide mensualmente las condiciones del mercado laboral\n  colombiano, la pobreza monetaria y las condiciones de vida de los hogares.\n  Es la principal fuente de indicadores de empleo, desempleo, ingresos\n  laborales y posición ocupacional en Colombia.\n\n\n\n\n\n\n\n\n\n\nConoce más de\nnuestra\nmetodología…\n\n\n\n\nDecisiones de diseño, fuentes de datos, filtros aplicados y limitaciones del estudio. Todo lo que necesitas saber sobre cómo se construyó este análisis.\n\n\n\n\n\n\n\n  Da click aquí\n  Guía metodológica\n\n\n\n\n\n\n\n\n\n\nEstos fueron\nnuestros cuatro\nmomentos de\nanálisis…\nDa click en cada uno para conocer más\n\n\n\n\nAnaliza quiénes participan en el mercado laboral colombiano y quiénes quedan fuera. A través de la Tasa Global de Participación, Tasa de Ocupación y Tasa de Desempleo desagregadas por sexo, territorio y año, esta sección revela la magnitud y persistencia de la brecha de participación entre hombres y mujeres entre 2019 y 2025.\n\n\n\n\nAcceder al mercado laboral no garantiza condiciones dignas. Esta sección examina en qué tipo de empleos se insertan las mujeres colombianas, su posición ocupacional, nivel de informalidad, jornada laboral y segregación sectorial; mostrando cómo las brechas de género van más allá del simple hecho de tener o no tener trabajo.\n\n\n\n\nEl corazón analítico del Radar. A través del modelo de descomposición Oaxaca-Blinder validado con el método Ñopo, esta sección separa cuánto de la brecha salarial se explica por características observables y cuánto responde a discriminación estructural, revelando que a iguales condiciones, los hombres ganan un 8,9% más.\n\n\n\n\nPor primera vez en un análisis de acceso público, esta sección caracteriza las condiciones laborales de las mujeres trans en Colombia y las compara con las de las mujeres cisgénero, aprovechando las preguntas sobre identidad de género que la GEIH incorpora desde 2022.\n\n\n\n\n\n\n\n  Participación y acceso al mercado laboral\n  Condiciones y estabilidad del empleo\n  Brechas salariales de género\n  Análisis de diversidades\n\n\n\n\n\n\n{\n  crTriggerIndex;\n\n  // Mapa: índice del trigger → id del card a enfocar\n  // Triggers: 0=portada, 1-2=hicimos, 3-4=metodologia, 5=momentos-intro,\n  //           6=acceso, 7=calidad, 8=salariales, 9=diversidades\n  const cardMap = {\n    6: \"card-acceso\",\n    7: \"card-calidad\",\n    8: \"card-salariales\",\n    9: \"card-diversidades\"\n  };\n\n  const grid = document.querySelector(\"#cr-momentos .eq-momentos-grid\");\n  if (!grid) return;\n\n  const cardId = cardMap[crTriggerIndex];\n  const allCards = grid.querySelectorAll(\".eq-momento-card\");\n\n  // Resetear transform para medir posiciones reales\n  grid.style.transition = \"none\";\n  grid.style.transform = \"\";\n  grid.style.transformOrigin = \"\";\n\n  if (cardId) {\n    const card = document.getElementById(cardId);\n    if (!card) return;\n\n    const gRect = grid.getBoundingClientRect();\n    const cRect = card.getBoundingClientRect();\n\n    const ccx = (cRect.left - gRect.left) + cRect.width  / 2;\n    const ccy = (cRect.top  - gRect.top)  + cRect.height / 2;\n\n    const s  = 2.2;\n    const tx = gRect.width  / 2 - ccx * s;\n    const ty = gRect.height / 2 - ccy * s;\n\n    // Marcar card activo y ocultar los demás\n    allCards.forEach(c =&gt; {\n      if (c.id === cardId) {\n        c.classList.add(\"eq-card-active\");\n        c.classList.remove(\"eq-card-hidden\");\n      } else {\n        c.classList.add(\"eq-card-hidden\");\n        c.classList.remove(\"eq-card-active\");\n      }\n    });\n\n    requestAnimationFrame(() =&gt; {\n      grid.style.transition      = \"transform 0.7s ease\";\n      grid.style.transformOrigin = \"0 0\";\n      grid.style.transform       = `translate(${tx}px, ${ty}px) scale(${s})`;\n    });\n  } else {\n    // Mostrar todos los cards\n    allCards.forEach(c =&gt; {\n      c.classList.remove(\"eq-card-active\", \"eq-card-hidden\");\n    });\n    requestAnimationFrame(() =&gt; {\n      grid.style.transition = \"transform 0.7s ease\";\n      grid.style.transform  = \"\";\n    });\n  }\n}\n\n\n\n\n\n\n\n\n\n\n\nConoce a las\ncreadoras…\n\n\n\n\nComprometidas con la equidad de género y el uso de datos para la toma de decisiones en Colombia.\n\n\n\n\n\n\n\n\n  \n    Alejandra Otero\n    Científica de datos y profesora de marketing en la Universidad EAN en Colombia. Su propósito es inspirar a sus estudiantes a descubrir las narrativas que revelan los datos, para avanzar juntos hacia un mundo cada vez más equitativo.\n    \n      \n        \n      \n      \n        \n      \n    \n  \n\n  \n    Jeidy Alzate\n    Estudiante de mercadeo apasionada por los datos y el comportamiento del consumidor. Combina comunicación estratégica, plataformas digitales y data storytelling para construir estrategias que realmente funcionan.\n    \n      \n        \n      \n      \n        \n      \n    \n  \n\n  \n    Sofía Lamprea\n    Estudiante de mercadeo orientada a utilizar los datos para generar soluciones que influyan positivamente en la vida de las personas, entender realidades y construir narrativas que importan.\n    \n      \n        \n      \n      \n        \n      \n    \n  \n\n  \n    Juliana Pemberty\n    Estudiante de mercadeo enfocada en el análisis de datos para comprender al consumidor y transformar la información en decisiones con impacto.\n    \n      \n        \n      \n      \n        \n      \n    \n  \n\n\n\n\n\n\n\n\n  \"Desde Equilab tenemos la profunda convicción de que podemos cambiar el mundo con las matemáticas\"\n\n\n  EQUILAB · Dat4cción 2026"
+  },
+  {
+    "objectID": "p4_mujeres_diversas.html",
+    "href": "p4_mujeres_diversas.html",
+    "title": "Mujeres diversas en el mercado laboral",
+    "section": "",
+    "text": "¿Cómo participan las\nmujeres diversas en\nel mercado laboral\ncolombiano?\n\n\n\n\n\n\n\n  Desde 2022, la Gran Encuesta Integrada de Hogares (GEIH)\n  del DANE incluye preguntas sobre identidad de género\n  y orientación sexual para personas mayores de 18 años.\n  Esto permite, por primera vez, caracterizar las condiciones laborales\n  de las mujeres trans en Colombia y compararlas con las\n  de las mujeres cisgénero.\n  Este análisis cubre el período 2022–2025 y utiliza\n  estimaciones ponderadas con coeficiente de variación (CV) para evaluar\n  la confiabilidad estadística de cada indicador."
+  },
+  {
+    "objectID": "p4_mujeres_diversas.html#acceso-al-mercado-laboral",
+    "href": "p4_mujeres_diversas.html#acceso-al-mercado-laboral",
+    "title": "Mujeres diversas en el mercado laboral",
+    "section": "Acceso al mercado laboral",
+    "text": "Acceso al mercado laboral\nLas mujeres trans presentan una tasa global de participación del 77%, significativamente mayor que la de las mujeres cisgénero (46%). Esto sugiere una mayor presión por insertarse en el mercado laboral.\nLa tasa de ocupación de las mujeres trans es del 70.4% frente al 41.3% de las mujeres cis.\nLa tasa de desempleo de las mujeres trans es del 8.5%, aunque esta estimación tiene un CV de 24.5%, lo que indica baja confiabilidad estadística."
+  },
+  {
+    "objectID": "p4_mujeres_diversas.html#calidad-del-empleo",
+    "href": "p4_mujeres_diversas.html#calidad-del-empleo",
+    "title": "Mujeres diversas en el mercado laboral",
+    "section": "Calidad del empleo",
+    "text": "Calidad del empleo\nLa informalidad entre las mujeres trans alcanza el 54.8% (CV: 7.8%), frente al 33.2% de las mujeres cisgénero. Esta brecha de 21.6 puntos porcentuales refleja la precariedad de su inserción laboral.\nLa mediana de horas semanales trabajadas es similar: 48 horas para mujeres trans vs 47 para mujeres cis, lo que indica cargas laborales comparables pero en condiciones de mayor informalidad."
+  },
+  {
+    "objectID": "p4_mujeres_diversas.html#ingresos-laborales",
+    "href": "p4_mujeres_diversas.html#ingresos-laborales",
+    "title": "Mujeres diversas en el mercado laboral",
+    "section": "Ingresos laborales",
+    "text": "Ingresos laborales\nLa mediana del ingreso mensual de las mujeres trans es de $1.100.000, frente a $1.300.000 de las mujeres cis. Esto representa una brecha descriptiva del 15.4%.\nEl CV de la estimación para mujeres trans es del 9.4%, lo que la ubica como una estimación aceptable.\nNota metodológica: no se aplica un modelo de descomposición Oaxaca-Blinder para esta subpoblación porque el tamaño muestral de mujeres trans (n=173 con ingreso válido) es insuficiente para estimar de forma confiable los coeficientes de una regresión con múltiples controles."
+  }
+]
